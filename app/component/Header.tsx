@@ -39,6 +39,16 @@ const Header: React.FC = () => {
                 Approvesell
               </Link>
             </li>
+            <li className="mb-4">
+            <Link href="/Reportproject" className="hover:text-gray-300" onClick={toggleMenu}>
+               Reportproject
+              </Link>
+              </li>
+              <li className="mb-4">
+              <Link href="/Reportblog" className="hover:text-gray-300" onClick={toggleMenu}>
+               Reportblog
+              </Link>
+              </li>
             {/* Add other menu items here */}
           </ul>
         </div>

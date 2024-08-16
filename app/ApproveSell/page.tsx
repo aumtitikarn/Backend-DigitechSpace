@@ -1,4 +1,8 @@
+"use client";
+
+import Header from "../component/Header";
 import React from 'react';
+import Link from 'next/link';
 
 interface Project {
   id: number;
@@ -16,8 +20,11 @@ const projects: Project[] = [
 
 const approvesell: React.FC = () => {
   return (
-    <div className="p-4">
+    < div className="bg-[#FBFBFB]">
+        <Header/>
+        <div className="lg:mx-65 mt-20 mb-2">
       <h2 className="text-xl font-bold mb-4">อนุมัติการขาย</h2>
+      <Link href="/ApproveSell/Detail">
       <table className="min-w-full border-collapse border border-gray-400">
         <thead>
           <tr>
@@ -27,6 +34,7 @@ const approvesell: React.FC = () => {
             <th className="border border-gray-400 p-2">ราคา</th>
           </tr>
         </thead>
+       
         <tbody>
           {projects.map((project) => (
             <tr key={project.id}>
@@ -37,10 +45,13 @@ const approvesell: React.FC = () => {
             </tr>
           ))}
         </tbody>
+       
       </table>
+       </Link>
       <p className="text-sm mt-2">
         *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางด้านบน
       </p>
+    </div>
     </div>
   );
 };
