@@ -49,6 +49,11 @@ const Header: React.FC = () => {
                Reportblog
               </Link>
               </li>
+              <li className="mb-4">
+              <Link href="/Withdraw" className="hover:text-gray-300" onClick={toggleMenu}>
+              Withdraw
+              </Link>
+              </li>
             {/* Add other menu items here */}
           </ul>
         </div>
