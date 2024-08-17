@@ -18,11 +18,11 @@ const projects: Project[] = [
 
 const Detail: React.FC = () => {
   return (
-    <div className="bg-[#FBFBFB]">
+    <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
       <Header />
-      <div className="lg:mx-65 mt-20 mb-2">
+      <div className="lg:mx-16 mt-20 mb-2">
       {projects.map((project) => (
-          <div key={project.id} className="mb-6 p-4 bg-white rounded-lg shadow-md">
+          <div key={project.id} className="mb-4 p-4 lg:ml-10 ml-2">
             <h1 className="text-xl font-bold mb-10 ml-2">คำร้องขอถอนเงิน</h1>
             <h3 className="text-lg text-gray-700 mb-4">โดย คุณ {project.creator}</h3>
             <h4 className="text-xl font-bold mb-4">จำนวนเงิน</h4>
@@ -34,23 +34,23 @@ const Detail: React.FC = () => {
           </div>
         ))}
         </div>
-        <div className="flex justify-center mt-11">
+        <div className="flex justify-center mt-10">
                  <Link href="/">
-                   <button className="bg-[#33529B] text-white px-20 py-2 rounded-lg">
+                   <button className="bg-[#33529B] text-white w-72 py-2 rounded-lg">
                    เสร็จสิ้น
                    </button>
                  </Link>
               </div>
               <div className="flex justify-center mt-11">
                  <Link href="/">
-                   <button className="bg-[#1976D2] text-white px-20 py-2 rounded-lg">
+                   <button className="bg-[#1976D2] text-white  w-72 py-2 rounded-lg">
                    ติดต่อผู้ถอน
                    </button>
                  </Link>
               </div>
               <div className="flex justify-center mt-11">
                  <Link href="/">
-                   <button className="bg-[#9B3933] text-white px-20 py-2 rounded-lg">
+                   <button className="bg-[#9B3933] text-white  w-72  py-2 rounded-lg">
                    ลบคำร้อง
                    </button>
                  </Link>

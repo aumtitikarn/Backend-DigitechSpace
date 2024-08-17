@@ -17,11 +17,11 @@ const projects: Project[] = [
 
 const Detail: React.FC = () => {
   return (
-    <div className="bg-[#FBFBFB]">
+    <div className="flex flex-col min-h-screen bg-[#FBFBFB] ">
       <Header />
-      <div className="lg:mx-65 mt-20 mb-2"> 
+      <div className="lg:mx-65 mt-10 mb-2 lg:ml-10 "> 
         {projects.map((project) => (
-          <div key={project.id} className="mb-6 p-4 bg-white rounded-lg shadow-md">
+          <div key={project.id} className="mb-4 p-4 lg:ml-10 ml-2">
             <h2 className="text-xl font-bold mb-10 ml-2">รายงานบล็อก {project.name}</h2>
             <h3 className="text-lg text-gray-700 mb-2">โดย คุณ {project.creator}</h3>
             <h4 className="text-xl font-bold mb-2">คำร้อง</h4>
@@ -33,27 +33,28 @@ const Detail: React.FC = () => {
           </div>
         ))}
       </div>
-      <div className="flex justify-center mt-11">
-                 <Link href="/">
-                   <button className="bg-[#33529B] text-white px-20 py-2 rounded-lg">
-                   ลบคำร้อง
-                   </button>
-                 </Link>
-              </div>
-              <div className="flex justify-center mt-11">
-                 <Link href="/">
-                   <button className="bg-[#1976D2] text-white px-20 py-2 rounded-lg">
-                   ติดต่อเจ้าของโครงงาน/บล็อก
-                   </button>
-                 </Link>
-              </div>
-              <div className="flex justify-center mt-11">
-                 <Link href="/">
-                   <button className="bg-[#9B3933] text-white px-20 py-2 rounded-lg">
-                   ลบโครงงาน/บล็อก
-                   </button>
-                 </Link>
-              </div>
+      <div className="flex justify-center mt-10">
+  <Link href="/">
+    <button className="bg-[#33529B] text-white w-72 py-2 rounded-lg">
+      ลบคำร้อง
+    </button>
+  </Link>
+</div>
+<div className="flex justify-center mt-11">
+  <Link href="/">
+    <button className="bg-[#1976D2] text-white w-72 py-2 rounded-lg">
+      ติดต่อเจ้าของโครงงาน/บล็อก
+    </button>
+  </Link>
+</div>
+<div className="flex justify-center mt-11">
+  <Link href="/">
+    <button className="bg-[#9B3933] text-white w-72 py-2 rounded-lg">
+      ลบโครงงาน/บล็อก
+    </button>
+  </Link>
+</div>
+
               
     </div>
   );
