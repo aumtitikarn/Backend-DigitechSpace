@@ -105,7 +105,7 @@ function page() {
   return (
     <main>
         <Header/>
-      <div className="flex flex-col items-center w-full">
+      <div className="flex flex-col items-center w-full" style={{backgroundColor:"#FBFBFB"}}>
         <div className="w-full max-w-screen-lg p-4">
           <div className="flex flex-col">
 
@@ -126,7 +126,7 @@ function page() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded"
+                className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
               >
                 <option value="" disabled>Select Category</option>
                 <option value="Document">Document</option>
@@ -144,7 +144,7 @@ function page() {
               <select
                 value={selectedCategory1}
                 onChange={(e) => setSelectedCategory1(e.target.value)}
-                className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded"
+                className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
               >
                 <option value="" disabled>Select Category</option>
                 <option value="Document">Document</option>
@@ -163,12 +163,12 @@ function page() {
             <div className="flex flex-row w-full mt-5">
             <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
                 <div className="flex flex-row justify-center m-2">
-                <p className="font-semibold">
+                <p className="font-semibold text-black">
                 ยอดขายทั้งหมด
                 </p>
                 </div>
                 <div className="flex flex-row justify-center m-2">
-                <p className="font-semibold">
+                <p className="font-semibold text-black">
                 25K
                 </p>
                 </div>
@@ -176,12 +176,12 @@ function page() {
 
             <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
                 <div className="flex flex-row justify-center m-2">
-                <p className="font-semibold">
+                <p className="font-semibold text-black">
                 กำไรของเว็บไซต์
                 </p>
                 </div>
                 <div className="flex flex-row justify-center m-2">
-                <p className="font-semibold">
+                <p className="font-semibold text-black">
                 15K
                 </p>
                 </div>
@@ -189,12 +189,12 @@ function page() {
 
             <div className="flex flex-col justify-center w-96 h-28 m-5 bg-white rounded-md drop-shadow-md">
                 <div className="flex flex-row justify-center m-2">
-                <p className="font-semibold">
+                <p className="font-semibold text-black">
                 จำนวนผู้เข้าชม
                 </p>
                 </div>
                 <div className="flex flex-row justify-center m-2">
-                <p className="font-semibold">
+                <p className="font-semibold text-black">
                 5K
                 </p>
                 </div>
@@ -231,7 +231,7 @@ function page() {
                     <th className="w-4/12 h-12 text-start">คำค้นหา</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody className="text-black">
             <tr>
                     <td className="text-center h-14">1</td>
                     <td className="h-14">ทำเว็บไซต์</td>
@@ -275,7 +275,7 @@ function page() {
               
             </div>
 
-            <div className="flex flex-col w-full mt-5">
+            <div className="flex flex-col w-full mt-5 ">
             <p
               style={{ fontSize: "24px", fontWeight: "bold", color:"#33539B"}}
             >

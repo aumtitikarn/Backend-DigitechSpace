@@ -23,7 +23,7 @@ function page() {
   return (
     <main>
         <Header/>
-    <div className="flex flex-col md:flex-row w-full max-w-auto justify-center p-4 mx-auto">
+    <div className="flex flex-col md:flex-row w-full max-w-auto justify-center p-4 mx-auto text-black" style={{backgroundColor:"#FBFBFB"}}>
         <div className="flex flex-col w-full md:w-2/3 lg:w-full justify-center p-4">
             <div className="flex flex-col justify-center m-5">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mt-5 mb-5">
