@@ -20,18 +20,19 @@ const projects: Project[] = [
 
 const approvesell: React.FC = () => {
   return (
-    < div className="bg-[#FBFBFB]">
+    < div className="flex flex-col min-h-screen bg-[#FBFBFB] ">
         <Header/>
-        <div className="lg:mx-65 mt-20 mb-2">
-      <h2 className="text-xl font-bold mb-4">อนุมัติการขาย</h2>
+        <div className="lg:mx-16 mt-20 mb-2">
+      <h2 className="text-xl font-bold mb-4 ml-5">อนุมัติการขาย</h2>
       <Link href="/ApproveSell/Detail">
+      <div className="w-full h-full flex flex-col"></div>
       <table className="min-w-full border-collapse border border-gray-400">
         <thead>
           <tr>
-            <th className="border border-gray-400 p-2">#</th>
-            <th className="border border-gray-400 p-2">ชื่อโครงการ</th>
-            <th className="border border-gray-400 p-2">ผู้สร้าง</th>
-            <th className="border border-gray-400 p-2">ราคา</th>
+            <th className="border border-gray-400 p-2 text-center text-sm lg:text-lg">#</th>
+            <th className="border border-gray-400 p-2 lg:text-lg">ชื่อโครงการ</th>
+            <th className="border border-gray-400 p-2 lg:text-lg">ผู้สร้าง</th>
+            <th className="border border-gray-400 p-2 lg:text-lg">ราคา</th>
           </tr>
         </thead>
        
@@ -39,9 +40,9 @@ const approvesell: React.FC = () => {
           {projects.map((project) => (
             <tr key={project.id}>
               <td className="border border-gray-400 p-2 text-center">{project.id}.</td>
-              <td className="border border-gray-400 p-2">{project.name}</td>
-              <td className="border border-gray-400 p-2">{project.creator}</td>
-              <td className="border border-gray-400 p-2">{project.price}</td>
+              <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.name}</td>
+              <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.creator}</td>
+              <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.price}</td>
             </tr>
           ))}
         </tbody>

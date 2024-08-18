@@ -11,6 +11,7 @@ import { FaChevronLeft } from "react-icons/fa";
 import { FaChevronRight } from "react-icons/fa";
 import { GoHeart } from "react-icons/go";
 import Link from "next/link";
+import Header from "../../component/Header";
 
 const Detail = () => {
   const { data: session, status } = useSession();
@@ -44,8 +45,8 @@ const Detail = () => {
   
 
   return (
-    <main className="bg-[#FBFBFB]">
-     
+    <main className="flex flex-col min-h-screen bg-[#FBFBFB] ">
+      <Header />
       <div className="lg:mx-60 lg:mt-20 lg:mb-20 mt-10 mb-10 ">
         <div className="flex flex-col min-h-screen">
           {/* Slider Section */}
@@ -138,33 +139,27 @@ const Detail = () => {
                   </li>
                   
                 </ul>
-                 <div className="flex justify-center mt-11">
-                 <Link href="/">
-                   <button className="bg-[#33529B] text-white px-20 py-2 rounded-lg">
-                        Download
-                   </button>
-                 </Link>
-              </div>
-              </div>
-              <div className="flex justify-between mt-5 space-x-2 md:space-x-20 ">
-  <div className="flex-1 flex justify-start ">
-    <Link href="/">
-      <button className="bg-[#666666] text-white px-20 py-3 rounded-lg text-sm md:text-base">
-        ไม่อนุมัติ
-      </button>
-    </Link>
-  </div>
-  <div className="flex-1 flex justify-end ">
-    <Link href="/">
-      <button className="bg-[#33529B] text-white px-20 py-3 rounded-lg text-sm md:text-base">
-        อนุมัติ
-      </button>
-    </Link>
-  </div>
+                <div className="flex justify-center mt-11">
+  <Link href="/">
+    <button className="bg-[#33529B] text-white px-20 py-2 rounded-lg">
+      Download
+    </button>
+  </Link>
 </div>
 
-
-
+<div className="flex justify-center mt-5 space-x-2 md:space-x-20 lg:space-x-10">
+  <Link href="/">
+    <button className="bg-[#666666] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base">
+      ไม่อนุมัติ
+    </button>
+  </Link>
+  <Link href="/">
+    <button className="bg-[#33529B] text-white w-[180px] lg:w-[350px]  md:w-[250px] py-3 rounded-lg text-sm lg:text-base">
+      อนุมัติ
+    </button>
+  </Link>
+</div>
+</div>
 
               <h4 className="bg-white text-[#FF2020] p-4 mt-10 rounded-lg ">
               *ใส่หมายเหตุ หากไม่อนุมัติ

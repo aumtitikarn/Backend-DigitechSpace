@@ -36,21 +36,21 @@ const Detail: React.FC = () => {
         </div>
         <div className="flex justify-center mt-10">
                  <Link href="/">
-                   <button className="bg-[#33529B] text-white w-72 py-2 rounded-lg">
+                   <button className="bg-[#33529B] text-white w-[350px] lg:w-[800px] py-2 rounded-lg">
                    เสร็จสิ้น
                    </button>
                  </Link>
               </div>
               <div className="flex justify-center mt-11">
                  <Link href="/">
-                   <button className="bg-[#1976D2] text-white  w-72 py-2 rounded-lg">
+                   <button className="bg-[#1976D2] text-white w-[350px] lg:w-[800px] py-2 rounded-lg">
                    ติดต่อผู้ถอน
                    </button>
                  </Link>
               </div>
               <div className="flex justify-center mt-11">
                  <Link href="/">
-                   <button className="bg-[#9B3933] text-white  w-72  py-2 rounded-lg">
+                   <button className="bg-[#9B3933] text-white w-[350px] lg:w-[800px] py-2 rounded-lg">
                    ลบคำร้อง
                    </button>
                  </Link>
