@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import Container from "../components/Container";
+import Header from "../../component/Header";
 import Link from 'next/link';
 
 function page() {
@@ -30,12 +28,12 @@ function page() {
   };
 
   return (
-    <Container>
-      <Navbar/>
-    <main className="flex flex-col md:flex-row w-full max-w-auto justify-center p-4 my-20">
-      <div className="flex flex-col md:flex-col w-full max-w-auto justify-center">
+      <main>
+        <Header/>
+    <div className="flex flex-col md:flex-row w-full max-w-auto justify-center p-4 bg text-black" style={{backgroundColor:"#FBFBFB"}}>
+      <div className="flex flex-col md:flex-col w-full max-w-auto justify-center" >
         <div className="flex flex-col justify-center">
-          <h1 className="text-lg font-bold mt-5 mb-5" style={{fontSize:"36px"}}>คำร้องปัญหาของผู้ใช้</h1>
+          <h1 className="text-lg font-bold mt-5 mb-5 text-black" style={{fontSize:"36px"}}>คำร้องปัญหาของผู้ใช้</h1>
         </div>
         <p className="mt-2 text-lg">
         โดย คุณสมใจ ใจดี
@@ -76,9 +74,8 @@ function page() {
           </div>
         </div>
       </div>
+    </div>
     </main>
-    <Footer/>
-    </Container>
   );
 }
 

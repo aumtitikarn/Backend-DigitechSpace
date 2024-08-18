@@ -1,10 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import Container from "../components/Container";
 import Link from 'next/link';
+import Header from "../component/Header";
 
 function page() {
 
@@ -23,9 +21,9 @@ function page() {
   };
 
   return (
-    <Container>
-        <Navbar/>
-    <main className="flex flex-col md:flex-row w-full max-w-auto justify-center p-4 mx-auto">
+    <main>
+        <Header/>
+    <div className="flex flex-col md:flex-row w-full max-w-auto justify-center p-4 mx-auto text-black" style={{backgroundColor:"#FBFBFB"}}>
         <div className="flex flex-col w-full md:w-2/3 lg:w-full justify-center p-4">
             <div className="flex flex-col justify-center m-5">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mt-5 mb-5">
@@ -55,10 +53,10 @@ function page() {
                     <td className="border-2 text-center h-14">a1@gmail.com</td>
             </tr>
             <tr>
-                    <td className="border-2 text-center h-14"><Link href="/Adminreport">3</Link></td>
-                    <td className="border-2 text-center h-14"><Link href="/Adminreport">สมใจ ใจดี</Link></td>
-                    <td className="border-2 text-center h-14"><Link href="/Adminreport">ไม่สามารถเข้าหน้า</Link></td>
-                    <td className="border-2 text-center h-14"><Link href="/Adminreport">a1@gmail.com</Link></td>
+                    <td className="border-2 text-center h-14"><Link href="/ReportService/detail">3</Link></td>
+                    <td className="border-2 text-center h-14"><Link href="/ReportService/detail">สมใจ ใจดี</Link></td>
+                    <td className="border-2 text-center h-14"><Link href="/ReportService/detail">ไม่สามารถเข้าหน้า</Link></td>
+                    <td className="border-2 text-center h-14"><Link href="/ReportService/detail">a1@gmail.com</Link></td>
             </tr>
                 {requests.map((request, index) => (
                 <tr key={index}>
@@ -108,9 +106,8 @@ function page() {
             </button>
         </form>
         </div>
+    </div>
     </main>
-    <Footer/>
-    </Container>
   )
 }
 
