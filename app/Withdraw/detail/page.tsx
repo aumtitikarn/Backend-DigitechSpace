@@ -23,7 +23,7 @@ const Detail: React.FC = () => {
       <div className="lg:mx-16 mt-20 mb-2">
       {projects.map((project) => (
           <div key={project.id} className="mb-4 p-4 lg:ml-10 ml-2">
-            <h1 className="text-xl font-bold mb-10 ml-2">คำร้องขอถอนเงิน</h1>
+            <h1 className="text-xl font-bold mb-10 ">คำร้องขอถอนเงิน</h1>
             <h3 className="text-lg text-gray-700 mb-4">โดย คุณ {project.creator}</h3>
             <h4 className="text-xl font-bold mb-4">จำนวนเงิน</h4>
             <p className="text-lg text-gray-700 mb-4">{project.name}</p>
@@ -34,27 +34,30 @@ const Detail: React.FC = () => {
           </div>
         ))}
         </div>
-        <div className="flex justify-center mt-10">
-                 <Link href="/">
-                   <button className="bg-[#33529B] text-white w-[350px] lg:w-[800px] py-2 rounded-lg">
-                   เสร็จสิ้น
-                   </button>
-                 </Link>
-              </div>
-              <div className="flex justify-center mt-11">
-                 <Link href="/">
-                   <button className="bg-[#1976D2] text-white w-[350px] lg:w-[800px] py-2 rounded-lg">
-                   ติดต่อผู้ถอน
-                   </button>
-                 </Link>
-              </div>
-              <div className="flex justify-center mt-11">
-                 <Link href="/">
-                   <button className="bg-[#9B3933] text-white w-[350px] lg:w-[800px] py-2 rounded-lg">
-                   ลบคำร้อง
-                   </button>
-                 </Link>
-              </div>
+        <div className="mt-4 ml-5 mr-5 lg:ml-20 lg:mr-20">
+            <button
+             
+              className="w-full p-2 text-white rounded mt-6"
+              style={{backgroundColor:"#33539B"}}
+            >
+            เสร็จสิ้น
+            </button>
+            <button
+             
+              className="w-full p-2 text-white rounded mt-4"
+              style={{backgroundColor:"#1976D2"}}
+            >
+                ติดต่อผู้ถอน
+            </button>
+            <button
+             
+              className="w-full p-2 text-white rounded mt-4"
+              style={{backgroundColor:"#9B3933"}}
+            >
+            ลบคำร้อง
+            </button>
+          </div>
+       
       </div>
    
   );

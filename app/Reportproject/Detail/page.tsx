@@ -34,28 +34,29 @@ const Detail: React.FC = () => {
           </div>
         ))}
         </div>
-        <div className="flex justify-center mt-10">
-  <Link href="/">
-    <button className="bg-[#33529B] text-white w-[350px] lg:w-[800px] py-2 rounded-lg">
-      ลบคำร้อง
-    </button>
-  </Link>
-</div>
-<div className="flex justify-center mt-5">
-  <Link href="/">
-    <button className="bg-[#1976D2] text-white w-[350px] lg:w-[800px] py-2 rounded-lg">
-      ติดต่อเจ้าของโครงงาน/บล็อก
-    </button>
-  </Link>
-</div>
-<div className="flex justify-center mt-5">
-  <Link href="/">
-    <button className="bg-[#9B3933] text-white w-[350px] lg:w-[800px] py-2 rounded-lg">
-      ลบโครงงาน/บล็อก
-    </button>
-  </Link>
-</div>
-
+        <div className="mt-4 ml-5 mr-5 lg:ml-20 lg:mr-20">
+            <button
+             
+              className="w-full p-2 text-white rounded mt-6"
+              style={{backgroundColor:"#33539B"}}
+            >
+              ลบคำร้อง
+            </button>
+            <button
+             
+              className="w-full p-2 text-white rounded mt-4"
+              style={{backgroundColor:"#1976D2"}}
+            >
+              ติดต่อเจ้าของโครงงาน/บล็อก
+            </button>
+            <button
+             
+              className="w-full p-2 text-white rounded mt-4"
+              style={{backgroundColor:"#9B3933"}}
+            >
+              ลบโครงงาน/บล็อก
+            </button>
+          </div>
 
       </div>
    
