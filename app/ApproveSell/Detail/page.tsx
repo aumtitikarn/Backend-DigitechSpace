@@ -9,7 +9,7 @@ import { IoIosStar } from "react-icons/io";
 import { MdAccountCircle } from "react-icons/md";
 import { FaChevronLeft } from "react-icons/fa";
 import { FaChevronRight } from "react-icons/fa";
-import { GoHeart } from "react-icons/go";
+import { useSearchParams } from 'next/navigation';
 import Link from "next/link";
 import Header from "../../component/Header";
 
@@ -38,11 +38,33 @@ const Detail = () => {
   const handleNextClick = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
-  const handleFavoriteClick = () => {
-    setIsFavorited((prev) => !prev);  // เปลี่ยนสถานะเมื่อคลิก
-  };
-
+  interface Project {
+    id: number;
+    name: string;
+    creator: string;
+    price: string;
+  }
   
+  const projects: Project[] = [
+    { id: 1, name: 'Facebook Website', creator: 'สมใจ ใจดี', price: '25,000' },
+    { id: 2, name: 'somjai', creator: 'สมใจ ใจดี', price: '45,000' },
+    { id: 3, name: '@somjai', creator: 'สมใจ ใจดี', price: '29,000' },
+    { id: 4, name: 'Facebook Website', creator: 'สมใจ ใจดี', price: '35,000' },
+    { id: 5, name: 'somjai', creator: 'สมใจ ใจดี', price: '15,000' },
+    { id: 6, name: '@somjai', creator: 'สมใจ ใจดี', price: '40,000' },
+    { id: 7, name: 'Facebook Website', creator: 'สมใจ ใจดี', price: '20,000' },
+    { id: 8, name: 'somjai', creator: 'สมใจ ใจดี', price: '27,000' },
+    
+  ];
+
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+
+  const project = projects.find(p => p.id === Number(id));
+
+  if (!project) {
+    return <div>Project not found</div>;
+  }
 
   return (
     <main className="flex flex-col min-h-screen bg-[#FBFBFB] ">
@@ -77,19 +99,19 @@ const Detail = () => {
             {/* Information Section */}
             <div className="w-full mt-4">
               <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xl font-bold text-[24px]">Facebook Website</p>
+                <div key={project.id}>
+                  <p className="text-xl font-bold text-[24px]">{project.name}</p>
                   <div className="flex items-center">
                     <p className="text-sm text-gray-600 mr-2">by</p>
                     <span className="text-gray-500 mr-2 text-2xl">
                       <MdAccountCircle />
                     </span>
                     <p className="text-sm text-gray-600 truncate w-[150px]">
-                      Titikarn Waitayasuwan
+                    {project.creator}
                     </p>
                   </div>
                   <p className="text-lg font-bold mt-3 text-[#33529B]">
-                    45,000 THB
+                  {project.price}THB
                   </p>
                   <div className="flex items-center">
                     <span className="text-yellow-500 mr-2">

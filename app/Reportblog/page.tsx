@@ -3,35 +3,24 @@ import Header from "../component/Header";
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Pagination from '../component/Pagination'; // Import the Pagination component
-
 interface Project {
   id: number;
   name: string;
   creator: string;
   report: string;
+  more:string;
 }
 
 const projects: Project[] = [
-  { id: 1, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 2, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 3, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 4, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 5, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 6, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 7, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 8, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 9, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 10, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 11, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 12, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 13, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 14, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 15, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 16, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 17, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 18, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 19, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
-  { id: 20, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตาม' },
+  { id: 1, name: 'แนะนำ Study with me', creator: 'สมใจ ', report: 'มีคำไม่สุภาพ หรือ คำหยาบคาย',more:'เป็นแบบอย่างที่ไม่ดี' },
+  { id: 2, name: 'แนะนำ Study with me', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงานตามที่ควรจะเป็น' ,more:'ไฟล์เปิดไม่ได้ค่ะ'},
+  { id: 3, name: 'แนะนำ Study with me', creator: 'สมศัก ใจดี', report: 'มีคำไม่สุภาพ หรือ คำหยาบคาย',more:'เป็นแบบอย่างที่ไม่ดี' },
+  { id: 4, name: 'แนะนำ Study with me', creator: 'ใจดี', report: 'มีคำไม่สุภาพ หรือ คำหยาบคาย' ,more:'เป็นแบบอย่างที่ไม่ดี'},
+  { id: 5, name: 'แนะนำ Study with me', creator: 'มานะ ใจดี', report: 'ไฟล์ไม่ทำงานตามที่ควรจะเป็น' ,more:'ไฟล์เปิดไม่ได้ค่ะ'},
+  { id: 6, name: 'แนะนำ Study with me', creator: 'นายดำ ', report: 'มีคำไม่สุภาพ หรือ คำหยาบคาย',more:'เป็นแบบอย่างที่ไม่ดี' },
+  { id: 7, name: 'แนะนำ Study with me', creator: 'สม', report: 'มีคำไม่สุภาพ หรือ คำหยาบคาย',more:'เป็นแบบอย่างที่ไม่ดี' },
+  { id: 8, name: 'แนะนำ Study with me', creator: 'สมใจ มานะ', report: 'ไฟล์ไม่ทำงานตามที่ควรจะเป็น',more:'ไฟล์เปิดไม่ได้ค่ะ' },
+
 ];
 
 const Reportblog: React.FC = () => {
@@ -64,14 +53,18 @@ const Reportblog: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentItems.map((project) => (
-                  <tr key={project.id}>
-                    <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">{project.id}.</td>
-                    <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.name}</td>
-                    <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.report}</td>
-                    <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.creator}</td>
-                  </tr>
-                ))}
+              {currentItems.map((project) => (
+                <tr key={project.id}>
+                  <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">{project.id}.</td>
+                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                    <Link href={`/Reportblog/detail?id=${project.id}`}>
+                      {project.name}
+                    </Link>
+                  </td>
+                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.report}</td>
+                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.creator}</td>
+                </tr>
+              ))}
               </tbody>
             </table>
           </div>

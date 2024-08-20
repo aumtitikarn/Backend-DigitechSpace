@@ -7,9 +7,14 @@ import { TiThMenu } from 'react-icons/ti';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSubMenuOpen, setIsSubMenuOpen] = useState<number | null>(null); // Track which submenu is open
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleSubMenu = (index: number) => {
+    setIsSubMenuOpen(isSubMenuOpen === index ? null : index);
   };
 
   return (
@@ -19,7 +24,6 @@ const Header: React.FC = () => {
           <TiThMenu className="text-3xl mr-4 cursor-pointer" onClick={toggleMenu} />
         </div>
         <img src="/dgt.png" alt="Logo" className="h-8" />
-       
         <FaUserCircle className="text-3xl cursor-pointer hover:text-gray-300" />
       </div>
 
@@ -30,30 +34,95 @@ const Header: React.FC = () => {
         } transition-transform duration-300 ease-in-out z-50`}
       >
         <div className="p-6">
-          <button className="text-white text-2xl" onClick={toggleMenu}>
-            &times;
-          </button>
-          <ul className="mt-8">
-            <li className="mb-4">
+        <div className="container mx-auto flex items-center justify-between">
+    {/* Logo on the left */}
+    <img src="/dgt.png" alt="Logo" className="h-8" />
+
+    {/* Close button on the right */}
+    <button className="text-white text-4xl ml-auto" onClick={toggleMenu}>
+      &times;
+    </button>
+  </div>
+          <ul className="mt-8 space-y-4">
+            {/* Menu Item 1 */}
+            <li>
+              <button
+                className="flex justify-between items-center w-full hover:text-gray-300"
+                onClick={() => toggleSubMenu(1)}
+              >
+                รายชื่อผู้ใช้
+                <span>{isSubMenuOpen === 1 ? '▲' : '▼'}</span>
+              </button>
+              {isSubMenuOpen === 1 && (
+                <ul className="mt-2 ml-4 space-y-2">
+                  <li>
+                    <Link href="/ApproveSell" className="hover:text-gray-300" onClick={toggleMenu}>
+                      ผู้ใช้ธรรมดา
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/Students" className="hover:text-gray-300" onClick={toggleMenu}>
+                      นักศึกษา
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/Admins" className="hover:text-gray-300" onClick={toggleMenu}>
+                      แอดมิน
+                    </Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Menu Item 2 */}
+            <li>
               <Link href="/ApproveSell" className="hover:text-gray-300" onClick={toggleMenu}>
-                Approvesell
+                อนุมัติการขาย
               </Link>
             </li>
-            <li className="mb-4">
-            <Link href="/Reportproject" className="hover:text-gray-300" onClick={toggleMenu}>
-               Reportproject
-              </Link>
-              </li>
-              <li className="mb-4">
-              <Link href="/Reportblog" className="hover:text-gray-300" onClick={toggleMenu}>
-               Reportblog
-              </Link>
-              </li>
-              <li className="mb-4">
+
+            {/* Menu Item 3 */}
+            <li>
+              <button
+                className="flex justify-between items-center w-full hover:text-gray-300"
+                onClick={() => toggleSubMenu(2)}
+              >
+                รายงานของผู้ใช้
+                <span>{isSubMenuOpen === 2 ? '▲' : '▼'}</span>
+              </button>
+              {isSubMenuOpen === 2 && (
+                <ul className="mt-2 ml-4 space-y-2">
+                  <li>
+                    <Link href="/Reportproject" className="hover:text-gray-300" onClick={toggleMenu}>
+                      โครงงาน
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/Reportblog" className="hover:text-gray-300" onClick={toggleMenu}>
+                      บล็อก
+                    </Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Menu Item 4 */}
+            <li>
               <Link href="/Withdraw" className="hover:text-gray-300" onClick={toggleMenu}>
-              Withdraw
+                คำร้องขอถอนเงิน
               </Link>
-              </li>
+            </li>
+            <li>
+              <Link href="/ReportService" className="hover:text-gray-300" onClick={toggleMenu}>
+                คำร้องปัญหาของผู้ใช้
+              </Link>
+            </li>
+            <li>
+              <Link href="/Analyst" className="hover:text-gray-300" onClick={toggleMenu}>
+                สรุปผล
+              </Link>
+            </li>
+
             {/* Add other menu items here */}
           </ul>
         </div>

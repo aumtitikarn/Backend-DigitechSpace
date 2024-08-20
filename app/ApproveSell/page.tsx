@@ -12,18 +12,15 @@ interface Project {
 }
 
 const projects: Project[] = [
-  { id: 1, name: '@somjai', creator: 'สมใจ ใจดี', price: '0640398458' },
-  { id: 2, name: '@somjai', creator: 'สมใจ ใจดี', price: '0640398458' },
-  { id: 3, name: '@somjai', creator: 'สมใจ ใจดี', price: '0640398458' },
-  { id: 4, name: '@somjai', creator: 'สมใจ ใจดี', price: '0640398458' },
-  { id: 5, name: '@somjai', creator: 'สมใจ ใจดี', price: '0640398458' },
-  { id: 6, name: '@somjai', creator: 'สมใจ ใจดี', price: '0640398458' },
-  { id: 7, name: '@somjai', creator: 'สมใจ ใจดี', price: '0640398458' },
-  { id: 8, name: '@somjai', creator: 'สมใจ ใจดี', price: '0640398458' },
-  { id: 9, name: '@somjai', creator: 'สมใจ ใจดี', price: '0640398458' },
-  { id: 10, name: '@somjai', creator: 'สมใจ ใจดี', price: '0640398458' },
-  { id: 11, name: '@somjai', creator: 'สมใจ ใจดี', price: '0640398458' },
-  { id: 12, name: '@somjai', creator: 'สมใจ ใจดี', price: '0640398458' },
+  { id: 1, name: 'Facebook Website', creator: 'สมใจ ใจดี', price: '25,000' },
+  { id: 2, name: 'somjai', creator: 'สมใจ ใจดี', price: '45,000' },
+  { id: 3, name: '@somjai', creator: 'สมใจ ใจดี', price: '29,000' },
+  { id: 4, name: 'Facebook Website', creator: 'สมใจ ใจดี', price: '35,000' },
+  { id: 5, name: 'somjai', creator: 'สมใจ ใจดี', price: '15,000' },
+  { id: 6, name: '@somjai', creator: 'สมใจ ใจดี', price: '40,000' },
+  { id: 7, name: 'Facebook Website', creator: 'สมใจ ใจดี', price: '20,000' },
+  { id: 8, name: 'somjai', creator: 'สมใจ ใจดี', price: '27,000' },
+  
 ];
 
 const approvesell: React.FC = () => {
@@ -60,7 +57,11 @@ const approvesell: React.FC = () => {
         {currentItems.map((project) => (
             <tr key={project.id}>
               <td className="border border-gray-400 p-2 text-center">{project.id}.</td>
-              <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.name}</td>
+              <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                    <Link href={`/ApproveSell/Detail?id=${project.id}`}>
+                      {project.name}
+                    </Link>
+                  </td>
               <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.creator}</td>
               <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.price}</td>
             </tr>
