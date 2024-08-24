@@ -1,26 +1,64 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from 'next/link';
 import Header from "../component/Header";
 
 function page() {
+
+    const [postData,setPostData] = useState<PostData[]>([]);
+    console.log(postData);
+
+    const getPosts = async ()=> {
+
+        try{
+          const res = await fetch("http://localhost:3000/api/getreportservice",{
+            method:"GET",
+            cache:"no-store"
+          })
+    
+          if(!res.ok){
+            throw new Error("Failed of fetch posts")
+          }
+    
+          const data = await res.json();
+          console.log("Fetched Data: ", data); // Log the data to inspect its structure
+          setPostData(data.postservice);
+          console.log(data); // Check the structure here
+          setPostData(data.postservice); // Make sure data.posts exists
+    
+        } catch(error) {
+          console.log("Error loading posts: ",error);
+        }
+      }
+    
+      useEffect(()=>{
+        getPosts();
+      },[]);
+
+      interface PostData {
+        _id: string;
+        report: string;
+        email: string;
+        // Add any other properties that are in your post data
+      }
+
     interface Project1 {
         id: number;
         name: string;
-        report: string;
-        email: string;
+        report1: string;
+        email1: string;
     }
 
     const projects: Project1[] = [
-        { id: 1, name: 'สมใจ ใจดี', report: 'มีคำไม่สุภาพ หรือ คำหยาบคาย', email: 'a1@gmail.com' },
-        { id: 2, name: 'สมใจ', report: 'ไฟล์ไม่ทำงานตามที่ควรจะเป็น', email: 'a1@gmail.com' },
-        { id: 3, name: 'สมหมาย', report: 'มีคำไม่สุภาพ หรือ คำหยาบคาย', email: 'a1@gmail.com' },
-        { id: 4, name: 'ใจดี', report: 'มีคำไม่สุภาพ หรือ คำหยาบคาย', email: 'a1@gmail.com' },
-        { id: 5, name: 'ใจ ใจ', report: 'ไฟล์ไม่ทำงานตามที่ควรจะเป็น', email: 'a1@gmail.com' },
-        { id: 6, name: 'ดี', report: 'มีคำไม่สุภาพ หรือ คำหยาบคาย', email: 'a1@gmail.com' },
-        { id: 7, name: 'สม', report: 'มีคำไม่สุภาพ หรือ คำหยาบคาย', email: 'a1@gmail.com' },
-        { id: 8, name: 'ใจใจดี', report: 'ไฟล์ไม่ทำงานตามที่ควรจะเป็น', email: 'a1@gmail.com' },
+        { id: 1, name: 'สมใจ ใจดี', report1: 'มีคำไม่สุภาพ หรือ คำหยาบคาย', email1: 'a1@gmail.com' },
+        { id: 2, name: 'สมใจ', report1: 'ไฟล์ไม่ทำงานตามที่ควรจะเป็น', email1: 'a1@gmail.com' },
+        { id: 3, name: 'สมหมาย', report1: 'มีคำไม่สุภาพ หรือ คำหยาบคาย', email1: 'a1@gmail.com' },
+        { id: 4, name: 'ใจดี', report1: 'มีคำไม่สุภาพ หรือ คำหยาบคาย', email1: 'a1@gmail.com' },
+        { id: 5, name: 'ใจ ใจ', report1: 'ไฟล์ไม่ทำงานตามที่ควรจะเป็น', email1: 'a1@gmail.com' },
+        { id: 6, name: 'ดี', report1: 'มีคำไม่สุภาพ หรือ คำหยาบคาย', email1: 'a1@gmail.com' },
+        { id: 7, name: 'สม', report1: 'มีคำไม่สุภาพ หรือ คำหยาบคาย', email1: 'a1@gmail.com' },
+        { id: 8, name: 'ใจใจดี', report1: 'ไฟล์ไม่ทำงานตามที่ควรจะเป็น', email1: 'a1@gmail.com' },
     ];
 
     return (
@@ -53,16 +91,47 @@ function page() {
                                             <Link href="/ReportService/detail">{project.name}</Link>
                                         </td>
                                         <td className="border-2 text-center h-14">
-                                            <Link href="/ReportService/detail">{project.report}</Link>
+                                            <Link href="/ReportService/detail">{project.report1}</Link>
                                         </td>
                                         <td className="border-2 text-center h-14">
-                                            <Link href="/ReportService/detail">{project.email}</Link>
+                                            <Link href="/ReportService/detail">{project.email1}</Link>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
+
+        <div className="w-full h-full flex flex-col">
+          <table className="min-w-full border-collapse border border-gray-400">
+            <thead>
+              <tr>
+                <th className="border border-gray-400 p-2">#</th>
+                <th className="border border-gray-400 p-2 lg:text-lg">ผู้ส่งคำร้อง</th>
+                <th className="border border-gray-400 p-2 lg:text-lg">ปัญหา</th>
+                <th className="border border-gray-400 p-2 lg:text-lg">อีเมล</th>
+              </tr>
+            </thead>
+            <tbody>
+            {postData && postData.length > 0 ? (
+                    postData.map(val => (
+                <tr key={val._id}>
+                  <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">ยังไม่มี.</td>
+                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                    <Link href={`ReportService/detail/${val._id}`}>
+                      ยังไม่มี
+                    </Link>
+                  </td>
+                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{val.report}</td>
+                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{val.email}</td>
+                </tr>
+              ))):(<p>you don't have</p>)}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-sm mt-2">
+          *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางคนนั้น
+        </p>
                     {/* Uncomment this section if you intend to use the requests form */}
                     {/* 
                     <form
