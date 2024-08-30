@@ -10,21 +10,21 @@ interface Project {
   name: string;
   creator: string;
   report: string;
-  more:string;
+ 
 }
 
 const projects: Project[] = [
-  { id: 1, name: 'Facebook Website', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงาน' ,more:'ไฟล์เปิดไม่ได้ค่ะ'},
-  { id: 2, name: 'Facebook Website', creator: 'สมศรี', report: 'ไม่ตรงปก' ,more:'ไม่สวย'},
-  { id: 3, name: 'Facebook Website', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงาน' ,more:'ไฟล์เปิดไม่ได้ค่ะ'},
-  { id: 4, name: 'Facebook Website', creator: 'สมศรี', report: 'ไม่ตรงปก' ,more:'ไม่สวย'},
-  { id: 5, name: 'Facebook Website', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงาน' ,more:'ไฟล์เปิดไม่ได้ค่ะ'},
-  { id: 6, name: 'Facebook Website', creator: 'สมศรี', report: 'ไม่ตรงปก' ,more:'ไม่สวย'},
-  { id: 7, name: 'Facebook Website', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงาน' ,more:'ไฟล์เปิดไม่ได้ค่ะ'},
-  { id: 8, name: 'Facebook Website', creator: 'สมศรี', report: 'ไม่ตรงปก' ,more:'ไม่สวย'},
+  { id: 1, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: 'a1@gmail.com' },
+  { id: 2, name: 'สมใจ ใจดี', report: 'เว็บโหลดช้า', creator: 'a1@gmail.com' },
+  { id: 3, name: 'สมใจ ใจดี', report: 'ไม่สามารถเข้าหน้า...', creator: 'a1@gmail.com' },
+  { id: 4, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: 'a1@gmail.com' },
+  { id: 5, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: 'a1@gmail.com' },
+  { id: 6, name: 'สมใจ ใจดี', report: 'เว็บโหลดช้า', creator: 'a1@gmail.com' },
+  { id: 7, name: 'สมใจ ใจดี', report: 'เว็บโหลดช้า ', creator: 'a1@gmail.com' },
+  { id: 8, name: 'สมใจ ใจดี', report: 'ไม่สามารถเข้าหน้า..', creator: 'a1@gmail.com' },
 ];
 
-const Reportproject: React.FC = () => {
+const Report: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -39,18 +39,18 @@ const Reportproject: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
-    <Header />
-    <main className="flex-grow">
-      <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
-        <h2 className="text-xl font-bold mb-4 ">รายงานของผู้ใช้ : โครงงาน</h2>
+      <Header />
+      <main className="flex-grow">
+        <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
+        <h2 className="text-xl font-bold mb-4 ">คำร้องปัญหาของผู้ใช้</h2>
         <div className="w-full h-full flex flex-col">
           <table className="min-w-full border-collapse border border-gray-400">
             <thead>
               <tr>
                 <th className="border border-gray-400 p-2">#</th>
-                <th className="border border-gray-400 p-2 lg:text-lg">ชื่อโครงการ</th>
-                <th className="border border-gray-400 p-2 lg:text-lg">คำร้อง</th>
-                <th className="border border-gray-400 p-2 lg:text-lg">ผู้รายงาน</th>
+                <th className="border border-gray-400 p-2 lg:text-lg">ผู้ส่งคำร้อง</th>
+                <th className="border border-gray-400 p-2 lg:text-lg">ปัญหา</th>
+                <th className="border border-gray-400 p-2 lg:text-lg">อีเมล</th>
               </tr>
             </thead>
             <tbody>
@@ -58,7 +58,7 @@ const Reportproject: React.FC = () => {
                 <tr key={project.id}>
                   <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">{project.id}.</td>
                   <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
-                    <Link href={`/Reportproject/Detail?id=${project.id}`}>
+                    <Link href={`/ReportService/detail?id=${project.id}`}>
                       {project.name}
                     </Link>
                   </td>
@@ -83,4 +83,4 @@ const Reportproject: React.FC = () => {
   );
 };
 
-export default Reportproject;
+export default Report;

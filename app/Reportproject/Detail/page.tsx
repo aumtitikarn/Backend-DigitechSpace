@@ -36,9 +36,9 @@ const Detail: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB]">
       <Header />
-      <div className="lg:mx-65 mt-10 mb-2 lg:ml-10">
+      <div className="lg:mx-10 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-1">
         <div key={project.id} className="mb-4 p-4 lg:ml-10 ml-2">
-          <h2 className="text-xl font-bold mb-10 ml-2">รายงานบล็อก {project.name}</h2>
+          <h2 className="text-xl font-bold mb-10 ">รายงานบล็อก {project.name}</h2>
           <h3 className="text-lg text-gray-700 mb-4">โดย คุณ {project.creator}</h3>
           <h4 className="text-xl font-bold mb-4">คำร้อง</h4>
           <p className="text-lg text-gray-700 mb-4">{project.report}</p>

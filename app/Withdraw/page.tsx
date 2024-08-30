@@ -22,7 +22,7 @@ const projects: Project[] = [
   { id: 5, name: '15,000.00', creator: 'นายดำ', time: '10/12/2567', bank: 'ธ.กสิกรไทย', numberbank:'112341298',},
 ];
 
-const Reportproject: React.FC = () => {
+const Withdraw: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -35,10 +35,11 @@ const Reportproject: React.FC = () => {
     setCurrentPage(page);
   };
   return (
-    < div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
-        <Header/>
-        <div className="lg:mx-16 mt-20 mb-2">
-      <h2 className="text-xl font-bold mb-4 ml-5">คำร้องขอถอนเงิน</h2>
+    <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
+    <Header />
+    <main className="flex-grow">
+      <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
+      <h2 className="text-xl font-bold mb-4 ">คำร้องขอถอนเงิน</h2>
       <Link href="/Withdraw/detail">
       <div className="w-full h-full flex flex-col">
       <table className="min-w-full border-collapse border border-gray-400">
@@ -78,8 +79,9 @@ const Reportproject: React.FC = () => {
           onPageChange={handlePageChange}
         />
     </div>
+    </main>
     </div>
   );
 };
 
-export default Reportproject;
+export default Withdraw;

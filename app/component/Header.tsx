@@ -56,17 +56,17 @@ const Header: React.FC = () => {
               {isSubMenuOpen === 1 && (
                 <ul className="mt-2 ml-4 space-y-2">
                   <li>
-                    <Link href="/ApproveSell" className="hover:text-gray-300" onClick={toggleMenu}>
+                    <Link href="/normal" className="hover:text-gray-300" onClick={toggleMenu}>
                       ผู้ใช้ธรรมดา
                     </Link>
                   </li>
                   <li>
-                    <Link href="/Students" className="hover:text-gray-300" onClick={toggleMenu}>
+                    <Link href="/student" className="hover:text-gray-300" onClick={toggleMenu}>
                       นักศึกษา
                     </Link>
                   </li>
                   <li>
-                    <Link href="/Admins" className="hover:text-gray-300" onClick={toggleMenu}>
+                    <Link href="/admin" className="hover:text-gray-300" onClick={toggleMenu}>
                       แอดมิน
                     </Link>
                   </li>
