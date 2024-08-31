@@ -15,11 +15,11 @@ interface Project {
 }
 
 const projects: Project[] = [
-  { id: 1, name: '25,000.00', creator: 'สมใจ ', time: '10/12/2567', bank: 'ธ.กสิกรไทย', numberbank:'209348576',},
-  { id: 2, name: '15,000.00', creator: 'สมใจ ใจดี', time: '10/12/2567', bank: 'ธ.กสิกรไทย', numberbank:'223455678',},
-  { id: 3, name: '35,000.00', creator: 'มานะ ', time: '10/12/2567', bank: 'ธ.กสิกรไทย', numberbank:'4635723456',},
-  { id: 4, name: '25,000.00', creator: 'มาสาย', time: '10/12/2567', bank: 'ธ.กสิกรไทย', numberbank:'2234568999',},
-  { id: 5, name: '15,000.00', creator: 'นายดำ', time: '10/12/2567', bank: 'ธ.กสิกรไทย', numberbank:'112341298',},
+  { id: 1, creator: '25,000.00', name: 'สมใจ ', time: '10/12/2567', bank: 'ธ.กสิกรไทย', numberbank:'209348576',},
+  { id: 2, creator: '15,000.00', name: 'สมใจ ใจดี', time: '10/12/2567', bank: 'ธ.กสิกรไทย', numberbank:'223455678',},
+  { id: 3, creator: '35,000.00', name: 'มานะ ', time: '10/12/2567', bank: 'ธ.กสิกรไทย', numberbank:'4635723456',},
+  { id: 4, creator: '25,000.00', name: 'มาสาย', time: '10/12/2567', bank: 'ธ.กสิกรไทย', numberbank:'2234568999',},
+  { id: 5, creator: '15,000.00', name: 'นายดำ', time: '10/12/2567', bank: 'ธ.กสิกรไทย', numberbank:'112341298',},
 ];
 
 const Withdraw: React.FC = () => {
@@ -57,11 +57,21 @@ const Withdraw: React.FC = () => {
         <tr key={project.id}>
                   <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">{project.id}.</td>
                   <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
-                    <Link href={`/Withdraw/detail?id=${project.id}`}>
-                      {project.creator}
+                    <Link href={{
+    pathname: `/Withdraw/detail`,
+    query: {
+      id: project.id,
+      name: project.name,
+      creator: project.creator,
+      time: project.time,
+      bank: project.bank,
+      numberbank: project.numberbank,
+    },
+  }}>
+                      {project.name}
                     </Link>
                   </td>
-                    <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.name}</td>
+                    <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.creator}</td>
                     <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.time}</td>
                   </tr>
                 ))}

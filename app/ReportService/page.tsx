@@ -10,21 +10,21 @@ interface Project {
   name: string;
   creator: string;
   report: string;
- 
+  time: string;
 }
 
 const projects: Project[] = [
-  { id: 1, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: 'a1@gmail.com' },
-  { id: 2, name: 'สมใจ ใจดี', report: 'เว็บโหลดช้า', creator: 'a1@gmail.com' },
-  { id: 3, name: 'สมใจ ใจดี', report: 'ไม่สามารถเข้าหน้า...', creator: 'a1@gmail.com' },
-  { id: 4, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: 'a1@gmail.com' },
-  { id: 5, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: 'a1@gmail.com' },
-  { id: 6, name: 'สมใจ ใจดี', report: 'เว็บโหลดช้า', creator: 'a1@gmail.com' },
-  { id: 7, name: 'สมใจ ใจดี', report: 'เว็บโหลดช้า ', creator: 'a1@gmail.com' },
-  { id: 8, name: 'สมใจ ใจดี', report: 'ไม่สามารถเข้าหน้า..', creator: 'a1@gmail.com' },
+  { id: 1, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: '@somjai01' ,time:'31/08/2567'},
+  { id: 2, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: '@somjai',time:'31/08/2567' },
+  { id: 3, name: 'สมใจ ใจดี', report: 'เว็บโหลดช้ามากก', creator: '@somjai44',time:'31/08/2567' },
+  { id: 4, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: '@somjai',time:'31/08/2567' },
+  { id: 5, name: 'สมใจ ใจดี', report: 'เว็บโหลดช้ามากก', creator: '@somjai88' ,time:'31/08/2567'},
+  { id: 6, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: '@somjai',time:'31/08/2567'},
+  { id: 7, name: 'สมใจ ใจดี', report: 'เว็บโหลดช้ามากก', creator: '@somjai',time:'31/08/2567' },
+  { id: 8, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: '@somjai' ,time:'31/08/2567'},
 ];
 
-const Report: React.FC = () => {
+const userstudent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -58,9 +58,20 @@ const Report: React.FC = () => {
                 <tr key={project.id}>
                   <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">{project.id}.</td>
                   <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
-                    <Link href={`/ReportService/detail?id=${project.id}`}>
-                      {project.name}
-                    </Link>
+                  <Link
+  href={{
+    pathname: `/ReportService/detail`,
+    query: {
+      id: project.id,
+      name: project.name,
+      creator: project.creator,
+      report: project.report,
+      time: project.time
+    },
+  }}
+>
+  {project.name}
+</Link>
                   </td>
                   <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.report}</td>
                   <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.creator}</td>
@@ -83,4 +94,4 @@ const Report: React.FC = () => {
   );
 };
 
-export default Report;
+export default userstudent;

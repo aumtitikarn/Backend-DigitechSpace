@@ -20,7 +20,7 @@ const Header: React.FC = () => {
   return (
     <header className="bg-[#0B1E48] text-white py-4 px-6">
       <div className="container mx-auto flex items-center justify-between">
-        <div className="flex items-center">
+      <div className="flex items-center justify-between lg:mx-[50px]">
           <TiThMenu className="text-3xl mr-4 cursor-pointer" onClick={toggleMenu} />
         </div>
         <img src="/dgt.png" alt="Logo" className="h-8" />

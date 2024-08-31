@@ -1,34 +1,36 @@
 "use client";
 
 import React, { useState } from "react";
-import { useSearchParams } from "next/navigation"; // Ensure you import this if you want to use it
 import Header from "../../component/Header";
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
-interface Project {
+interface PostData {
   id: number;
   name: string;
   creator: string;
   report: string;
-  more: string;
+  time: string;
 }
 
-const projects: Project[] = [
-  { id: 1, name: "Facebook Website", creator: "สมใจ ใจดี", report: "ไฟล์ไม่ทำงาน", more: "ไฟล์เปิดไม่ได้ค่ะ" },
-  { id: 2, name: "Facebook Website", creator: "สมศรี", report: "ไม่ตรงปก", more: "ไม่สวย" },
-  { id: 3, name: "Facebook Website", creator: "สมใจ ใจดี", report: "ไฟล์ไม่ทำงาน", more: "ไฟล์เปิดไม่ได้ค่ะ" },
-  { id: 4, name: "Facebook Website", creator: "สมศรี", report: "ไม่ตรงปก", more: "ไม่สวย" },
-  { id: 5, name: "Facebook Website", creator: "สมใจ ใจดี", report: "ไฟล์ไม่ทำงาน", more: "ไฟล์เปิดไม่ได้ค่ะ" },
-  { id: 6, name: "Facebook Website", creator: "สมศรี", report: "ไม่ตรงปก", more: "ไม่สวย" },
-  { id: 7, name: "Facebook Website", creator: "สมใจ ใจดี", report: "ไฟล์ไม่ทำงาน", more: "ไฟล์เปิดไม่ได้ค่ะ" },
-  { id: 8, name: "Facebook Website", creator: "สมศรี", report: "ไม่ตรงปก", more: "ไม่สวย" },
-];
-
-const Detail: React.FC = () => {
+function Blog() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  const name = searchParams.get("name");
+  const creator = searchParams.get("creator");
+  const report = searchParams.get("report");
+  const time = searchParams.get("time");
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [popupInput, setPopupInput] = useState("");
 
-  const project = projects.find((p) => p.id === Number(id));
+  const togglePopup = () => {
+    setIsPopupOpen(!isPopupOpen);
+  };
+
+  const handlePopupSubmit = () => {
+    alert(`Popup Input: ${popupInput}`);
+    setPopupInput("");
+    setIsPopupOpen(false);
+  };
 
   const [input1, setInput1] = useState("");
   const [input2, setInput2] = useState("");
@@ -51,50 +53,52 @@ const Detail: React.FC = () => {
     setInput2("");
   };
 
-  if (!project) {
-    return <div>Project not found</div>;
-  }
-
   return (
-    <div className="flex flex-col min-h-screen bg-[#FBFBFB]">
+    <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
       <Header />
-      <div className="lg:mx-10 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-1">
-        <div key={project.id} className="mb-4 p-4 lg:ml-10 ml-2">
-          <h2 className="text-xl font-bold mb-10 ">รายงานบล็อก {project.name}</h2>
-          <h3 className="text-lg text-gray-700 mb-4">โดย คุณ {project.creator}</h3>
-          <h4 className="text-xl font-bold mb-4">คำร้อง</h4>
-          <p className="text-lg text-gray-700 mb-4">{project.report}</p>
-          <h4 className="text-xl font-bold mb-4">ข้อความเพิ่มเติม</h4>
-          <p className="text-lg text-gray-700 mb-4">{project.more}</p>
-          <h4 className="text-xl font-bold mb-4">วันที่/เวลา</h4>
-          <p className="text-lg text-gray-700 mb-4">15/08/2567 10:10:00</p>
+      <main className="flex-grow">
+        <div className="lg:mx-60 mt-10 mb-5">
+          <div className="w-full mt-2 lg:w-2/3 mx-auto">
+            <h1 className="text-lg font-bold mt-5 mb-5 text-black" style={{ fontSize: "36px" }}>
+              คำร้องปัญหาของผู้ใช้
+            </h1>
+            <p className="mt-2 text-lg">โดย {name || ""}</p>
+            <h1 className="text-lg font-bold mt-4" style={{ fontSize: "24px" }}>ปัญหา</h1>
+            <p className="mt-2 text-lg">{report || ""}</p>
+            <h1 className="text-lg font-bold mt-4" style={{ fontSize: "24px" }}>อีเมล</h1>
+            <p className="mt-2 text-lg">{creator || ""}</p>
+            <h1 className="text-xl font-bold mt-4" style={{ fontSize: "24px" }}>วันที่/เวลา</h1>
+            <p className="mt-2 text-lg">{time || ""}</p>
+
+            {/* Buttons */}
+            <div className="mt-6 flex flex-col gap-4">
+              <button
+                onClick={handleSubmit}
+                className="w-full p-2 text-white rounded"
+                style={{ backgroundColor: "#33539B" }}
+              >
+                ลบคำร้อง
+              </button>
+              <button
+                onClick={handleSubmit1}
+                className="w-full p-2 text-white rounded"
+                style={{ backgroundColor: "#1976D2" }}
+              >
+                ติดต่อเจ้าของโครงงาน/บล็อก
+              </button>
+              <button
+                onClick={handleSubmit2}
+                className="w-full p-2 text-white rounded"
+                style={{ backgroundColor: "#9B3933" }}
+              >
+                ลบโครงงาน/บล็อก
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="mt-4 ml-5 mr-5 lg:ml-20 lg:mr-20">
-        <button
-          onClick={handleSubmit}
-          className="w-full p-2 text-white rounded mt-6"
-          style={{ backgroundColor: "#33539B" }}
-        >
-          ลบคำร้อง
-        </button>
-        <button
-          onClick={handleSubmit1}
-          className="w-full p-2 text-white rounded mt-4"
-          style={{ backgroundColor: "#1976D2" }}
-        >
-          ติดต่อเจ้าของโครงงาน/บล็อก
-        </button>
-        <button
-          onClick={handleSubmit2}
-          className="w-full p-2 text-white rounded mt-4"
-          style={{ backgroundColor: "#9B3933" }}
-        >
-          ลบโครงงาน/บล็อก
-        </button>
-      </div>
+      </main>
     </div>
   );
-};
+}
 
-export default Detail;
+export default Blog;

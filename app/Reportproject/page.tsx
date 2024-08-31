@@ -11,17 +11,18 @@ interface Project {
   creator: string;
   report: string;
   more:string;
+  time:string;
 }
 
 const projects: Project[] = [
-  { id: 1, name: 'Facebook Website', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงาน' ,more:'ไฟล์เปิดไม่ได้ค่ะ'},
-  { id: 2, name: 'Facebook Website', creator: 'สมศรี', report: 'ไม่ตรงปก' ,more:'ไม่สวย'},
-  { id: 3, name: 'Facebook Website', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงาน' ,more:'ไฟล์เปิดไม่ได้ค่ะ'},
-  { id: 4, name: 'Facebook Website', creator: 'สมศรี', report: 'ไม่ตรงปก' ,more:'ไม่สวย'},
-  { id: 5, name: 'Facebook Website', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงาน' ,more:'ไฟล์เปิดไม่ได้ค่ะ'},
-  { id: 6, name: 'Facebook Website', creator: 'สมศรี', report: 'ไม่ตรงปก' ,more:'ไม่สวย'},
-  { id: 7, name: 'Facebook Website', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงาน' ,more:'ไฟล์เปิดไม่ได้ค่ะ'},
-  { id: 8, name: 'Facebook Website', creator: 'สมศรี', report: 'ไม่ตรงปก' ,more:'ไม่สวย'},
+  { id: 1, name: 'Facebook Website', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงาน' ,more:'ไฟล์เปิดไม่ได้ค่ะ', time: '10/12/2567'},
+  { id: 2, name: 'Facebook Website', creator: 'สมศรี', report: 'ไม่ตรงปก' ,more:'ไม่สวย', time: '10/12/2567'},
+  { id: 3, name: 'Facebook Website', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงาน' ,more:'ไฟล์เปิดไม่ได้ค่ะ', time: '10/12/2567'},
+  { id: 4, name: 'Facebook Website', creator: 'สมศรี', report: 'ไม่ตรงปก' ,more:'ไม่สวย', time: '10/12/2567'},
+  { id: 5, name: 'Facebook Website', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงาน' ,more:'ไฟล์เปิดไม่ได้ค่ะ', time: '10/12/2567'},
+  { id: 6, name: 'Facebook Website', creator: 'สมศรี', report: 'ไม่ตรงปก' ,more:'ไม่สวย', time: '10/12/2567'},
+  { id: 7, name: 'Facebook Website', creator: 'สมใจ ใจดี', report: 'ไฟล์ไม่ทำงาน' ,more:'ไฟล์เปิดไม่ได้ค่ะ', time: '10/12/2567'},
+  { id: 8, name: 'Facebook Website', creator: 'สมศรี', report: 'ไม่ตรงปก' ,more:'ไม่สวย', time: '10/12/2567'},
 ];
 
 const Reportproject: React.FC = () => {
@@ -58,7 +59,19 @@ const Reportproject: React.FC = () => {
                 <tr key={project.id}>
                   <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">{project.id}.</td>
                   <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
-                    <Link href={`/Reportproject/Detail?id=${project.id}`}>
+                  <Link
+  href={{
+    pathname: `/Reportproject/Detail`,
+    query: {
+      id: project.id,
+      name: project.name,
+      creator: project.creator,
+      report: project.report,
+      more:project.more,
+      time: project.time
+    },
+  }}
+>
                       {project.name}
                     </Link>
                   </td>
