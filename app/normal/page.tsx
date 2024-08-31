@@ -7,21 +7,21 @@ import Pagination from '../component/Pagination';
 
 interface Project {
   id: number;
+  Username: string;
   name: string;
-  creator: string;
-  report: string;
+  phon: string;
  
 }
 
 const projects: Project[] = [
-  { id: 1, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 2, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 3, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 4, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 5, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 6, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 7, name: '@somjai', report: 'สมใจ ใจดี ', creator: '0640398458' },
-  { id: 8, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
+  { id: 1, Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458' },
+  { id: 2, Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458' },
+  { id: 3, Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458' },
+  { id: 4, Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458' },
+  { id: 5, Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458' },
+  { id: 6, Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458' },
+  { id: 7, Username: '@somjai', name: 'สมใจ ใจดี ', phon: '0640398458' },
+  { id: 8, Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458' },
 ];
 
 const usernormal: React.FC = () => {
@@ -58,12 +58,20 @@ const usernormal: React.FC = () => {
                 <tr key={project.id}>
                   <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">{project.id}.</td>
                   <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
-                    <Link href={`/normal/detail?id=${project.id}`}>
-                      {project.name}
+                    <Link  href={{
+    pathname: `/normal/detail`,
+    query: {
+      id: project.id,
+      Username: project.Username,
+      name: project.name,
+      phon: project.phon,
+    },
+  }}>
+                      {project.Username}
                     </Link>
                   </td>
-                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.report}</td>
-                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.creator}</td>
+                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.name}</td>
+                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.phon}</td>
                 </tr>
               ))}
             </tbody>

@@ -1,37 +1,54 @@
 "use client";
 
 import Header from "../component/Header";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Pagination from '../component/Pagination';
 
-interface Project {
-  id: number;
-  name: string;
-  creator: string;
+interface PostData {
+  _id: number; // Make sure this matches the type returned by the API
   report: string;
-  time: string;
+  email: string;
+  // Add other properties as needed
 }
 
-const projects: Project[] = [
-  { id: 1, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: '@somjai01' ,time:'31/08/2567'},
-  { id: 2, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: '@somjai',time:'31/08/2567' },
-  { id: 3, name: 'สมใจ ใจดี', report: 'เว็บโหลดช้ามากก', creator: '@somjai44',time:'31/08/2567' },
-  { id: 4, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: '@somjai',time:'31/08/2567' },
-  { id: 5, name: 'สมใจ ใจดี', report: 'เว็บโหลดช้ามากก', creator: '@somjai88' ,time:'31/08/2567'},
-  { id: 6, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: '@somjai',time:'31/08/2567'},
-  { id: 7, name: 'สมใจ ใจดี', report: 'เว็บโหลดช้ามากก', creator: '@somjai',time:'31/08/2567' },
-  { id: 8, name: 'สมใจ ใจดี', report: 'เว็บบัค', creator: '@somjai' ,time:'31/08/2567'},
-];
-
-const userstudent: React.FC = () => {
+const ReportService: React.FC = () => {
+  const [postData, setPostData] = useState<PostData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = projects.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(projects.length / itemsPerPage);
+  const currentItems = postData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(postData.length / itemsPerPage);
+
+  // Function to fetch data from API
+  const getPosts = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/getreportservice", {
+        method: "GET",
+        cache: "no-store"
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch posts");
+      }
+
+      const data = await response.json();
+      console.log("Fetched Data: ", data); // Log the data to inspect its structure
+      if (data && data.postservice) {
+        setPostData(data.postservice); // Assume API returns { postservice: [...] }
+      } else {
+        console.error('Data format is incorrect:', data);
+      }
+    } catch (error) {
+      console.error("Error loading posts: ", error);
+    }
+  };
+
+  useEffect(() => {
+    getPosts(); // Fetch posts when component mounts
+  }, []);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -42,56 +59,66 @@ const userstudent: React.FC = () => {
       <Header />
       <main className="flex-grow">
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
-        <h2 className="text-xl font-bold mb-4 ">คำร้องปัญหาของผู้ใช้</h2>
-        <div className="w-full h-full flex flex-col">
-          <table className="min-w-full border-collapse border border-gray-400">
-            <thead>
-              <tr>
-                <th className="border border-gray-400 p-2">#</th>
-                <th className="border border-gray-400 p-2 lg:text-lg">ผู้ส่งคำร้อง</th>
-                <th className="border border-gray-400 p-2 lg:text-lg">ปัญหา</th>
-                <th className="border border-gray-400 p-2 lg:text-lg">อีเมล</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.map((project) => (
-                <tr key={project.id}>
-                  <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">{project.id}.</td>
-                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
-                  <Link
-  href={{
-    pathname: `/ReportService/detail`,
-    query: {
-      id: project.id,
-      name: project.name,
-      creator: project.creator,
-      report: project.report,
-      time: project.time
-    },
-  }}
->
-  {project.name}
-</Link>
-                  </td>
-                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.report}</td>
-                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.creator}</td>
+          <h2 className="text-xl font-bold mb-4">คำร้องปัญหาของผู้ใช้</h2>
+          <div className="w-full h-full flex flex-col">
+            <table className="min-w-full border-collapse border border-gray-400">
+              <thead>
+                <tr>
+                  <th className="border border-gray-400 p-2">#</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg">ผู้ส่งคำร้อง</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg">ปัญหา</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg">อีเมล</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {currentItems.length > 0 ? (
+                  currentItems.map((val, index) => (
+                    <tr key={val._id}>
+                      <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">
+                        {indexOfFirstItem + index + 1}
+                      </td>
+                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                        <Link
+                          href={{
+                            pathname: `/ReportService/detail/`,
+                            query: {
+                              _id: val._id,
+                              report: val.report,
+                              email: val.email,
+                            },
+                          }}
+                        >
+                          {val.report}
+                        </Link>
+                      </td>
+                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                        {val.report}
+                      </td>
+                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                        {val.email}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="text-center p-4">ไม่มีข้อมูลคำร้อง</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-sm mt-2">
+            *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางคนนั้น
+          </p>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
-        <p className="text-sm mt-2">
-          *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางคนนั้น
-        </p>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
-      </div>
       </main>
     </div>
   );
 };
 
-export default userstudent;
+export default ReportService;

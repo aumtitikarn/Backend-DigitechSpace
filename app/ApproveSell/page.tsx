@@ -59,7 +59,15 @@ const approvesell: React.FC = () => {
             <tr key={project.id}>
               <td className="border border-gray-400 p-2 text-center">{project.id}.</td>
               <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
-                    <Link href={`/ApproveSell/Detail?id=${project.id}`}>
+                    <Link  href={{
+    pathname: `/ApproveSell/Detail`,
+    query: {
+      id: project.id,
+      name: project.name,
+      creator: project.creator,
+      price: project.price,
+    },
+  }}>
                       {project.name}
                     </Link>
                   </td>

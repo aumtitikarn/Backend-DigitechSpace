@@ -38,33 +38,13 @@ const Detail = () => {
   const handleNextClick = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
-  interface Project {
-    id: number;
-    name: string;
-    creator: string;
-    price: string;
-  }
-  
-  const projects: Project[] = [
-    { id: 1, name: 'Facebook Website', creator: 'สมใจ ใจดี', price: '25,000' },
-    { id: 2, name: 'somjai', creator: 'สมใจ ใจดี', price: '45,000' },
-    { id: 3, name: '@somjai', creator: 'สมใจ ใจดี', price: '29,000' },
-    { id: 4, name: 'Facebook Website', creator: 'สมใจ ใจดี', price: '35,000' },
-    { id: 5, name: 'somjai', creator: 'สมใจ ใจดี', price: '15,000' },
-    { id: 6, name: '@somjai', creator: 'สมใจ ใจดี', price: '40,000' },
-    { id: 7, name: 'Facebook Website', creator: 'สมใจ ใจดี', price: '20,000' },
-    { id: 8, name: 'somjai', creator: 'สมใจ ใจดี', price: '27,000' },
-    
-  ];
+ 
 
   const searchParams = useSearchParams();
-  const id = searchParams.get('id');
-
-  const project = projects.find(p => p.id === Number(id));
-
-  if (!project) {
-    return <div>Project not found</div>;
-  }
+  const id = searchParams.get("id");
+  const name = searchParams.get("name");
+  const creator = searchParams.get("creator");
+  const price = searchParams.get("price")
 
   return (
     <main className="flex flex-col min-h-screen bg-[#FBFBFB] ">
@@ -99,19 +79,19 @@ const Detail = () => {
             {/* Information Section */}
             <div className="w-full mt-4">
               <div className="flex items-start justify-between">
-                <div key={project.id}>
-                  <p className="text-xl font-bold text-[24px]">{project.name}</p>
+                <div >
+                  <p className="text-xl font-bold text-[24px]">{name || ""}</p>
                   <div className="flex items-center">
                     <p className="text-sm text-gray-600 mr-2">by</p>
                     <span className="text-gray-500 mr-2 text-2xl">
                       <MdAccountCircle />
                     </span>
                     <p className="text-sm text-gray-600 truncate w-[150px]">
-                    {project.creator}
+                    {creator || ""}
                     </p>
                   </div>
                   <p className="text-lg font-bold mt-3 text-[#33529B]">
-                  {project.price}THB
+                  {price || ""}THB
                   </p>
                   <div className="flex items-center">
                     <span className="text-yellow-500 mr-2">

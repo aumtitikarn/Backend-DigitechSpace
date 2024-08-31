@@ -7,21 +7,38 @@ import Pagination from '../component/Pagination';
 
 interface Project {
   id: number;
+  Username: string;
   name: string;
-  creator: string;
-  report: string;
+  phon: string;
+  Email: string;
+  idcard: string;
+  bank:string;
+  banknumber:string;
+  Address:string;
+  subdis:string;
+  district:string;
+  province:string;
+  postal:string;
  
 }
 
 const projects: Project[] = [
-  { id: 1, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 2, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 3, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 4, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 5, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 6, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 7, name: '@somjai', report: 'สมใจ ใจดี ', creator: '0640398458' },
-  { id: 8, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
+  { id: 1, Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458',Email:'phorn@gmail.com', idcard:'1234123454321',
+    bank:'กสิกรไทย',banknumber:'1234567890',Address:'333/17 ถนนป็อปปูล่า',subdis:'บ้านใหม่จริง',district:'ปากเกร็ดติ',province:'นนทบุรี', postal:'1120' },
+  { id: 2,Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458',Email:'phorn01@gmail.com', idcard:'1234123454321',
+    bank:'กสิกรไทย',banknumber:'1234567890',Address:'333/17 ถนนป็อปปูล่า',subdis:'บ้านเก่า',district:'ปากเกร็ด',province:'นนทบุรี', postal:'1120' },
+  { id: 3, Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458',Email:'phorn12@gmail.com', idcard:'1234123454321',
+    bank:'กสิกรไทย',banknumber:'1234567890',Address:'333/17 ถนนป็อปปูล่า',subdis:'บ้านใหม่',district:'ปากเกร็ดจิ',province:'นนทบุรี', postal:'1120'  },
+  { id: 4,Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458',Email:'phorn14@gmail.com', idcard:'1234123454321',
+    bank:'กสิกรไทย',banknumber:'1234567890',Address:'333/17 ถนนป็อปปูล่า',subdis:'บ้านเก่า',district:'ปากเกร็ด',province:'นนทบุรี', postal:'1120'  },
+  { id: 5,Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458',Email:'phorn04@gmail.com', idcard:'1234123454321',
+    bank:'กสิกรไทย',banknumber:'1234567890',Address:'333/17 ถนนป็อปปูล่า',subdis:'บ้านใหม่ไหน',district:'ปากเกร็ด',province:'นนทบุรี', postal:'1120'  },
+  { id: 6,Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458',Email:'phorn40@gmail.com', idcard:'1234123454321',
+    bank:'กสิกรไทย',banknumber:'1234567890',Address:'333/17 ถนนป็อปปูล่า',subdis:'บ้านใหม่',district:'ปากเกร็ด',province:'นนทบุรี', postal:'1120'  },
+  { id: 7, Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458',Email:'phorn5@gmail.com', idcard:'1234123454321',
+    bank:'กสิกรไทย',banknumber:'1234567890',Address:'333/17 ถนนป็อปปูล่า',subdis:'บ้านใหม่',district:'ปากเกร็ด',province:'นนทบุรี', postal:'1120'  },
+  { id: 8, Username: '@somjai', name: 'สมใจ ใจดี', phon: '0640398458',Email:'phorn3@gmail.com', idcard:'1234123454321',
+    bank:'กสิกรไทย',banknumber:'1234567890',Address:'333/17 ถนนป็อปปูล่า',subdis:'บ้านใหม่',district:'ปากเกร็ด',province:'นนทบุรี', postal:'1120'  },
 ];
 
 const userstudent: React.FC = () => {
@@ -58,12 +75,29 @@ const userstudent: React.FC = () => {
                 <tr key={project.id}>
                   <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">{project.id}.</td>
                   <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
-                    <Link href={`/student/detail?id=${project.id}`}>
-                      {project.name}
-                    </Link>
+                  <Link  href={{
+    pathname: `/student/detail`,
+    query: {
+      id: project.id,
+      Username: project.Username,
+      name: project.name,
+      phon: project.phon,
+      Email: project.Email,
+      idcard: project.idcard,
+      bank:project.bank,
+      banknumber:project.banknumber,
+      Address:project.Address,
+      subdis:project.subdis,
+      district:project.district,
+      province:project.province,
+      postal:project.postal,
+    },
+  }}>
+  {project.Username}
+</Link>
                   </td>
-                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.report}</td>
-                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.creator}</td>
+                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.name}</td>
+                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.phon}</td>
                 </tr>
               ))}
             </tbody>

@@ -7,21 +7,21 @@ import Pagination from '../component/Pagination';
 
 interface Project {
   id: number;
+  Username: string;
   name: string;
-  creator: string;
-  report: string;
+  Email: string;
  
 }
 
 const projects: Project[] = [
-  { id: 1, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 2, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 3, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 4, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 5, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 6, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
-  { id: 7, name: '@somjai', report: 'สมใจ ใจดี ', creator: '0640398458' },
-  { id: 8, name: '@somjai', report: 'สมใจ ใจดี', creator: '0640398458' },
+  { id: 1, Username: '@somjai', name: 'สมใจ ใจดี', Email: 'phorn@gmail.com' },
+  { id: 2, Username: '@somjai', name: 'สมใจ ใจดี', Email: 'thiwa@gmail.com' },
+  { id: 3, Username: '@somjai', name: 'สมใจ ใจดี', Email: 'phorn@gmail.com' },
+  { id: 4, Username: '@somjai', name: 'สมใจ ใจดี', Email: 'thiwa@gmail.com' },
+  { id: 5, Username: '@somjai', name: 'สมใจ ใจดี', Email: 'thiwa@gmail.com' },
+  { id: 6, Username: '@somjai', name: 'สมใจ ใจดี', Email: 'thiwa@gmail.com' },
+  { id: 7, Username: '@somjai', name: 'สมใจ ใจดี ', Email: 'phorn@gmail.com' },
+  { id: 8, Username: '@somjai', name: 'สมใจ ใจดี', Email: 'phorn@gmail.com' },
 ];
 
 const usernormal: React.FC = () => {
@@ -50,7 +50,7 @@ const usernormal: React.FC = () => {
                 <th className="border border-gray-400 p-2">#</th>
                 <th className="border border-gray-400 p-2 lg:text-lg">Username</th>
                 <th className="border border-gray-400 p-2 lg:text-lg">ชื่อ-นามสกุล</th>
-                <th className="border border-gray-400 p-2 lg:text-lg">เบอร์โทรศัพท์</th>
+                <th className="border border-gray-400 p-2 lg:text-lg">อีเมล</th>
               </tr>
             </thead>
             <tbody>
@@ -58,12 +58,20 @@ const usernormal: React.FC = () => {
                 <tr key={project.id}>
                   <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">{project.id}.</td>
                   <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
-                    <Link href={`/admin/detail?id=${project.id}`}>
-                      {project.name}
+                    <Link href={{
+    pathname: `/admin/detail`,
+    query: {
+      id: project.id,
+      Username: project.Username,
+       name: project.name,
+      Email: project.Email,
+    },
+  }}>
+                      {project.Username}
                     </Link>
                   </td>
-                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.report}</td>
-                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.creator}</td>
+                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.name}</td>
+                  <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.Email}</td>
                 </tr>
               ))}
             </tbody>
