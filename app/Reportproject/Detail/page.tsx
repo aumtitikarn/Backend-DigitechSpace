@@ -4,23 +4,28 @@ import Header from "../../component/Header";
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
 
-interface Project {
-  id: number;
-  name: string;
-  creator: string;
-  report: string;
-  more: string;
-  time: string;
-}
-
 const Detail: React.FC = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const name = searchParams.get("name");
-  const creator = searchParams.get("creator");
+  const username = searchParams.get("username");
   const report = searchParams.get("report");
   const more = searchParams.get("more");
   const time = searchParams.get("time");
+
+  // Function to format date
+  const formatDate = (timestamp: string | null) => {
+    if (!timestamp) return '';
+    const date = new Date(timestamp); 
+    return date.toLocaleString("th-TH", {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+  };
 
   const handleSubmit1 = () => {
     alert("Button 1 clicked");
@@ -47,13 +52,13 @@ const Detail: React.FC = () => {
             {/* Content */}
             <div className="flex flex-col gap-4">
               <h2 className="text-xl font-bold mb-5">รายงานบล็อก {name || ""}</h2>
-              <h3 className="text-lg text-gray-700 mb-2">โดย คุณ {creator || ""}</h3>
+              <h3 className="text-lg text-gray-700 mb-2">โดย คุณ {username || ""}</h3>
               <h4 className="text-xl font-bold mb-2">คำร้อง</h4>
               <p className="text-lg text-gray-700 mb-2">{report || ""}</p>
               <h4 className="text-xl font-bold mb-2">ข้อความเพิ่มเติม</h4>
               <p className="text-lg text-gray-700 mb-2">{more || ""}</p>
               <h4 className="text-xl font-bold mb-2">วันที่/เวลา</h4>
-              <p className="text-lg text-gray-700 mb-4">{time || ""}</p>
+              <p className="text-lg text-gray-700 mb-4">{formatDate(time)}</p>
             </div>
 
             {/* Buttons */}

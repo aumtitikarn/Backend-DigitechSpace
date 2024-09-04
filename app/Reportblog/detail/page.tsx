@@ -4,22 +4,28 @@ import Header from "../../component/Header";
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
 
-interface Project {
-  id: number;
-  name: string;
-  creator: string;
-  report: string;
-  more: string;
-}
+
 
 const Detail: React.FC = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const name = searchParams.get("name");
-  const creator = searchParams.get("creator");
+  const username = searchParams.get("username");
   const report = searchParams.get("report");
   const more = searchParams.get("more");
-  const time = searchParams.get("time");
+  const createdAt = searchParams.get("createdAt");
+
+  const formatDate = (timestamp: string | null) => {
+    if (!timestamp) return '';
+    const date = new Date(parseInt(timestamp));
+    return date.toLocaleDateString("th-TH", {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   const handleSubmit1 = () => {
     alert("ลบคำร้อง");
@@ -45,13 +51,13 @@ const Detail: React.FC = () => {
           <div className="w-full mt-2 lg:w-2/3 mx-auto">
             {/* Content */}
             <h2 className="text-xl font-bold mb-10">รายงานบล็อก {name || ""}</h2>
-            <h3 className="text-lg text-gray-700 mb-4">โดย คุณ {creator || ""}</h3>
+            <h3 className="text-lg text-gray-700 mb-4">โดย คุณ {username || ""}</h3>
             <h4 className="text-xl font-bold mb-4">คำร้อง</h4>
             <p className="text-lg text-gray-700 mb-4">{report || ""}</p>
             <h4 className="text-xl font-bold mb-4">ข้อความเพิ่มเติม</h4>
             <p className="text-lg text-gray-700 mb-4">{more || ""}</p>
             <h4 className="text-xl font-bold mb-4">วันที่/เวลา</h4>
-            <p className="text-lg text-gray-700 mb-4">{time || ""}</p>
+            <p className="text-lg text-gray-700 mb-4">{formatDate(createdAt)}</p>
           </div>
 
           {/* Buttons */}
