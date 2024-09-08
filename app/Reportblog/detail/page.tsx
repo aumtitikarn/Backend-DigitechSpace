@@ -9,10 +9,10 @@ import { useSearchParams } from 'next/navigation';
 const Detail: React.FC = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const name = searchParams.get("name");
+  const blogname = searchParams.get("blogname");
   const username = searchParams.get("username");
   const report = searchParams.get("report");
-  const more = searchParams.get("more");
+  const selectedReason = searchParams.get("selectedReason");
   const createdAt = searchParams.get("createdAt");
 
   const formatDate = (timestamp: string | null) => {
@@ -50,12 +50,12 @@ const Detail: React.FC = () => {
           {/* Container for content and buttons */}
           <div className="w-full mt-2 lg:w-2/3 mx-auto">
             {/* Content */}
-            <h2 className="text-xl font-bold mb-10">รายงานบล็อก {name || ""}</h2>
+            <h2 className="text-xl font-bold mb-10">รายงานบล็อก {blogname || ""}</h2>
             <h3 className="text-lg text-gray-700 mb-4">โดย คุณ {username || ""}</h3>
             <h4 className="text-xl font-bold mb-4">คำร้อง</h4>
             <p className="text-lg text-gray-700 mb-4">{report || ""}</p>
             <h4 className="text-xl font-bold mb-4">ข้อความเพิ่มเติม</h4>
-            <p className="text-lg text-gray-700 mb-4">{more || ""}</p>
+            <p className="text-lg text-gray-700 mb-4">{selectedReason || ""}</p>
             <h4 className="text-xl font-bold mb-4">วันที่/เวลา</h4>
             <p className="text-lg text-gray-700 mb-4">{formatDate(createdAt)}</p>
           </div>

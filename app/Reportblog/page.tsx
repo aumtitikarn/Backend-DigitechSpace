@@ -6,10 +6,10 @@ import Pagination from '../component/Pagination';
 
 interface Project {
   _id: string;
-  name: string;
+  blogname: string;
   username: string;
   report: string;
-  more: string;
+  selectedReason: string;
   time: string;
 }
 
@@ -100,15 +100,15 @@ const Reportblog: React.FC = () => {
                               pathname: `/Reportblog/detail`,
                               query: {
                                 id: val._id,
-                                name: val.name,
+                                name: val.blogname,
                                 username: val.username,
                                 report: val.report,
-                                more: val.more,
+                                selectedReason: val.selectedReason,
                                 time: val.time
                               },
                             }}
                           >
-                            {val.name}
+                            {val.blogname}
                           </Link>
                         </td>
                         <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">

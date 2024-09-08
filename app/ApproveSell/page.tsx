@@ -1,31 +1,67 @@
 "use client";
 
 import Header from "../component/Header";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Pagination from '../component/Pagination';
+
 interface Project {
-  id: number;
-  name: string;
-  creator: string;
-  price: string;
+  _id: string;
+  projectname: string;
+  description: string;
+  price: number;
+  author: string;
+  receive: string[];
+  permission: boolean;
+  rathing: number;
+  sold: number;
+  review: number;
+  category: string;
+  filesUrl: string[];
+  imageUrl: string[];
 }
 
-const projects: Project[] = [
-  { id: 1, name: 'Facebook Website', creator: 'สมใจ ใจดี', price: '25,000' },
-  { id: 2, name: 'somjai', creator: 'สมใจ ใจดี', price: '45,000' },
-  { id: 3, name: '@somjai', creator: 'สมใจ ใจดี', price: '29,000' },
-  { id: 4, name: 'Facebook Website', creator: 'สมใจ ใจดี', price: '35,000' },
-  { id: 5, name: 'somjai', creator: 'สมใจ ใจดี', price: '15,000' },
-  { id: 6, name: '@somjai', creator: 'สมใจ ใจดี', price: '40,000' },
-  { id: 7, name: 'Facebook Website', creator: 'สมใจ ใจดี', price: '20,000' },
-  { id: 8, name: 'somjai', creator: 'สมใจ ใจดี', price: '27,000' },
-  
-];
-
-const approvesell: React.FC = () => {
+const ApproveSell: React.FC = () => {
+  const [projects, setProjects] = useState<Project[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const itemsPerPage = 5;
+
+  const getPosts = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+        const response = await fetch("http://localhost:3000/api/project", {
+            method: "GET",
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch projects");
+        }
+
+        const data = await response.json();
+        console.log("Fetched Data:", data);
+
+        if (data && Array.isArray(data.projectData)) {
+            setProjects(data.projectData);
+        } else {
+            console.error('Data format is incorrect:', data);
+            setError('Data format is incorrect');
+        }
+    } catch (error) {
+        console.error("Error loading projects:", error);
+        setError("Error loading projects");
+    } finally {
+        setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getPosts();
+  }, []);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -41,56 +77,74 @@ const approvesell: React.FC = () => {
       <Header />
       <main className="flex-grow">
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
-      <h2 className="text-xl font-bold mb-4">อนุมัติการขาย</h2>
-      <Link href="/ApproveSell/Detail">
-      <div className="w-full h-full flex flex-col"></div>
-      <table className="min-w-full border-collapse border border-gray-400">
-        <thead>
-          <tr>
-            <th className="border border-gray-400 p-2 text-center text-sm lg:text-lg">#</th>
-            <th className="border border-gray-400 p-2 lg:text-lg">ชื่อโครงการ</th>
-            <th className="border border-gray-400 p-2 lg:text-lg">ผู้สร้าง</th>
-            <th className="border border-gray-400 p-2 lg:text-lg">ราคา</th>
-          </tr>
-        </thead>
-       
-        <tbody>
-        {currentItems.map((project) => (
-            <tr key={project.id}>
-              <td className="border border-gray-400 p-2 text-center">{project.id}.</td>
-              <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
-                    <Link  href={{
-    pathname: `/ApproveSell/Detail`,
-    query: {
-      id: project.id,
-      name: project.name,
-      creator: project.creator,
-      price: project.price,
-    },
-  }}>
-                      {project.name}
-                    </Link>
-                  </td>
-              <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.creator}</td>
-              <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.price}</td>
-            </tr>
-          ))}
-        </tbody>
-       
-      </table>
-       </Link>
-      <p className="text-sm mt-2">
-        *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางด้านบน
-      </p>
-      <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
-    </div>
-    </main>
+          <h2 className="text-xl font-bold mb-4">อนุมัติการขาย</h2>
+          {loading ? (
+            <p>Loading...</p>
+          ) : error ? (
+            <p className="text-red-500">{error}</p>
+          ) : (
+            <table className="min-w-full border-collapse border border-gray-400">
+              <thead>
+                <tr>
+                  <th className="border border-gray-400 p-2 text-center text-sm lg:text-lg">#</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg">ชื่อโครงการ</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg">ผู้สร้าง</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg">ราคา</th>
+                </tr>
+              </thead>
+              <tbody>
+              {currentItems.length > 0 ? (
+                    currentItems.map((project, index) => (
+                    <tr key={project._id}>
+                      <td className="border border-gray-400 p-2 text-center"> {indexOfFirstItem + index + 1}.</td>
+                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                      <Link href={{
+  pathname: `/ApproveSell/Detail`,
+  query: {
+    id: project._id,
+    author: project.author,
+    projectname: project.projectname,
+    price: project.price,
+    description: project.description,
+    filesUrl: JSON.stringify(project.filesUrl), // Serialize array as JSON
+    imageUrl: JSON.stringify(project.imageUrl),// Stringify the array
+    receive: project.receive.join(','), // Serialize array as string
+    permission: project.permission,
+    rathing: project.rathing,
+    sold: project.sold,
+    review: project.review,
+    category: project.category,
+  },
+}}>
+  {project.projectname}
+</Link>
+
+
+                      </td>
+                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.author}</td>
+                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.price}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="text-center p-4">ไม่มีข้อมูลคำร้อง</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+          <p className="text-sm mt-2">
+            *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางด้านบน
+          </p>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      </main>
     </div>
   );
 };
 
-export default approvesell;
+export default ApproveSell;
