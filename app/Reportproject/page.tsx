@@ -10,7 +10,7 @@ interface Project {
   username: string;
   report: string;
   more: string;
-  time: Date;
+  createdAt: Date;
 }
 
 const Reportproject: React.FC = () => {
@@ -111,7 +111,7 @@ const Reportproject: React.FC = () => {
                                 username: val.username,
                                 report: val.report,
                                 more: val.more,
-                                time: formatDate(val.time),
+                                createdAt: formatDate(val.createdAt),
                               },
                             }}
                           >

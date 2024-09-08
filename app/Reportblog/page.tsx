@@ -10,7 +10,7 @@ interface Project {
   username: string;
   report: string;
   selectedReason: string;
-  time: string;
+  createdAt: Date;
 }
 
 const Reportblog: React.FC = () => {
@@ -66,6 +66,10 @@ const Reportblog: React.FC = () => {
     setCurrentPage(page);
   };
 
+  const formatDate = (date: any) => {
+    const parsedDate = new Date(date);
+    return !isNaN(parsedDate.getTime()) ? parsedDate.toISOString() : "";
+  };
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
       <Header />
@@ -104,7 +108,7 @@ const Reportblog: React.FC = () => {
                                 username: val.username,
                                 report: val.report,
                                 selectedReason: val.selectedReason,
-                                time: val.time
+                                createdAt: formatDate(val.createdAt),
                               },
                             }}
                           >

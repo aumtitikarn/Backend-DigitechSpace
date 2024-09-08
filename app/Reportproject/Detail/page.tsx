@@ -11,7 +11,7 @@ const Detail: React.FC = () => {
   const username = searchParams.get("username");
   const report = searchParams.get("report");
   const more = searchParams.get("more");
-  const time = searchParams.get("time");
+  const createdAt = searchParams.get("createdAt");
 
   // Function to format date
   const formatDate = (timestamp: string | null) => {
@@ -27,10 +27,37 @@ const Detail: React.FC = () => {
     });
   };
 
-  const handleSubmit1 = () => {
-    alert("Button 1 clicked");
-    // Add your specific logic here
+  const handleSubmit1 = async (id: string | null) => {
+    if (!id) {
+      alert("Report ID is missing");
+      return;
+    }
+  
+    const confirmDeletion = confirm("Are you sure you want to delete this report?");
+    if (!confirmDeletion) return;
+  
+    try {
+      const response = await fetch('/api/getreportproject/delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }), // Send the id of the report to be deleted
+      });
+  
+      if (response.ok) {
+        alert("Report deleted successfully");
+        // Add any additional logic, like updating the UI or redirecting
+      } else {
+        const data = await response.json();
+        alert(`Failed to delete report: ${data.msg}`);
+      }
+    } catch (error) {
+      console.error("Error deleting report:", error);
+      alert("An error occurred while deleting the report.");
+    }
   };
+  
 
   const handleSubmit2 = () => {
     alert("Button 2 clicked");
@@ -58,13 +85,13 @@ const Detail: React.FC = () => {
               <h4 className="text-xl font-bold mb-2">ข้อความเพิ่มเติม</h4>
               <p className="text-lg text-gray-700 mb-2">{more || ""}</p>
               <h4 className="text-xl font-bold mb-2">วันที่/เวลา</h4>
-              <p className="text-lg text-gray-700 mb-4">{formatDate(time)}</p>
+              <p className="text-lg text-gray-700 mb-4">{formatDate(createdAt)}</p>
             </div>
 
             {/* Buttons */}
             <div className="mt-6 flex flex-col gap-4">
               <button
-                onClick={handleSubmit1}
+                onClick={() => handleSubmit1(id)}
                 className="w-full p-2 text-white rounded"
                 style={{ backgroundColor: "#33539B" }}
               >

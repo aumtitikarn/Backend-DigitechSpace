@@ -4,8 +4,6 @@ import Header from "../../component/Header";
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
 
-
-
 const Detail: React.FC = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -17,20 +15,48 @@ const Detail: React.FC = () => {
 
   const formatDate = (timestamp: string | null) => {
     if (!timestamp) return '';
-    const date = new Date(parseInt(timestamp));
-    return date.toLocaleDateString("th-TH", {
+    const date = new Date(timestamp); 
+    return date.toLocaleString("th-TH", {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      second: '2-digit',
     });
   };
 
-  const handleSubmit1 = () => {
-    alert("ลบคำร้อง");
-    // Add your specific logic here
+  const handleSubmit1 = async (id: string | null) => {
+    if (!id) {
+      alert("Report ID is missing");
+      return;
+    }
+  
+    const confirmDeletion = confirm("Are you sure you want to delete this report?");
+    if (!confirmDeletion) return;
+  
+    try {
+      const response = await fetch('/api/getreportblog/delet', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }), // Send the id of the report to be deleted
+      });
+  
+      if (response.ok) {
+        alert("Report deleted successfully");
+        // Add any additional logic, like updating the UI or redirecting
+      } else {
+        const data = await response.json();
+        alert(`Failed to delete report: ${data.msg}`);
+      }
+    } catch (error) {
+      console.error("Error deleting report:", error);
+      alert("An error occurred while deleting the report.");
+    }
   };
+  
 
   const handleSubmit2 = () => {
     alert("ติดต่อเจ้าของโครงงาน/บล็อก");
@@ -63,7 +89,7 @@ const Detail: React.FC = () => {
           {/* Buttons */}
           <div className="mt-6 flex flex-col gap-4 lg:w-2/3 mx-auto">
             <button
-              onClick={handleSubmit1}
+             onClick={() => handleSubmit1(id)}
               className="w-full p-2 text-white rounded"
               style={{ backgroundColor: "#33539B" }}
             >
