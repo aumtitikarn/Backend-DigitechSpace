@@ -59,6 +59,16 @@ const ProjectSchema = new mongoose.Schema({
     type: [String], 
     required: true, 
   },
+  status: {
+    type: String,
+    enum: ['submitted', 'pending', 'reviewing', 'approved', 'rejected'],
+    default: 'submitted',
+    required: true,
+  },
+  rejecttext: {
+    type: String,
+    default: '',
+  },
 });
 
 const Project = mongoose.models.Project || mongoose.model('Project', ProjectSchema);

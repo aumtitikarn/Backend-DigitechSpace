@@ -98,24 +98,7 @@ const ApproveSell: React.FC = () => {
                     <tr key={project._id}>
                       <td className="border border-gray-400 p-2 text-center"> {indexOfFirstItem + index + 1}.</td>
                       <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
-                      <Link href={{
-  pathname: `/ApproveSell/Detail`,
-  query: {
-    id: project._id,
-    author: project.author,
-    projectname: project.projectname,
-    price: project.price,
-    description: project.description,
-    filesUrl: JSON.stringify(project.filesUrl), // Serialize array as JSON
-    imageUrl: JSON.stringify(project.imageUrl),// Stringify the array
-    receive: project.receive.join(','), // Serialize array as string
-    permission: project.permission,
-    rathing: project.rathing,
-    sold: project.sold,
-    review: project.review,
-    category: project.category,
-  },
-}}>
+                      <Link href={`/ApproveSell/Detail?_id=${project._id}`}>
   {project.projectname}
 </Link>
 
