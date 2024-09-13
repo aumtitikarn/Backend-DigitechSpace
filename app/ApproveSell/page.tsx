@@ -19,6 +19,7 @@ interface Project {
   category: string;
   filesUrl: string[];
   imageUrl: string[];
+  status?: string; // Add this if status is optional
 }
 
 const ApproveSell: React.FC = () => {
@@ -29,37 +30,39 @@ const ApproveSell: React.FC = () => {
 
   const itemsPerPage = 5;
 
-  const getPosts = async () => {
-    setLoading(true);
-    setError(null);
-    try {
+  useEffect(() => {
+    const getPosts = async () => {
+      setLoading(true);
+      setError(null);
+      try {
         const response = await fetch("http://localhost:3000/api/project", {
-            method: "GET",
-            cache: "no-store"
+          method: "GET",
+          cache: "no-store",
         });
 
         if (!response.ok) {
-            throw new Error("Failed to fetch projects");
+          throw new Error("Failed to fetch projects");
         }
 
         const data = await response.json();
         console.log("Fetched Data:", data);
 
         if (data && Array.isArray(data.projectData)) {
-            setProjects(data.projectData);
+          // Filter out rejected projects
+          const filteredProjects = data.projectData.filter((project: Project) => project.status !== 'rejected');
+          setProjects(filteredProjects);
         } else {
-            console.error('Data format is incorrect:', data);
-            setError('Data format is incorrect');
+          console.error('Data format is incorrect:', data);
+          setError('Data format is incorrect');
         }
-    } catch (error) {
+      } catch (error) {
         console.error("Error loading projects:", error);
         setError("Error loading projects");
-    } finally {
+      } finally {
         setLoading(false);
-    }
-  };
+      }
+    };
 
-  useEffect(() => {
     getPosts();
   }, []);
 
@@ -93,16 +96,14 @@ const ApproveSell: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-              {currentItems.length > 0 ? (
-                    currentItems.map((project, index) => (
+                {currentItems.length > 0 ? (
+                  currentItems.map((project, index) => (
                     <tr key={project._id}>
                       <td className="border border-gray-400 p-2 text-center"> {indexOfFirstItem + index + 1}.</td>
                       <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
-                      <Link href={`/ApproveSell/Detail?_id=${project._id}`}>
-  {project.projectname}
-</Link>
-
-
+                        <Link href={`/ApproveSell/Detail?_id=${project._id}`}>
+                          {project.projectname}
+                        </Link>
                       </td>
                       <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.author}</td>
                       <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.price}</td>
@@ -110,7 +111,7 @@ const ApproveSell: React.FC = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="text-center p-4">ไม่มีข้อมูลคำร้อง</td>
+                    <td colSpan={4} className="text-center p-4">ไม่มีข้อมูลคำร้อง</td>
                   </tr>
                 )}
               </tbody>

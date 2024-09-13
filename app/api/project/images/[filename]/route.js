@@ -1,22 +1,23 @@
 import { NextResponse } from 'next/server';
 import { connectMongoDB } from '../../../../../lib/mongodb';
+import { ObjectId } from 'mongodb'; // ตรวจสอบว่าได้ใช้ ObjectId จาก mongodb
 
 export async function GET(req, { params }) {
-  const { filename } = params;
+  const { id } = params;
 
   try {
     // Connect to MongoDB and get the bucket
     const { imgbucket } = await connectMongoDB();
     
-    // Find the file metadata
-    const file = await imgbucket.findOne({ filename });
+    // Find the file metadata by _id
+    const file = await imgbucket.findOne({ _id: new ObjectId(id) });
 
     if (!file) {
       return new NextResponse("File not found", { status: 404 });
     }
 
     // Open a stream for the file
-    const stream = imgbucket.openDownloadStreamByName(filename);
+    const stream = imgbucket.openDownloadStream(file._id);
 
     return new NextResponse(stream, {
       headers: { "Content-Type": file.contentType },

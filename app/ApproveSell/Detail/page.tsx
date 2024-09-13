@@ -8,6 +8,7 @@ import { MdAccountCircle } from "react-icons/md";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Link from "next/link";
 import Header from "../../component/Header";
+import { useRouter } from 'next/navigation';
 
 interface Project {
   _id: string;
@@ -33,6 +34,7 @@ const Detail: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rejectText, setRejectText] = useState<string>("");
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const id = searchParams.get("_id");
   
@@ -90,7 +92,31 @@ const Detail: React.FC = () => {
     redirect("/auth/signin");
     return null;
   }
+  useEffect(() => {
+    if (!id) return;
 
+    const updateStatusToPending = async () => {
+      try {
+        const response = await fetch(`/api/project/id/${id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            status: 'reviewing',
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to update project status');
+        }
+      } catch (error) {
+        console.error('Error updating project status:', error);
+      }
+    };
+
+    updateStatusToPending();
+  }, [id]);
   const handleApprove = async () => {
     if (!id) return;
 
@@ -103,7 +129,9 @@ const Detail: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ permission: true }),
+        body: JSON.stringify({ permission: true ,
+          status: 'approved',
+        }),
       });
 
       const responseData = await response.json();
@@ -121,39 +149,42 @@ const Detail: React.FC = () => {
     }
   };
 
-  const handleNotApprove = async () => {
-    if (!id || !rejectText) return;
+  
+const handleNotApprove = async () => {
+  if (!id || !rejectText) return;
 
-    setIsLoading(true);
-    setStatusMessage(null);
+  setIsLoading(true);
+  setStatusMessage(null);
 
-    try {
-      const response = await fetch(`/api/project/id/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          status: 'rejected',
-          rejecttext: rejectText,
-        }),
-      });
+  try {
+    const response = await fetch(`/api/project/id/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        status: 'rejected',
+        rejecttext: rejectText,
+      }),
+    });
 
-      const responseData = await response.json();
+    const responseData = await response.json();
 
-      if (!response.ok) {
-        throw new Error(responseData.error || 'Failed to update project');
-      }
-
-      setStatusMessage('Project has been successfully rejected and notification has been sent.');
-    } catch (error) {
-      console.error('Error updating project:', error);
-      setStatusMessage('Failed to reject project. Please try again.');
-    } finally {
-      setIsLoading(false);
+    if (!response.ok) {
+      throw new Error(responseData.error || 'Failed to update project');
     }
-  };
 
+    setStatusMessage('Project has been successfully rejected and notification has been sent.');
+
+    // Redirect to the ApproveSell page
+    router.push('/ApproveSell');
+  } catch (error) {
+    console.error('Error updating project:', error);
+    setStatusMessage('Failed to reject project. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
   const parseJson = (str: string | null) => {
     try {
       return JSON.parse(str || "[]");
@@ -179,14 +210,14 @@ const Detail: React.FC = () => {
   return (
     <main className="flex flex-col min-h-screen bg-[#FBFBFB]">
       <Header />
-      <div className="lg:mx-60 lg:mt-20 lg:mb-20 mt-10 mb-10">
-        <div className="flex flex-col min-h-screen">
+      <div className="lg:mx-64 lg:mt-20 lg:mb-20 mt-10 mb-10">
+        <div className="flex flex-col min-h-screen ">
           {/* Slider Section */}
           <div className="flex flex-col items-center p-4">
             <div className="relative w-full h-auto overflow-hidden rounded-lg">
               {imageUrl.length > 0 && (
                 <img
-                  src={`/api/project/image/${imageUrl[currentIndex]}`}
+                src={`/api/project/image/${imageUrl[currentIndex]}`}
                   className="w-full h-auto object-cover rounded-lg"
                   onError={(e) => console.error('Image failed to load:', e)}
                 />
@@ -242,7 +273,7 @@ const Detail: React.FC = () => {
                 </div>
 
                 {/* Receive Section */}
-                <div className="bg-white p-6 rounded-lg mt-10 shadow-custom">
+                <div className="bg-white p-6 rounded-lg mt-5 shadow-custom">
                   <h2 className="text-lg font-bold text-[#33529B]">Receive</h2>
                   <div className="border-t border-gray-300 my-4"></div>
                   <ul className="list-none text-sm text-gray-600 mt-2">
