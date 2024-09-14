@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect,useState } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import Header from "../component/Header"
@@ -18,6 +18,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import axios from 'axios'; // เพิ่มการ import axios
 
 // Register the necessary components
 ChartJS.register(
@@ -32,28 +33,52 @@ ChartJS.register(
   Legend,
 );
 
-function page() {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [popupInput, setPopupInput] = useState("");
+const page = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedCategory1, setSelectedCategory1] = useState("");
 
-  const [input1, setInput1] = useState("");
+  const [roleData, setRoleData] = useState({
+    labels: [],
+    datasets: [],
+  });
 
-  const togglePopup = () => {
-    setIsPopupOpen(!isPopupOpen);
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // เรียก API เพื่อนำข้อมูล role
+        const result = await axios.get('/api/getanalyst');
+        console.log('API Result:', result.data);
+        const normalRoles = result.data.normalUsers.map(user => user.roleai);
+        const studentRoles = result.data.studentUsers.map(user => user.roleai);
 
-  const handlePopupSubmit = () => {
-    alert(`Popup Input: ${popupInput}`);
-    setPopupInput("");
-    setIsPopupOpen(false);
-  };
+        // นับจำนวน role แต่ละประเภท
+        const roles = ['student', 'other', 'developer'];
+        const normalCounts = roles.map(role => normalRoles.filter(r => r === role).length);
+        const studentCounts = roles.map(role => studentRoles.filter(r => r === role).length);
 
-  const handleSubmit = () => {
-    alert(`Input 1: ${input1}`);
-    setInput1("");
-  };
+        // อัพเดท state ด้วยข้อมูลใหม่
+        setRoleData({
+          labels: roles,
+          datasets: [
+            {
+              label: 'Normal User',
+              data: normalCounts,
+              backgroundColor: '#33539B',
+            },
+            {
+              label: 'Student User',
+              data: studentCounts,
+              backgroundColor: '#33539B',
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error fetching role data:", error);
+      }
+    };
+
+    fetchData();  // เรียกฟังก์ชันเพื่อดึงข้อมูลเมื่อ component ถูก mount
+  }, []);  // ใส่ dependency array ที่ว่างเพื่อให้ทำงานเพียงครั้งเดียว
 
   const { data: session, status } = useSession();
 
@@ -73,7 +98,7 @@ function page() {
         label: 'Dataset',
         backgroundColor: '#33539B',
         hoverBackgroundColor: '#273E74',
-        data: [30000, 15000, 10000, 8000, 6000, 3000, 2000, 1500 ,1000 ,1000]
+        data: [30000, 15000, 10000, 8000, 6000, 3000, 2000, 1500, 1000, 1000]
       }
     ]
   };
@@ -85,7 +110,7 @@ function page() {
         label: 'Dataset',
         backgroundColor: '#33539B',
         hoverBackgroundColor: '#273E74',
-        data: [100, 90, 85, 75, 65, 50, 45, 45 ,30 ,25]
+        data: [100, 90, 85, 75, 65, 50, 45, 45, 30, 25]
       }
     ]
   };
@@ -104,8 +129,8 @@ function page() {
 
   return (
     <main>
-        <Header/>
-      <div className="flex flex-col items-center w-full" style={{backgroundColor:"#FBFBFB"}}>
+      <Header />
+      <div className="flex flex-col items-center w-full" style={{ backgroundColor: "#FBFBFB" }}>
         <div className="w-full max-w-screen-lg p-4">
           <div className="flex flex-col">
 
@@ -117,11 +142,11 @@ function page() {
             </p>
 
             <div className="flex flex-row w-full mt-10">
-            <p
-              style={{ fontSize: "24px", fontWeight: "bold", color:"#33539B"}}
-            >
-              ประจำเดือน
-            </p>
+              <p
+                style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
+              >
+                ประจำเดือน
+              </p>
               {/* Category Dropdown */}
               <select
                 value={selectedCategory}
@@ -161,140 +186,138 @@ function page() {
             </div>
 
             <div className="flex flex-row w-full mt-5">
-            <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
+              <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
                 <div className="flex flex-row justify-center m-2">
-                <p className="font-semibold text-black">
-                ยอดขายทั้งหมด
-                </p>
+                  <p className="font-semibold text-black">
+                    ยอดขายทั้งหมด
+                  </p>
                 </div>
                 <div className="flex flex-row justify-center m-2">
-                <p className="font-semibold text-black">
-                25K
-                </p>
+                  <p className="font-semibold text-black">
+                    25K
+                  </p>
                 </div>
-            </div>
+              </div>
 
-            <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
+              <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
                 <div className="flex flex-row justify-center m-2">
-                <p className="font-semibold text-black">
-                กำไรของเว็บไซต์
-                </p>
+                  <p className="font-semibold text-black">
+                    กำไรของเว็บไซต์
+                  </p>
                 </div>
                 <div className="flex flex-row justify-center m-2">
-                <p className="font-semibold text-black">
-                15K
-                </p>
+                  <p className="font-semibold text-black">
+                    15K
+                  </p>
                 </div>
-            </div>
+              </div>
 
-            <div className="flex flex-col justify-center w-96 h-28 m-5 bg-white rounded-md drop-shadow-md">
+              <div className="flex flex-col justify-center w-96 h-28 m-5 bg-white rounded-md drop-shadow-md">
                 <div className="flex flex-row justify-center m-2">
-                <p className="font-semibold text-black">
-                จำนวนผู้เข้าชม
-                </p>
+                  <p className="font-semibold text-black">
+                    จำนวนผู้เข้าชม
+                  </p>
                 </div>
                 <div className="flex flex-row justify-center m-2">
-                <p className="font-semibold text-black">
-                5K
-                </p>
+                  <p className="font-semibold text-black">
+                    5K
+                  </p>
                 </div>
-            </div>
+              </div>
             </div>
 
             <div className="flex flex-col w-full mt-5">
-            <p
-              style={{ fontSize: "24px", fontWeight: "bold", color:"#33539B"}}
-            >
-              จำนวนที่ขายได้แต่ละหมวดหมู่
-            </p>
-              
-            <Bar
+              <p
+                style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
+              >
+                จำนวนที่ขายได้แต่ละหมวดหมู่
+              </p>
+
+              <Bar
                 data={data1}
                 width={200}
                 height={100}
                 options={{ indexAxis: 'y' }}  // Set indexAxis to 'y' for horizontal bars
-            />
-              
+              />
+
             </div>
 
             <div className="flex flex-col w-full mt-5">
-            <p
-              style={{ fontSize: "24px", fontWeight: "bold", color:"#33539B"}}
-            >
-              อันดับการค้นหา
-            </p>
-              
-            <table className="border-2 mt-10 mb-10" style={{width:"992px"}}>
-            <thead>
-                <tr style={{backgroundColor:"#33539B", color:"#ffff"}}>
+              <p
+                style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
+              >
+                อันดับการค้นหา
+              </p>
+
+              <table className="border-2 mt-10 mb-10" style={{ width: "992px" }}>
+                <thead>
+                  <tr style={{ backgroundColor: "#33539B", color: "#ffff" }}>
                     <th className="w-1/12 text-center h-12">อันดับ</th>
                     <th className="w-4/12 h-12 text-start">คำค้นหา</th>
-                </tr>
-            </thead>
-            <tbody className="text-black">
-            <tr>
+                  </tr>
+                </thead>
+                <tbody className="text-black">
+                  <tr>
                     <td className="text-center h-14">1</td>
                     <td className="h-14">ทำเว็บไซต์</td>
-            </tr>
-            <tr>
+                  </tr>
+                  <tr>
                     <td className="text-center h-14">2</td>
                     <td className="h-14">ออกแบบบ้าน</td>
-            </tr>
-            <tr>
+                  </tr>
+                  <tr>
                     <td className="text-center h-14">3</td>
                     <td className="h-14">แอพขายของ</td>
-            </tr>
-            <tr>
+                  </tr>
+                  <tr>
                     <td className="text-center h-14">4</td>
                     <td className="h-14">NFT</td>
-            </tr>
-            <tr>
+                  </tr>
+                  <tr>
                     <td className="text-center h-14">5</td>
                     <td className="h-14">Blockchain</td>
-            </tr>
-            </tbody>
-            </table>
-              
+                  </tr>
+                </tbody>
+              </table>
+
             </div>
 
             <div className="flex flex-col w-full mt-5">
-            <p
-              style={{ fontSize: "24px", fontWeight: "bold", color:"#33539B"}}
-            >
-              บทบาทของผู้ใช้
-            </p>
-              
-            <Bar
-                data={data3}
+              <p
+                style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
+              >
+                บทบาทของผู้ใช้
+              </p>
+              <Bar
+                data={roleData}  // ใช้ข้อมูลจาก state roleData
                 width={200}
-                height={100}  // Adjusted height
+                height={100}
                 options={{
-                maintainAspectRatio: true,  // Try setting this to true
+                  maintainAspectRatio: true,
                 }}
-            />
-              
+              />
             </div>
 
             <div className="flex flex-col w-full mt-5 ">
-            <p
-              style={{ fontSize: "24px", fontWeight: "bold", color:"#33539B"}}
-            >
-              ความชอบของผู้ใช้
-            </p>
-              
-            <Bar
+              <p
+                style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
+              >
+                ความชอบของผู้ใช้
+              </p>
+
+              <Bar
                 data={data2}
                 width={200}
                 height={100}
                 options={{ indexAxis: 'y' }}  // Set indexAxis to 'y' for horizontal bars
-            />
-              
+              />
+
             </div>
-            
+
           </div>
         </div>
       </div>
-      </main>
+    </main>
   );
 }
 
