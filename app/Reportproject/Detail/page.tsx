@@ -60,9 +60,9 @@ const Detail: React.FC = () => {
   
 
   const handleSubmit2 = () => {
-    alert("Button 2 clicked");
-    // Add your specific logic here
-  };
+    const email = "owner@example.com"; // Replace with the actual email address
+    window.location.href = `mailto:${email}?subject=Contact regarding project&body=Hi, I would like to discuss the project.`;
+  }
 
   const handleSubmit3 = () => {
     alert("Button 3 clicked");

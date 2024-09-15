@@ -5,20 +5,14 @@ import { useSearchParams } from "next/navigation"; // Ensure you import this if 
 import Header from "../../component/Header";
 import Link from "next/link";
 
-interface Project {
-  id: number;
-  name: string;
-  creator: string;
-  Email: string;
-}
+
 
 
 const Detail: React.FC = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const Username = searchParams.get("Username");
   const name = searchParams.get("name");
-  const Email = searchParams.get("Email")
+  const email = searchParams.get("email")
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
@@ -32,8 +26,8 @@ const Detail: React.FC = () => {
             </svg>
           </div>
           </div> <div className="w-full mt-2 lg:w-2/3 mx-auto">
-          <h2 className="text-xl font-bold mb-2">Username: {Username || ""}</h2>
-          <p className="text-lg text-gray-700 mb-1">อีเมล: {Email || ""}</p>
+          <h2 className="text-xl font-bold mb-2">Username: {name || ""}</h2>
+          <p className="text-lg text-gray-700 mb-1">อีเมล: {email || ""}</p>
           <p className="text-lg text-gray-700 mb-1">ชื่อ-นามสกุล: {name || ""}</p>
         </div>
       </div>

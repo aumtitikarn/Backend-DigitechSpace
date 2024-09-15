@@ -11,9 +11,11 @@ import Link from "next/link";
 const Detail: React.FC = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const Username = searchParams.get("Username");
+  const username = searchParams.get("username");
   const name = searchParams.get("name");
-  const phon = searchParams.get("phon")
+  const phonenumber = searchParams.get("phonenumber")
+  const email = searchParams.get("email")
+ 
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
@@ -27,10 +29,10 @@ const Detail: React.FC = () => {
             </svg>
           </div>
           </div> <div className="w-full mt-2 lg:w-2/3 mx-auto">
-          <h2 className="text-xl font-bold mb-2">Username: {Username || ""}</h2>
-          <p className="text-lg text-gray-700 mb-1">อีเมล: a@gamil.com</p>
+          <h2 className="text-xl font-bold mb-2">Username: {username || ""}</h2>
+          <p className="text-lg text-gray-700 mb-1">อีเมล:  {email || ""}</p>
           <p className="text-lg text-gray-700 mb-1">ชื่อ-นามสกุล:  {name || ""}</p>
-          <p className="text-lg text-gray-700 mb-1">เบอร์โทรศัพท์:  {phon || ""}</p>
+          <p className="text-lg text-gray-700 mb-1">เบอร์โทรศัพท์:  {phonenumber || ""}</p>
         </div>
       </div>
       </main>

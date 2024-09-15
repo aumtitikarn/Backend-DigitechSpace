@@ -195,7 +195,34 @@ const handleNotApprove = async () => {
   };
 
   const imageUrl = project?.imageUrl || [];
-  const filesUrl = project?.filesUrl || [];
+  
+  const handleDownload = async (fileName: string) => {
+    try {
+      if (!project || !project.filesUrl.length) {
+        console.error("No files available for download");
+        return;
+      }
+  
+      const fileUrl = `/api/project/files/${fileName}`;
+      const response = await fetch(fileUrl);
+  
+      if (response.ok) {
+        // บอกให้ผู้ใช้ทราบว่าดาวน์โหลดสำเร็จ
+        console.log("ไฟล์ดาวน์โหลดสำเร็จ");
+        alert("ไฟล์ดาวน์โหลดสำเร็จ");
+  
+      } else {
+        console.error("Failed to download file");
+        alert("ดาวน์โหลดไฟล์ไม่สำเร็จ");
+      }
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      alert("เกิดข้อผิดพลาดในการดาวน์โหลดไฟล์");
+    }
+  };
+  
+
+  
   
   const handlePrevClick = () => {
     setCurrentIndex(
@@ -217,7 +244,7 @@ const handleNotApprove = async () => {
             <div className="relative w-full h-auto overflow-hidden rounded-lg">
               {imageUrl.length > 0 && (
                 <img
-                src={`/api/project/image/${imageUrl[currentIndex]}`}
+                src={`/api/project/images/${imageUrl[currentIndex]}`}
                   className="w-full h-auto object-cover rounded-lg"
                   onError={(e) => console.error('Image failed to load:', e)}
                 />
@@ -288,16 +315,18 @@ const handleNotApprove = async () => {
                       <li className="text-gray-500">No items to display</li>
                     )}
                   </ul>
-                  <div className="flex justify-center mt-11">
-                    <a
-                      href={filesUrl[0] || "#"}
-                      className="bg-[#33529B] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base flex items-center justify-center"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      ดูไฟล์
-                    </a>
-                  </div>
+                  <div className="flex flex-col items-center mt-5">
+                  {project.filesUrl.map((fileName, index) => (
+  <button
+    key={index}
+    onClick={() => handleDownload(fileName)}
+    className="bg-[#33529B] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base flex items-center justify-center mb-2"
+  >
+    ดาวน์โหลด {fileName}
+  </button>
+))}
+   </div>
+
                 </div>
 
                 {/* Buttons Section */}
