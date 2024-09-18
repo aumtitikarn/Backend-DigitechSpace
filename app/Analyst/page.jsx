@@ -42,11 +42,29 @@ const page = () => {
     datasets: [],
   });
 
+  const [totalSales, setTotalSales] = useState(0);
+
+  useEffect(() => {
+    async function fetchTotalSales() {
+      try {
+        const response = await fetch('/api/getmoney', {
+          method: 'GET', // ระบุ method ให้ถูกต้อง
+        });
+        const data = await response.json();
+        setTotalSales(data.totalSales);
+      } catch (error) {
+        console.error("Error fetching total sales:", error);
+      }
+    }
+  
+    fetchTotalSales();
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         // เรียก API เพื่อนำข้อมูล role
-        const result = await axios.get('/api/getanalyst');
+        const result = await axios.get('/api/getmoney');
         console.log('API Result:', result.data);
         const normalRoles = result.data.normalUsers.map(user => user.roleai);
         const studentRoles = result.data.studentUsers.map(user => user.roleai);
@@ -193,9 +211,9 @@ const page = () => {
                   </p>
                 </div>
                 <div className="flex flex-row justify-center m-2">
-                  <p className="font-semibold text-black">
-                    25K
-                  </p>
+                <p className="font-semibold text-black">
+        {totalSales !== undefined ? totalSales.toLocaleString() : 'กำลังโหลด...'} ฿
+      </p>
                 </div>
               </div>
 
