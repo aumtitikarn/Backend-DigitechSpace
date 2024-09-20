@@ -23,7 +23,14 @@ const Header: React.FC = () => {
       <div className="flex items-center justify-between lg:mx-[50px]">
           <TiThMenu className="text-3xl mr-4 cursor-pointer" onClick={toggleMenu} />
         </div>
-        <img src="/dgt.png" alt="Logo" className="h-8" />
+        <div className="flex items-center justify-between mb-3">
+        <img
+                  src="https://m1r.ai/W8p5i.png"
+                  alt="Digitech Space logo"
+                  width={100}
+                  height={100}
+                />
+        </div>
         <FaUserCircle className="text-3xl cursor-pointer hover:text-gray-300" />
       </div>
 
@@ -36,7 +43,12 @@ const Header: React.FC = () => {
         <div className="p-6">
         <div className="container mx-auto flex items-center justify-between">
     {/* Logo on the left */}
-    <img src="/dgt.png" alt="Logo" className="h-8" />
+    <img
+                  src="https://m1r.ai/W8p5i.png"
+                  alt="Digitech Space logo"
+                  width={100}
+                  height={100}
+                />
 
     {/* Close button on the right */}
     <button className="text-white text-4xl ml-auto" onClick={toggleMenu}>

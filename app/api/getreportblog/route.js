@@ -60,3 +60,10 @@ export async function GET() {
   return NextResponse.json({ blogData }, { status: 200 }); // Ensure the structure matches the frontend expectation
 }
 
+export async function DELETE(req) {
+  const id = req.nextUrl.searchParams.get("id");
+  await connectMongoDB();
+  await blog.findByIdAndDelete(id);
+  return NextResponse.json({ message: "Post deleted" }, { status: 200 });
+}
+
