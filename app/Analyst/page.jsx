@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import Header from "../component/Header"
@@ -62,6 +62,72 @@ const page = () => {
     fetchTotalSales();
   }, []);
 
+  const [projectNames, setProjectNames] = useState([]);
+  const [projectCounts, setProjectCounts] = useState([]);
+
+  useEffect(() => {
+    async function fetchFavoritesData() {
+      try {
+        const response = await fetch('/api/getfav', {
+          method: 'GET',
+        });
+        const data = await response.json();
+
+        // สมมติว่าข้อมูลที่ส่งกลับจาก API มี projectNames และ projectCounts
+        setProjectNames(data.projectNames);  // กำหนดค่า projectNames
+        setProjectCounts(data.projectCounts);  // กำหนดค่า projectCounts
+      } catch (error) {
+        console.error("Error fetching favorites data:", error);
+      }
+    }
+
+    fetchFavoritesData();
+  }, []);
+  
+  const datafav = {
+    labels: projectNames,  // ใช้ projectNames เป็น labels
+    datasets: [
+      {
+        label: 'จำนวนโปรเจค',  // ชื่อชุดข้อมูล
+        data: projectCounts,  // ใช้ projectCounts เป็นข้อมูล
+        backgroundColor: 'rgba(53, 83, 155, 0.5)',
+        borderColor: 'rgba(53, 83, 155, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+
+  const [terms, setTerms] = useState([]);
+  const [totalCount, setTotalCount] = useState(0); // State to hold the total count
+  
+  useEffect(() => {
+    async function fetchTerms() {
+      try {
+        const response = await fetch('/api/getsearch', {
+          method: 'GET',
+        });
+  
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+  
+        const data = await response.json();
+        console.log("ข้อมูลตาราง", data);
+        
+        // Set the terms and the total count
+        setTerms(data.terms); 
+        setTotalCount(data.count); // Set total count from the API
+  
+      } catch (error) {
+        console.error("Error fetching search terms:", error);
+      }
+    }
+    
+    fetchTerms();
+  }, []);
+
+
   const [loading, setLoading] = useState(true);  // เพิ่ม state สำหรับ loading
   const [error, setError] = useState(null);
   const [chartData, setChartData] = useState({});
@@ -71,7 +137,7 @@ const page = () => {
       try {
         const response = await fetch('/api/getseller');
         const salesData = await response.json(); // ต้อง parse JSON ก่อน
-        
+
         if (salesData && Array.isArray(salesData)) {
           const categories = salesData.map((data) => data.category);
           const prices = salesData.map((data) => data.price);
@@ -257,9 +323,9 @@ const page = () => {
                   </p>
                 </div>
                 <div className="flex flex-row justify-center m-2">
-                <p className="font-semibold text-black">
-        {totalSales !== undefined ? totalSales.toLocaleString() : 'กำลังโหลด...'} ฿
-      </p>
+                  <p className="font-semibold text-black">
+                    {totalSales !== undefined ? totalSales.toLocaleString() : 'กำลังโหลด...'} ฿
+                  </p>
                 </div>
               </div>
 
@@ -271,7 +337,7 @@ const page = () => {
                 </div>
                 <div className="flex flex-row justify-center m-2">
                   <p className="font-semibold text-black">
-                  {totalCommission !== undefined ? totalCommission.toLocaleString() : 'กำลังโหลด...'} ฿
+                    {totalCommission !== undefined ? totalCommission.toLocaleString() : 'กำลังโหลด...'} ฿
                   </p>
                 </div>
               </div>
@@ -309,35 +375,23 @@ const page = () => {
               </p>
 
               <table className="border-2 mt-10 mb-10" style={{ width: "992px" }}>
-                <thead>
-                  <tr style={{ backgroundColor: "#33539B", color: "#ffff" }}>
-                    <th className="w-1/12 text-center h-12">อันดับ</th>
-                    <th className="w-4/12 h-12 text-start">คำค้นหา</th>
-                  </tr>
-                </thead>
-                <tbody className="text-black">
-                  <tr>
-                    <td className="text-center h-14">1</td>
-                    <td className="h-14">ทำเว็บไซต์</td>
-                  </tr>
-                  <tr>
-                    <td className="text-center h-14">2</td>
-                    <td className="h-14">ออกแบบบ้าน</td>
-                  </tr>
-                  <tr>
-                    <td className="text-center h-14">3</td>
-                    <td className="h-14">แอพขายของ</td>
-                  </tr>
-                  <tr>
-                    <td className="text-center h-14">4</td>
-                    <td className="h-14">NFT</td>
-                  </tr>
-                  <tr>
-                    <td className="text-center h-14">5</td>
-                    <td className="h-14">Blockchain</td>
-                  </tr>
-                </tbody>
-              </table>
+      <thead>
+        <tr style={{ backgroundColor: "#33539B", color: "#ffff" }}>
+          <th className="w-1/12 text-center h-12">อันดับ</th>
+          <th className="w-3/12 h-12 text-start">คำค้นหา</th>
+          <th className="w-1/12 h-12 text-start">จำนวน</th>
+        </tr>
+      </thead>
+      <tbody className="text-black">
+        {terms.map((term, index) => (
+          <tr key={term._id}>
+            <td className="text-center h-14">{index + 1}</td>
+            <td className="h-14">{term.term}</td>
+            <td className="h-14">{term.count}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
 
             </div>
 
@@ -365,7 +419,7 @@ const page = () => {
               </p>
 
               <Bar
-                data={data2}
+                data={datafav}
                 width={200}
                 height={100}
                 options={{ indexAxis: 'y' }}  // Set indexAxis to 'y' for horizontal bars
