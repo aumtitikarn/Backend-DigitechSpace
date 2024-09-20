@@ -28,7 +28,7 @@ export default function SignIn() {
         return;
       }
   
-      router.replace("/listuser");
+      router.replace("/normal");
     } catch (error) {
       console.log(error);
       setError("Something went wrong");

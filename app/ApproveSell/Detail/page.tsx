@@ -197,32 +197,29 @@ const handleNotApprove = async () => {
   const imageUrl = project?.imageUrl || [];
   
   const handleDownload = async (fileName: string) => {
-    try {
-      if (!project || !project.filesUrl.length) {
-        console.error("No files available for download");
-        return;
-      }
+    if (!fileName) {
+      console.error("No file name provided");
+      return;
+    }
   
-      const fileUrl = `/api/project/files/${fileName}`;
-      const response = await fetch(fileUrl);
+    const fileUrl = `/api/project/files/${fileName}`;
+    const response = await fetch(fileUrl);
   
-      if (response.ok) {
-        // บอกให้ผู้ใช้ทราบว่าดาวน์โหลดสำเร็จ
-        console.log("ไฟล์ดาวน์โหลดสำเร็จ");
-        alert("ไฟล์ดาวน์โหลดสำเร็จ");
-  
-      } else {
-        console.error("Failed to download file");
-        alert("ดาวน์โหลดไฟล์ไม่สำเร็จ");
-      }
-    } catch (error) {
-      console.error("Error downloading file:", error);
-      alert("เกิดข้อผิดพลาดในการดาวน์โหลดไฟล์");
+    if (response.ok) {
+      // ดาวน์โหลดไฟล์
+      const blob = await response.blob();
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      alert("ดาวน์โหลดไฟล์สำเร็จ");
+    } else {
+      console.error("Failed to download file");
+      alert("ดาวน์โหลดไฟล์ไม่สำเร็จ");
     }
   };
-  
-
-  
   
   const handlePrevClick = () => {
     setCurrentIndex(
@@ -322,7 +319,7 @@ const handleNotApprove = async () => {
     onClick={() => handleDownload(fileName)}
     className="bg-[#33529B] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base flex items-center justify-center mb-2"
   >
-    ดาวน์โหลด {fileName}
+    ดาวน์โหลด 
   </button>
 ))}
    </div>
