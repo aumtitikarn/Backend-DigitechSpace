@@ -42,11 +42,71 @@ const page = () => {
     datasets: [],
   });
 
+  const [totalSales, setTotalSales] = useState(0);
+  const [totalCommission, setTotalCommission] = useState(0); // New state for commission
+
+  useEffect(() => {
+    async function fetchTotalSales() {
+      try {
+        const response = await fetch('/api/getmoney', {
+          method: 'GET',
+        });
+        const data = await response.json();
+        setTotalSales(data.totalSales); // Total net sales
+        setTotalCommission(data.totalCommission); // 20% of net sales
+      } catch (error) {
+        console.error("Error fetching total sales and commission:", error);
+      }
+    }
+
+    fetchTotalSales();
+  }, []);
+
+  const [loading, setLoading] = useState(true);  // เพิ่ม state สำหรับ loading
+  const [error, setError] = useState(null);
+  const [chartData, setChartData] = useState({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/getseller');
+        const salesData = await response.json();
+
+        if (salesData && Array.isArray(salesData)) {
+          const categories = salesData.map(data => data.category);
+          const prices = salesData.map(data => data.price);
+
+          setChartData({
+            labels: categories,
+            datasets: [
+              {
+                label: 'Price',
+                data: prices,
+                backgroundColor: 'rgba(53, 83, 155, 0.5)',
+                borderColor: 'rgba(53, 83, 155, 1)',
+                borderWidth: 1,
+              },
+            ],
+          });
+        } else {
+          setError('Invalid data format or no data available');
+        }
+      } catch (error) {
+        setError('Error fetching data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         // เรียก API เพื่อนำข้อมูล role
-        const result = await axios.get('/api/getanalyst');
+        const result = await axios.get('/api/getmoney');
         console.log('API Result:', result.data);
         const normalRoles = result.data.normalUsers.map(user => user.roleai);
         const studentRoles = result.data.studentUsers.map(user => user.roleai);
@@ -81,6 +141,9 @@ const page = () => {
   }, []);  // ใส่ dependency array ที่ว่างเพื่อให้ทำงานเพียงครั้งเดียว
 
   const { data: session, status } = useSession();
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   if (status === "loading") {
     return <p>Loading...</p>;
@@ -193,9 +256,9 @@ const page = () => {
                   </p>
                 </div>
                 <div className="flex flex-row justify-center m-2">
-                  <p className="font-semibold text-black">
-                    25K
-                  </p>
+                <p className="font-semibold text-black">
+        {totalSales !== undefined ? totalSales.toLocaleString() : 'กำลังโหลด...'} ฿
+      </p>
                 </div>
               </div>
 
@@ -207,7 +270,7 @@ const page = () => {
                 </div>
                 <div className="flex flex-row justify-center m-2">
                   <p className="font-semibold text-black">
-                    15K
+                  {totalCommission !== undefined ? totalCommission.toLocaleString() : 'กำลังโหลด...'} ฿
                   </p>
                 </div>
               </div>
@@ -233,12 +296,7 @@ const page = () => {
                 จำนวนที่ขายได้แต่ละหมวดหมู่
               </p>
 
-              <Bar
-                data={data1}
-                width={200}
-                height={100}
-                options={{ indexAxis: 'y' }}  // Set indexAxis to 'y' for horizontal bars
-              />
+              <Bar data={chartData} width={200} height={100} options={{ indexAxis: 'y' }} />
 
             </div>
 

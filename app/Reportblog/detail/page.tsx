@@ -3,6 +3,7 @@
 import Header from "../../component/Header";
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useState } from "react";
 
 const Detail: React.FC = () => {
   const searchParams = useSearchParams();
@@ -12,6 +13,8 @@ const Detail: React.FC = () => {
   const report = searchParams.get("report");
   const selectedReason = searchParams.get("selectedReason");
   const createdAt = searchParams.get("createdAt");
+
+  const [userEmail, setUserEmail] = useState('');
 
   const formatDate = (timestamp: string | null) => {
     if (!timestamp) return '';
@@ -58,9 +61,39 @@ const Detail: React.FC = () => {
   };
   
 
-  const handleSubmit2 = () => {
-    alert("ติดต่อเจ้าของโครงงาน/บล็อก");
-    // Add your specific logic here
+  const handleSubmit2 = async (id: string | null) => {
+    if (!id) {
+      alert("Blog ID is missing");
+      return;
+    }
+  
+    const confirmed = confirm("Are you sure?");
+    if (!confirmed) return;
+  
+    try {
+      // Fetch the blog post details from MongoDB using the blog ID
+      const response = await fetch(`/api/getreportblog/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const blogData = await response.json();
+        const { blogEmail } = blogData;
+  
+        // Dynamically create the mailto link
+        const mailtoLink = `mailto:${blogEmail}?subject=Notification&body=hello`;
+        window.location.href = mailtoLink;
+  
+      } else {
+        alert("Failed to fetch blog details.");
+      }
+    } catch (error) {
+      console.error("Error fetching blog details:", error);
+      alert("An error occurred while fetching blog details.");
+    }
   };
 
   const handleSubmit3 = () => {
@@ -69,7 +102,7 @@ const Detail: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden text-black">
       <Header />
       <main className="flex-grow">
         <div className="lg:mx-60 mt-10 mb-5">
@@ -95,8 +128,15 @@ const Detail: React.FC = () => {
             >
               ลบคำร้อง
             </button>
+            <input
+              type="email"
+              value={userEmail}
+              onChange={(e) => setUserEmail(e.target.value)}
+              placeholder="Enter your email"
+              className="w-full p-2 mb-4 border rounded"
+            />
             <button
-              onClick={handleSubmit2}
+              onClick={() => handleSubmit2(id)}
               className="w-full p-2 text-white rounded"
               style={{ backgroundColor: "#1976D2" }}
             >
