@@ -70,11 +70,11 @@ const page = () => {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/getseller');
-        const salesData = await response.json();
-
+        const salesData = await response.json(); // ต้อง parse JSON ก่อน
+        
         if (salesData && Array.isArray(salesData)) {
-          const categories = salesData.map(data => data.category);
-          const prices = salesData.map(data => data.price);
+          const categories = salesData.map((data) => data.category);
+          const prices = salesData.map((data) => data.price);
 
           setChartData({
             labels: categories,
@@ -102,11 +102,12 @@ const page = () => {
   }, []);
 
 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         // เรียก API เพื่อนำข้อมูล role
-        const result = await axios.get('/api/getmoney');
+        const result = await axios.get('/api/getanalyst');
         console.log('API Result:', result.data);
         const normalRoles = result.data.normalUsers.map(user => user.roleai);
         const studentRoles = result.data.studentUsers.map(user => user.roleai);
