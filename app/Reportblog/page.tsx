@@ -102,6 +102,12 @@ const Reportblog: React.FC = () => {
                           <Link
                             href={{
                               pathname: `/Reportblog/${val._id}`, // Use dynamic ID in the pathname
+                              // query: {
+                              //   id: val._id,
+                              //   username: val.username,
+                              //   report: val.report,
+                              //   createdAt: formatDate(val.createdAt),
+                              // },
                             }}
                           >
                             {val.blogname}

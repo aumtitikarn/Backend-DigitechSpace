@@ -1,6 +1,7 @@
 // app/api/getreportblog/route.js
 import { connectMongoDB } from "../../../lib/mongodb";
 import blog from "../../../models/postblog";
+import Post from "../../../models/posts";
 import { NextResponse } from "next/server";
 
 
@@ -60,10 +61,29 @@ export async function GET() {
   return NextResponse.json({ blogData }, { status: 200 }); // Ensure the structure matches the frontend expectation
 }
 
-export async function DELETE(req) {
-  const id = req.nextUrl.searchParams.get("id");
-  await connectMongoDB();
-  await blog.findByIdAndDelete(id);
-  return NextResponse.json({ message: "Post deleted" }, { status: 200 });
+export async function DELETE(req, { params }) {
+  try {
+    const { id } = params; // ใช้ id ของ postblogs เพื่อค้นหา blogid
+    await connectMongoDB();
+
+    // ค้นหา blogid จากคอลเลกชัน postblogs
+    const blogData = await blog.findById(id);
+    
+    if (!blogData) {
+      return NextResponse.json({ message: "Blog not found" }, { status: 404 });
+    }
+
+    // ค้นหาและลบโพสต์จากคอลเลกชัน posts โดยใช้ blogid
+    const deletedPost = await Post.findByIdAndDelete(blogData.blogid);
+    
+    if (!deletedPost) {
+      return NextResponse.json({ message: "Post not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Post and blog deleted" }, { status: 200 });
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    return NextResponse.json({ error: "Failed to delete post" }, { status: 500 });
+  }
 }
 

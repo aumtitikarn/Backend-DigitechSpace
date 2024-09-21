@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 const Order = mongoose.models.Order || mongoose.model('Order', new mongoose.Schema({
   email: String,
   name: String,
-  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' }, // กำหนดว่าเป็น ObjectId และเชื่อมโยงกับ Product
+  product: String,
   amount: Number,
   net: Number,
   typec: String,
