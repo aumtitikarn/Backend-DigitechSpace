@@ -2,7 +2,6 @@ import mongoose, { Schema } from "mongoose";
 
 const PostBlogSchema = new Schema(
   {
-    _id: { type: String, required: true },
     blogname: { type: String, required: true }, // Blog name
     report: { type: String, required: true },   // Report content
     author: { type: String, required: true },   // Author of the report
@@ -24,5 +23,5 @@ const PostBlogSchema = new Schema(
 );
 
 // Export the model
-const PostBlog = mongoose.models.PostBlog || mongoose.model("PostBlog", PostBlogSchema);
+const PostBlog = mongoose.models.postblogs || mongoose.model("postblogs", PostBlogSchema);
 export default PostBlog;
