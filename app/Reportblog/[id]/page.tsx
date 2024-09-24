@@ -84,13 +84,13 @@ const Detail: React.FC = (params) => {
       });
 
       if (response.ok) {
-        const post = await response.json();
-        console.log(post)
+        const data = await response.json();
+        console.log(data)
 
-        setBlogemail(post.blogEmail);
+        setBlogemail(data.post);
 
         console.log("getsetemail :", blogemail);
-        const { blogEmail } = post;
+        const { blogEmail } = data.post;
         console.log("getemail2 :", blogEmail)
 
         // Dynamically create the mailto link
@@ -145,15 +145,15 @@ const Detail: React.FC = (params) => {
         return;
       }
   
-      const post = await response.json();
-      console.log("Fetched post:", post);
-      console.log("หัวเรื่อง :",post.blogname)
+      const data = await response.json();
+      console.log("Fetched post:", data.post);
+      console.log("หัวเรื่อง :",data.post)
   
       // ตรวจสอบโครงสร้างข้อมูลที่ได้
-      if (Array.isArray(post)) {
-        setPostBlogs(post); // หาก API ส่งกลับเป็นอาร์เรย์
+      if (Array.isArray(data.post)) {
+        setPostBlogs(data.post); // หาก API ส่งกลับเป็นอาร์เรย์
       } else {
-        setPostBlogs([post]); // หาก API ส่งกลับเป็นวัตถุเดียว
+        setPostBlogs([data.post]); // หาก API ส่งกลับเป็นวัตถุเดียว
       }
     } catch (error) {
       console.error('Error fetching blogs:', error);

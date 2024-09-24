@@ -27,7 +27,7 @@ const Reportblog: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:3000/api/getreportblog", {
+      const response = await fetch("/api/getreportblog", {
         method: "GET",
         cache: "no-store"
       });
