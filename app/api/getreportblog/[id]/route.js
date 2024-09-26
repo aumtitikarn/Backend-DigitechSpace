@@ -1,6 +1,7 @@
 import { connectMongoDB } from "../../../../lib/mongodb";
 import blog from "../../../../models/postblog";
 import Post from "../../../../models/posts";
+import Notification from "../../../..//models/notification";
 import { NextResponse } from "next/server";
 import mongoose, { ObjectId } from 'mongoose';
 
@@ -68,7 +69,7 @@ export async function DELETE(req, { params }) {
     await connectMongoDB();
 
     // ค้นหา blogid จากคอลเลกชัน postblogs
-    const blogData = await PostBlog.findById(id);
+    const blogData = await blog.findById(id);
     
     if (!blogData) {
       return NextResponse.json({ message: "Blog not found" }, { status: 404 });
@@ -81,9 +82,28 @@ export async function DELETE(req, { params }) {
       return NextResponse.json({ message: "Post not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ message: "Post and blog deleted" }, { status: 200 });
+    // Notify the owner of the blog
+    const notificationMessage = `Your blog titled "${blogData.blogname}" has been deleted.`;
+    
+    // Check if a notification record exists for this email
+    const notification = await Notification.findOne({ email: blogData.blogEmail });
+
+    if (notification) {
+      // Add the new message to the existing notifications array
+      notification.notifications.push(notificationMessage);
+      await notification.save();
+    } else {
+      // If no notification record exists, create a new one
+      const newNotification = new Notification({
+        email: blogData.blogEmail,
+        notifications: [notificationMessage],
+      });
+      await newNotification.save();
+    }
+
+    return NextResponse.json({ message: "Post and blog deleted, and notification sent" }, { status: 200 });
   } catch (error) {
-    console.error("Error deleting post:", error);
-    return NextResponse.json({ error: "Failed to delete post" }, { status: 500 });
+    console.error("Error deleting post or sending notification:", error);
+    return NextResponse.json({ error: "Failed to delete post and send notification" }, { status: 500 });
   }
 }
