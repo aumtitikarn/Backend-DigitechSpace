@@ -14,6 +14,7 @@ interface Project {
   _id: string;
   projectname: string;
   description: string;
+  email: string;
   price: number;
   author: string;
   receive: string[];
@@ -124,30 +125,48 @@ const Detail: React.FC = () => {
     setStatusMessage(null);
 
     try {
-      const response = await fetch(`/api/project/id/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ permission: true ,
-          status: 'approved',
-        }),
-      });
+        // อัปเดตสถานะของโปรเจกต์
+        const response = await fetch(`/api/project/id/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ permission: true, status: 'approved' }),
+        });
 
-      const responseData = await response.json();
+        const responseData = await response.json();
 
-      if (!response.ok) {
-        throw new Error(responseData.error || 'Failed to update project permission');
-      }
+        if (!response.ok) {
+            throw new Error(responseData.error || 'Failed to update project permission');
+        }
 
-      setStatusMessage('Project approved successfully.');
+        // บันทึกข้อความแจ้งเตือน
+        const email = project?.email; // เปลี่ยนเป็นการดึง email จากผู้ส่งคำขอ หรือข้อมูลโปรเจกต์
+        const notificationMessage = `โปรเจกต์ "${project?.projectname}" ได้รับการอนุมัติเรียบร้อยแล้ว.`; 
+
+        const notificationResponse = await fetch('/api/notification', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, notificationValue: notificationMessage }), // ส่ง email และ notificationValue
+        });
+
+        const notificationData = await notificationResponse.json();
+
+        if (!notificationResponse.ok) {
+            throw new Error(notificationData.error || 'Failed to save notification');
+        }
+
+        setStatusMessage('Project approved successfully and notification sent.');
     } catch (error) {
-      console.error('Error approving project:', error);
-      setStatusMessage('Approval failed. Please try again.');
+        console.error('Error approving project:', error);
+        setStatusMessage(`Approval failed.`); // แสดงข้อความผิดพลาดที่ชัดเจน
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
+
 
   
 const handleNotApprove = async () => {
@@ -172,6 +191,23 @@ const handleNotApprove = async () => {
 
     if (!response.ok) {
       throw new Error(responseData.error || 'Failed to update project');
+    }
+    // บันทึกข้อความแจ้งเตือน
+    const email = project?.email; // เปลี่ยนเป็นการดึง email จากผู้ส่งคำขอ หรือข้อมูลโปรเจกต์
+    const notificationMessage = `โครงงานของท่านไม่ผ่านการอนุมัติเนื่องจาก: ${rejectText}`; // เพิ่ม rejectText ในข้อความ
+
+    const notificationResponse = await fetch('/api/notification', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, notificationValue: notificationMessage }), // ส่ง email และ notificationValue
+    });
+
+    const notificationData = await notificationResponse.json();
+
+    if (!notificationResponse.ok) {
+        throw new Error(notificationData.error || 'Failed to save notification');
     }
 
     setStatusMessage('Project has been successfully rejected and notification has been sent.');
