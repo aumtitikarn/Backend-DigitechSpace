@@ -10,6 +10,9 @@ interface Project {
   username: string;
   report: string;
   more: string;
+  email: string;
+  author: string;
+  projectId: string;
   createdAt: Date;
 }
 
@@ -111,6 +114,9 @@ const Reportproject: React.FC = () => {
                                 username: val.username,
                                 report: val.report,
                                 more: val.more,
+                                email: val.email,
+                                author: val.author,
+                                projectId: val.projectId,
                                 createdAt: formatDate(val.createdAt),
                               },
                             }}

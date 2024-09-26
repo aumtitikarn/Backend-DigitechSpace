@@ -12,6 +12,10 @@ const Detail: React.FC = () => {
   const report = searchParams.get("report");
   const more = searchParams.get("more");
   const createdAt = searchParams.get("createdAt");
+  const email = searchParams.get("email");
+  const author = searchParams.get("author");
+  const projectId = searchParams.get("projectId");
+ 
 
   // Function to format date
   const formatDate = (timestamp: string | null) => {
@@ -58,16 +62,65 @@ const Detail: React.FC = () => {
     }
   };
   
-
-  const handleSubmit2 = () => {
-    const email = "owner@example.com"; // Replace with the actual email address
-    window.location.href = `mailto:${email}?subject=Contact regarding project&body=Hi, I would like to discuss the project.`;
-  }
-
-  const handleSubmit3 = () => {
-    alert("Button 3 clicked");
-    // Add your specific logic here
+  const handleSubmit2 = async (id: string | null) => {
+    if (!id) {
+      alert("Blog ID is missing");
+      return;
+    }
+  
+    const confirmed = confirm("Are you sure you want to contact the project owner?");
+    if (!confirmed) return;
+  
+    try {
+      // Get the email from the URL search parameters
+      const searchParams = new URLSearchParams(window.location.search);
+      const email = searchParams.get("email");
+  
+      if (email) {
+        // Dynamically create the mailto link with the retrieved email
+        const mailtoLink = `mailto:${email}?subject=Notification&body=Hello, I would like to contact you about your project.`;
+        window.location.href = mailtoLink;
+      } else {
+        alert("Email is undefined.");
+      }
+    } catch (error) {
+      console.error("Error contacting project owner:", error);
+      alert("An error occurred while contacting the project owner.");
+    }
   };
+  const handleSubmit3 = async (projectId: string | null) => {
+    if (!projectId) {
+        alert("Project ID is missing");
+        return;
+    }
+
+    const confirmDeletion = confirm("Are you sure you want to delete this project?");
+    if (!confirmDeletion) return;
+
+    try {
+        const response = await fetch(`/api/getreportproject`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ projectId }), // ส่ง projectId ของโปรเจกต์ที่จะถูกลบ
+        });
+
+        if (response.ok) {
+            alert("Project deleted successfully");
+            window.location.reload(); // รีโหลดหน้าเมื่อการลบสำเร็จ
+        } else {
+            const data = await response.json();
+            alert(`Failed to delete project: ${data.msg}`);
+        }
+    } catch (error) {
+        console.error("Error deleting project:", error);
+        alert("An error occurred while deleting the project.");
+    }
+};
+
+
+  
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
@@ -84,6 +137,9 @@ const Detail: React.FC = () => {
               <p className="text-lg text-gray-700 mb-2">{report || ""}</p>
               <h4 className="text-xl font-bold mb-2">ข้อความเพิ่มเติม</h4>
               <p className="text-lg text-gray-700 mb-2">{more || ""}</p>
+              <h4 className="text-xl font-bold mb-2">ข้อมูลเจ้าของโครงงาน</h4>
+              <p className="text-lg text-gray-700 mb-2">ชื่อ: {author || ""}</p>
+              <p className="text-lg text-gray-700 mb-2">อีเมล: {email || ""}</p>
               <h4 className="text-xl font-bold mb-2">วันที่/เวลา</h4>
               <p className="text-lg text-gray-700 mb-4">{formatDate(createdAt)}</p>
             </div>
@@ -98,14 +154,14 @@ const Detail: React.FC = () => {
                 ลบคำร้อง
               </button>
               <button
-                onClick={handleSubmit2}
+                 onClick={() => handleSubmit2(id)}
                 className="w-full p-2 text-white rounded"
                 style={{ backgroundColor: "#1976D2" }}
               >
                 ติดต่อเจ้าของโครงงาน/บล็อก
               </button>
               <button
-                onClick={handleSubmit3}
+                onClick={() => handleSubmit3(projectId)}
                 className="w-full p-2 text-white rounded"
                 style={{ backgroundColor: "#9B3933" }}
               >

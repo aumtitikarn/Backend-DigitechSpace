@@ -23,7 +23,7 @@ const Header: React.FC = () => {
       <div className="flex items-center justify-between lg:mx-[50px]">
           <TiThMenu className="text-3xl mr-4 cursor-pointer" onClick={toggleMenu} />
         </div>
-        <img src="/dgt.png" alt="Logo" className="h-8" />
+        <img src="/test9.png" alt="Logo" className="h-8" />
         <FaUserCircle className="text-3xl cursor-pointer hover:text-gray-300" />
       </div>
 

@@ -27,3 +27,24 @@ export async function GET() {
         return NextResponse.json({ error: "Failed to fetch projects" }, { status: 500 });
     }
 }
+export async function DELETE(req, { params }) {
+    try {
+        await connectMongoDB();
+  
+        const { projectId } = await req.json(); // รับ projectId จาก body ของ request
+        console.log("Deleting project with projectId:", projectId); // แสดง projectId ที่จะลบ
+
+        const deletedPost = await Reportprojet.findOneAndDelete({ projectId }); // ค้นหาและลบโดยใช้ projectId
+
+        if (!deletedPost) {
+            console.error("Project not found for projectId:", projectId); // ล็อกถ้าไม่พบ project
+            return NextResponse.json({ msg: "Project not found" }, { status: 404 });
+        }
+
+        console.log("Project deleted successfully:", deletedPost); // ล็อกเมื่อมีการลบสำเร็จ
+        return NextResponse.json({ message: "Project deleted successfully" }, { status: 200 });
+    } catch (error) {
+        console.error("Error in DELETE handler:", error); // ล็อกข้อผิดพลาด
+        return NextResponse.json({ msg: "Error deleting project" }, { status: 500 });
+    }
+}
