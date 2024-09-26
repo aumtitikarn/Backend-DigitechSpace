@@ -4,6 +4,8 @@ import { connectMongoDB } from '../../../../../lib/mongodb';
 export async function GET(req, { params }) {
   const { filename } = params;
 
+  console.log("Requested filename:", filename);
+
   if (!filename) {
     return new NextResponse("Filename is required", { status: 400 });
   }
@@ -11,6 +13,8 @@ export async function GET(req, { params }) {
   try {
     const { filebucket } = await connectMongoDB();
     const files = await filebucket.find({ filename }).toArray();
+    
+    console.log("Files found:", files); // Log found files
 
     if (files.length === 0) {
       return new NextResponse("File not found", { status: 404 });
@@ -30,3 +34,4 @@ export async function GET(req, { params }) {
     return new NextResponse(JSON.stringify({ msg: "Error fetching file" }), { status: 500 });
   }
 }
+

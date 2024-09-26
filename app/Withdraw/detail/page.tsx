@@ -155,6 +155,29 @@ const sendNotification = async (email: string, message: string): Promise<void> =
     console.error("Error sending notification:", error);
   }
 };
+const handleSubmit2 = async (id: string | null, email: string | undefined) => {
+  if (!id) {
+      alert("Blog ID is missing");
+      return;
+  }
+
+  const confirmed = confirm("Are you sure you want to contact the project owner?");
+  if (!confirmed) return;
+
+  try {
+      // ตรวจสอบว่าอีเมลที่ได้รับมีค่าหรือไม่
+      if (email) {
+          // สร้าง mailto link สำหรับส่งอีเมล
+          const mailtoLink = `mailto:${email}?subject=Notification&body=Hello, I would like to contact you about your project.`;
+          window.location.href = mailtoLink;
+      } else {
+          alert("Email is undefined.");
+      }
+  } catch (error) {
+      console.error("Error contacting project owner:", error);
+      alert("An error occurred while contacting the project owner.");
+  }
+};
 
 
   if (loading) {
@@ -198,12 +221,12 @@ const sendNotification = async (email: string, message: string): Promise<void> =
                 เสร็จสิ้น
               </button>
               <button
-                onClick={() => alert("ติดต่อผู้ถอน")}
-                className="w-full p-2 text-white rounded"
-                style={{ backgroundColor: "#1976D2" }}
-              >
-                ติดต่อผู้ถอน
-              </button>
+    onClick={() => handleSubmit2(id, withdrawalDetails?.receipt.email)}
+    className="w-full p-2 text-white rounded"
+    style={{ backgroundColor: "#1976D2" }}
+>
+    ติดต่อผู้ถอน
+</button>
               <button
                 onClick={() =>
                   handleDelete(id, withdrawalDetails?.receipt.email)
