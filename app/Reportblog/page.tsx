@@ -21,13 +21,13 @@ const Reportblog: React.FC = () => {
 
   const itemsPerPage = 5;
 
- 
+
 
   const getPosts = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:3000/api/getreportblog", {
+      const response = await fetch("/api/getreportblog", {
         method: "GET",
         cache: "no-store"
       });
@@ -101,15 +101,13 @@ const Reportblog: React.FC = () => {
                         <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
                           <Link
                             href={{
-                              pathname: `/Reportblog/detail`,
-                              query: {
-                                id: val._id,
-                                name: val.blogname,
-                                username: val.username,
-                                report: val.report,
-                                selectedReason: val.selectedReason,
-                                createdAt: formatDate(val.createdAt),
-                              },
+                              pathname: `/Reportblog/${val._id}`, // Use dynamic ID in the pathname
+                              // query: {
+                              //   id: val._id,
+                              //   username: val.username,
+                              //   report: val.report,
+                              //   createdAt: formatDate(val.createdAt),
+                              // },
                             }}
                           >
                             {val.blogname}
@@ -119,7 +117,7 @@ const Reportblog: React.FC = () => {
                           {val.report}
                         </td>
                         <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
-                          {val.username}
+                          {val.author}
                         </td>
                       </tr>
                     ))
