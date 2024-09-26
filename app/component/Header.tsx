@@ -19,19 +19,35 @@ const Header: React.FC = () => {
 
   return (
     <header className="bg-[#0B1E48] text-white py-4 px-6">
-      <div className="container mx-auto flex items-center justify-between">
-      <div className="flex items-center justify-between lg:mx-[50px]">
-          <TiThMenu className="text-3xl mr-4 cursor-pointer" onClick={toggleMenu} />
-        </div>
-        <FaUserCircle className="text-3xl cursor-pointer hover:text-gray-300" />
-      </div>
+     <div className="container mx-auto flex items-center justify-between">
+  {/* Menu Icon */}
+  <div className="flex items-center">
+    <TiThMenu className="text-3xl mr-4 cursor-pointer" onClick={toggleMenu} />
+  </div>
 
+  {/* Logo in the center */}
+  <div className="flex flex-grow items-center justify-center">
+    <img
+      src="https://m1r.ai/W8p5i.png"
+      alt="Digitech Space logo"
+      width={90}
+      height={90}
+    />
+  </div>
+
+  {/* User Icon */}
+  <div className="flex items-center">
+    <FaUserCircle className="text-3xl cursor-pointer hover:text-gray-300" />
+  </div>
+</div>
+      
       {/* Sliding Menu */}
       <div
         className={`fixed top-0 left-0 h-full w-64 bg-[#0B1E48] transform ${
           isMenuOpen ? 'translate-x-0' : '-translate-x-full'
         } transition-transform duration-300 ease-in-out z-50`}
       >
+
         <div className="p-6">
         <div className="container mx-auto flex items-center justify-between">
     {/* Logo on the left */}
