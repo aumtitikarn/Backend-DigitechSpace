@@ -90,71 +90,84 @@ const Detail: React.FC = () => {
         if (!response.ok) {
             const data = await response.json();
             alert(`Failed to mark project as completed: ${data.msg || "Unknown error"}`);
-            await sendNotification(email, "คำร้องขอถอนเงินของท่านไม่สำเร็จ");
+           
             return;
         }
 
+        // บันทึกข้อความแจ้งเตือน
+        const notificationMessage = "คำร้องขอถอนเงินของท่านสำเร็จ"; 
+
+        const notificationResponse = await fetch('/api/notification', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email,   notificationValue: notificationMessage }), // ส่ง email และ notificationMessage
+        });
+
+        if (!notificationResponse.ok) {
+            const notificationData = await notificationResponse.json();
+            console.error("Failed to send notification:", notificationData);
+        }
+
         alert("Project marked as completed successfully");
-        await sendNotification(email, "คำร้องขอถอนเงินของท่านสำเร็จ");
+        // Send notification to user
 
     } catch (error) {
         console.error("Error marking project as completed:", error);
         alert("An error occurred while marking the project as completed.");
-        await sendNotification(email, "คำร้องขอถอนเงินของท่านไม่สำเร็จ");
+        
     }
 };
+
 
 const handleDelete = async (id: string | null, email: string) => {
-    if (!id) {
-        alert("Project ID is missing");
-        return;
-    }
+  if (!id) {
+      alert("Project ID is missing");
+      return;
+  }
 
-    const confirmed = confirm("Are you sure you want to mark this project as failed?");
-    if (!confirmed) return;
+  const confirmed = confirm("Are you sure you want to mark this project as failed?");
+  if (!confirmed) return;
 
-    try {
-        const response = await fetch(`/api/withdrawals/${id}`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ status: "failed" }),
-        });
-
-        if (response.ok) {
-            alert("Project marked as failed successfully");
-            const notificationMessage = `คำร้องขอถอนเงินถูกยกเลิกเนื่องจากข้อมูลไม่ตรงกัน`;
-            await sendNotification(email, notificationMessage);
-        } else {
-            const data = await response.json();
-            alert(`Failed to mark project as failed: ${data.error || "Unknown error"}`);
-        }
-    } catch (error) {
-        console.error("Error marking project as failed:", error);
-        alert("An error occurred while marking the project as failed.");
-    }
-};
-const sendNotification = async (email: string, message: string): Promise<void> => {
   try {
-    const response = await fetch('/api/notification', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, message }),
-    });
+      const response = await fetch(`/api/withdrawals/${id}`, {
+          method: "PATCH",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: "failed" }),
+      });
 
-    if (!response.ok) {
-      throw new Error('Failed to send notification');
-    }
+      if (response.ok) {
+          // บันทึกข้อความแจ้งเตือน
+          const notificationMessage = "คำร้องขอถอนเงินของท่านไม่สำเร็จเนื่องจากข้อมูลไม่ตรงกัน"; // Change the message as appropriate
 
-    const data = await response.json();
-    console.log(data.message);
+          const notificationResponse = await fetch('/api/notification', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ email,notificationValue:notificationMessage }), // ส่ง email และ notificationMessage
+          });
+
+          if (!notificationResponse.ok) {
+              const notificationData = await notificationResponse.json();
+              console.error("Failed to send notification:", notificationData);
+          }
+
+          alert("Project marked as failed successfully");
+
+      } else {
+          const data = await response.json();
+          alert(`Failed to mark project as failed: ${data.error || "Unknown error"}`);
+      }
   } catch (error) {
-    console.error("Error sending notification:", error);
+      console.error("Error marking project as failed:", error);
+      alert("An error occurred while marking the project as failed.");
   }
 };
+
 const handleSubmit2 = async (id: string | null, email: string | undefined) => {
   if (!id) {
       alert("Blog ID is missing");
