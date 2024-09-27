@@ -77,7 +77,7 @@ const Detail: React.FC = (params) => {
     try {
       // Fetch the blog post details from MongoDB using the blog ID
       const response = await fetch(`/api/getreportblog/${id}`, {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -87,15 +87,15 @@ const Detail: React.FC = (params) => {
         const data = await response.json();
         console.log(data)
 
-        setBlogemail(data.post);
+        // setBlogemail(data.post);
 
-        console.log("getsetemail :", blogemail);
-        const { blogEmail } = data.post;
-        console.log("getemail2 :", blogEmail)
+        // console.log("getsetemail :", blogemail);
+        // const { blogEmail } = data.post;
+        // console.log("getemail2 :", blogEmail)
 
         // Dynamically create the mailto link
-        const mailtoLink = `mailto:${blogEmail}?subject=Notification form DigitechSpace&body=`;
-        window.location.href = mailtoLink;
+        // const mailtoLink = `mailto:${blogEmail}?subject=Notification form DigitechSpace&body=`;
+        // window.location.href = mailtoLink;
 
       } else {
         alert("Failed to fetch blog details.");
