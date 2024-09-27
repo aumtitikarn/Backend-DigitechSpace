@@ -142,6 +142,7 @@ const Detail: React.FC = (params) => {
       if (!response.ok) {
         const errorData = await response.json();
         console.error(`Error fetching blogs: ${errorData.message}`);
+        handleSubmit1
         return;
       }
   

@@ -53,7 +53,7 @@ export async function POST(req,{params}) {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Password Reset Request</title>
+          <title>Warnings from</title>
           <style>
             body { 
               font-family: Arial, sans-serif; 
@@ -85,18 +85,10 @@ export async function POST(req,{params}) {
             <div class="logo">
               <img src="https://m1r.ai/7ttM.png" alt="Digitech Space Logo" width="150">
             </div>
-            <h2>Password Reset Request</h2>
+            <h2>Warning you have been reported</h2>
             <p>Dear ${blogData.author},</p>
-            <p>We have received a request to reset the password for your Digitech Space account. If you did not make this request, please ignore this email.</p>
-            <p>To reset your password, please click the button below:</p>
-            <p style="text-align: center;">
-              <a>Reset Password</a>
-            </p>
-            <p>If the button above doesn't work, you can also copy and paste the following link into your browser:</p>
-            <p>TestJUBBB</p>
-            <p>This link will expire in 1 hour for security reasons.</p>
-            <p>If you need any assistance, please don't hesitate to contact our support team.</p>
-            <p>Best regards,<br>The Digitech Space Team</p>
+            <p>We have received requests from other users that your blog is inappropriate for our site.</p>
+            <p>We will be removing your blog content soon.</p>
           </div>
         </body>
         </html>
@@ -105,7 +97,7 @@ export async function POST(req,{params}) {
       let info = await transporter.sendMail({
         from: '"Digitech Space" <digitechspace65@gmail.com>',
         to: blogData.blogEmail,
-        subject: "Password Reset Request - Digitech Space",
+        subject: "Warnings from Digitech Space",
         text: `Dear ${blogData.blogname},TestReport`,
         html: htmlContent,
       });
