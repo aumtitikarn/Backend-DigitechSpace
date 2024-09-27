@@ -11,8 +11,8 @@ interface Project {
   firstname: string;
   lastname: string;
   email: string;
- phonenumber: string;
-  username: string; // เพิ่ม username ที่ขาดไป
+  phonenumber: string;
+  username: string;
 }
 
 const usernormal: React.FC = () => {
@@ -41,16 +41,15 @@ const usernormal: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log("Fetched Data:", data); // ตรวจสอบข้อมูลที่ได้มา
+      console.log("Fetched Data:", data);
 
-      // ตรวจสอบโครงสร้างข้อมูลและดึงข้อมูลที่ต้องการ
       if (data && Array.isArray(data.normalusers)) {
         const formattedProjects = data.normalusers.map((user: any) => ({
-          id: user._id, // ใช้ _id เป็น id
+          id: user._id,
           name: user.name,
           phonenumber: user.phonenumber,
           username: user.username,
-          email: user.email // ตรวจสอบว่า field username มีอยู่ในข้อมูลที่ดึงมา
+          email: user.email
         }));
         setProjects(formattedProjects);
       } else {
@@ -84,7 +83,7 @@ const usernormal: React.FC = () => {
               <thead>
                 <tr>
                   <th className="border border-gray-400 p-2">#</th>
-                  <th className="border border-gray-400 p-2 lg:text-lg">Username</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg">ชื่อผู้ใช้</th>
                   <th className="border border-gray-400 p-2 lg:text-lg">ชื่อ-นามสกุล</th>
                   <th className="border border-gray-400 p-2 lg:text-lg">เบอร์โทรศัพท์</th>
                 </tr>
@@ -100,7 +99,7 @@ const usernormal: React.FC = () => {
                         pathname: `/normal/detail`,
                         query: {
                           id: project.id,
-                          username: project.username, // ใช้ project.username แทน project.Username
+                          username: project.username,
                           name: project.name,
                           phonenumber: project.phonenumber,
                           firstname: project.firstname,
@@ -130,6 +129,19 @@ const usernormal: React.FC = () => {
             totalPages={totalPages}
             onPageChange={handlePageChange}
           />
+          {/* Textarea and Button */}
+          <div className="mt-6">
+          <p className="text-sm mt-2">
+            ส่งเมลรวมทั้งหมด
+          </p>
+            <textarea
+              className="w-full h-28 border border-gray-400 p-2 rounded-md"
+              placeholder="ข้อความ"
+            ></textarea>
+            <button className="w-full mt-4 bg-blue-600 text-white p-2 rounded-md">
+              ส่งเมล
+            </button>
+          </div>
         </div>
       </main>
     </div>

@@ -16,6 +16,29 @@ const Detail: React.FC = () => {
   const phonenumber = searchParams.get("phonenumber")
   const email = searchParams.get("email")
  
+const handleSubmit2 = async (id: string | null, email: string | undefined) => {
+  if (!id) {
+      alert("Blog ID is missing");
+      return;
+  }
+
+  const confirmed = confirm("Are you sure you want to contact the project owner?");
+  if (!confirmed) return;
+
+  try {
+      // ตรวจสอบว่าอีเมลที่ได้รับมีค่าหรือไม่
+      if (email) {
+          // สร้าง mailto link สำหรับส่งอีเมล
+          const mailtoLink = `mailto:${email}?subject=Notification&body=Hello, I would like to contact you about your project.`;
+          window.location.href = mailtoLink;
+      } else {
+          alert("Email is undefined.");
+      }
+  } catch (error) {
+      console.error("Error contacting project owner:", error);
+      alert("An error occurred while contacting the project owner.");
+  }
+};
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
@@ -29,10 +52,17 @@ const Detail: React.FC = () => {
             </svg>
           </div>
           </div> <div className="w-full mt-2 lg:w-2/3 mx-auto">
-          <h2 className="text-xl font-bold mb-2">Username: {username || ""}</h2>
+          <h2 className="text-xl font-bold mb-2">รายละเอียดของข้อมูลผู้ใช้</h2>
+          <p className="text-lg text-gray-700 mb-1">ชื่อผู้ใช้: {username || ""}</p>
           <p className="text-lg text-gray-700 mb-1">อีเมล:  {email || ""}</p>
           <p className="text-lg text-gray-700 mb-1">ชื่อ-นามสกุล:  {name || ""}</p>
           <p className="text-lg text-gray-700 mb-1">เบอร์โทรศัพท์:  {phonenumber || ""}</p>
+          <p className="text-sm mt-20">
+            ส่งเมลเฉพาะผู้ใช้
+          </p>
+          <button className="w-full mt-2 bg-blue-600 text-white p-2 rounded-md" >
+              ส่งเมล
+            </button>
         </div>
       </div>
       </main>
