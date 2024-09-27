@@ -138,7 +138,7 @@ const Detail: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden text-black">
       <Header />
       <main className="flex-grow">
-        <div className="lg:mx-60 mt-10 mb-5">
+        <div className="lg:mx-60 mt-10 mb-5 mx-20">
           {/* Container for content and buttons */}
           <div className="w-full mt-2 lg:w-2/3 mx-auto">
             {/* Content */}
