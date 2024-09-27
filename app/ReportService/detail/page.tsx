@@ -89,12 +89,12 @@ function Blog({ params }: { params: { _id: string } }) {
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
       <Header />
       <main className="flex-grow">
-        <div className="lg:mx-60 mt-10 mb-5">
+        <div className="lg:mx-60 mt-10 mb-5 mx-20">
           {/* Container for content and buttons */}
           <div className="w-full mt-2 lg:w-2/3 mx-auto">
             {/* Content */}
             <div className="flex flex-col gap-4">
-          <h1 className="text-lg font-bold mt-5 mb5 text-black" style={{ fontSize: "36px" }}>คำร้องปัญหาของผู้ใช้</h1>
+          <h1 className="text-lg font-bold mt-5 mb5 text-black" style={{ fontSize: "32px" }}>คำร้องปัญหาของผู้ใช้</h1>
               <p className="mt-4 text-lg">
                 โดย   {email}
               </p>

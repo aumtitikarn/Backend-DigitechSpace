@@ -12,17 +12,7 @@ const reportprojetsSchema = new mongoose.Schema({
   more: { type: String, required: true },
   projectId: { type: String, required: true },
   author: { type: String, required: true }, // Ensure there's no enum constraint here
-  report: {
-    type: String,
-    enum: [
-      'ได้รับไฟล์ไม่ครบตามที่กำหนด',
-      'ไฟล์ไม่ทำงานตามที่ควรจะเป็น',
-      'เข้าใจยาก ไม่มีคู่มือการใช้',
-      'โครงงานมีการละเมิดลิขสิทธิ์',
-      'อื่นๆ',
-    ],
-    required: true,
-  },
+  report: { type: String, required: true },
 }, { timestamps: true });
 
 const Reportprojets = mongoose.model('Reportprojets', reportprojetsSchema);

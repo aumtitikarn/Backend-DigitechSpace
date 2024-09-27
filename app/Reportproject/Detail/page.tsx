@@ -61,33 +61,51 @@ const Detail: React.FC = () => {
       alert("An error occurred while deleting the report.");
     }
   };
-  
   const handleSubmit2 = async (id: string | null) => {
     if (!id) {
-      alert("Blog ID is missing");
-      return;
+        alert("Blog ID is missing");
+        return;
     }
-  
+
+    if (!email || !author) {
+        alert("Email or Author is missing");
+        return;
+    }
+
     const confirmed = confirm("Are you sure you want to contact the project owner?");
     if (!confirmed) return;
-  
+
     try {
-      // Get the email from the URL search parameters
-      const searchParams = new URLSearchParams(window.location.search);
-      const email = searchParams.get("email");
-  
-      if (email) {
-        // Dynamically create the mailto link with the retrieved email
-        const mailtoLink = `mailto:${email}?subject=Notification&body=Hello, I would like to contact you about your project.`;
-        window.location.href = mailtoLink;
-      } else {
-        alert("Email is undefined.");
-      }
+        const response = await fetch(`/api/getreportproject`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id, // ID ของโปรเจกต์
+                email, // อีเมลของเจ้าของโปรเจกต์
+                author, // ชื่อของผู้ติดต่อ
+                name, // ชื่อผู้ติดต่อ (ถ้ามี)
+                username, // ชื่อผู้ใช้ (ถ้ามี)
+                report, // รายงาน (ถ้ามี)
+                more, // ข้อมูลเพิ่มเติม (ถ้ามี)
+               
+            }),
+        });
+
+        if (response.ok) {
+            alert("Email sent to the project owner successfully!");
+        } else {
+            const data = await response.json();
+            alert(`Failed to send email: ${data.msg}`);
+        }
     } catch (error) {
-      console.error("Error contacting project owner:", error);
-      alert("An error occurred while contacting the project owner.");
+        console.error("Error contacting project owner:", error);
+        alert("An error occurred while contacting the project owner.");
     }
-  };
+};
+
+
   const handleSubmit3 = async (projectId: string | null) => {
     if (!projectId) {
         alert("Project ID is missing");
@@ -126,12 +144,12 @@ const Detail: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
       <Header />
       <main className="flex-grow">
-        <div className="lg:mx-60 mt-10 mb-5">
+        <div className="lg:mx-60 mt-10 mb-5 mx-20">
           {/* Container for content and buttons */}
           <div className="w-full mt-2 lg:w-2/3 mx-auto">
             {/* Content */}
             <div className="flex flex-col gap-4">
-              <h2 className="text-xl font-bold mb-5">รายงานบล็อก {name || ""}</h2>
+              <h2 className="text-xl font-bold mb-5">รายงานโครงงาน {name || ""}</h2>
               <h3 className="text-lg text-gray-700 mb-2">โดย คุณ {username || ""}</h3>
               <h4 className="text-xl font-bold mb-2">คำร้อง</h4>
               <p className="text-lg text-gray-700 mb-2">{report || ""}</p>
