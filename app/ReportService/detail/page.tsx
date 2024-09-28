@@ -1,145 +1,108 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Header from "../../component/Header";
-import { redirect,useRouter } from "next/navigation";
-import Link from 'next/link';
-import { useSearchParams } from "next/navigation"; 
+import { useSearchParams } from "next/navigation";
 
-function Blog({ params }: { params: { _id: string } }) {
-  const { _id } = params;
-  const router = useRouter();
+const Blog: React.FC = () => {
   const searchParams = useSearchParams();
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [popupInput, setPopupInput] = useState("");
-
-  const [postData, setPostData] = useState<PostData | null>(null); // Update to handle a single object or null
-
-  const id = searchParams.get("id");
-  const report = searchParams.get("report");
-  const username = searchParams.get("report");
-  interface PostData {
-    _id: string;
-    report: string;
-    email: string;
-    username:string;
-    // Add any other properties that are in your post data
-  }
-
-  const getPostById = async (id: string) => {
-    try {
-      if (!id) {
-        throw new Error("ID is undefined");
-      }
-      const res = await fetch(`http://localhost:3000/api/getreportservice/${id}`, {
-        method: "GET",
-        cache: "no-store",
-      });
-  
-      if (!res.ok) {
-        throw new Error(`Failed to fetch post: ${res.statusText}`);
-      }
-  
-      const data = await res.json();
-      console.log("Fetched post: ", data);
-  
-      setPostData(data.post); // Assuming data.post is a single PostData object
-    } catch (error) {
-      console.error("Error fetching post:", error);
-    }
-  };
-  
-
-  useEffect(() => {
-    console.log("Fetched ID:", _id);
-    getPostById(_id);
-  }, [_id]);
-  
-
-  const togglePopup = () => {
-    setIsPopupOpen(!isPopupOpen);
-  };
-
-  const handlePopupSubmit = () => {
-    alert(`Popup Input: ${popupInput}`);
-    setPopupInput("");
-    setIsPopupOpen(false);
-  };
-
-  const [input1, setInput1] = useState("");
-  const [input2, setInput2] = useState("");
-
-  const handleSubmit = () => {
-    alert(`Input 1: ${input1}, Input 2: ${input2}`);
-    setInput1("");
-    setInput2("");
-  };
-
-  const handleSubmit1 = () => {
-    alert(`Input 1: ${input1}, Input 2: ${input2}`);
-    setInput1("");
-    setInput2("");
-  };
   const email = searchParams.get("email");
-  const handleSubmit2 = () => {
-    alert(`Input 1: ${input1}, Input 2: ${input2}`);
-    setInput1("");
-    setInput2("");
-  };
+  const id = searchParams.get("_id");
+  const report = searchParams.get("report");
+  const username = searchParams.get("username");
+
+  const handleSubmit1 = async (id: string | null, email: string | null, report: string) => {
+    if (!id) {
+        alert("Report ID is missing");
+        return;
+    }
+
+    const confirmDeletion = confirm("Are you sure you want to delete this report?");
+    if (!confirmDeletion) return;
+
+    if (!email) {
+        alert("Email is missing");
+        return;
+    }
+
+    // สร้างข้อความแจ้งเตือน
+    const notificationMessage = `We have received your report and we will take action as soon as possible.`;
+
+    try {
+        // ส่งข้อความแจ้งเตือนก่อน
+        const notificationResponse = await fetch('/api/notification', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email, // รับ email จาก session
+                notificationValue: notificationMessage, // ส่งข้อความแจ้งเตือนด้วยชื่อฟิลด์ที่ถูกต้อง
+            }),
+        });
+
+        // Check for notification success
+        if (!notificationResponse.ok) {
+            const notificationData = await notificationResponse.json();
+            console.error("Failed to send notification:", notificationData);
+            alert(`Failed to send notification: ${notificationData.error}`);
+            return; // Stop if notification fails
+        }
+
+        // Proceed to delete the report if notification is successful
+        const deleteResponse = await fetch('/api/getreportservice/delete', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id }), // Sending report ID
+        });
+
+        // Handle delete response
+        if (deleteResponse.ok) {
+            alert("Report deleted successfully");
+        } else {
+            const data = await deleteResponse.json();
+            alert(`Failed to delete report: ${data.msg}`);
+        }
+    } catch (error) {
+        console.error("Error during deletion process:", error);
+        alert("An error occurred while processing your request.");
+    }
+};
+
+  
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
       <Header />
       <main className="flex-grow">
         <div className="lg:mx-60 mt-10 mb-5 mx-20">
-          {/* Container for content and buttons */}
           <div className="w-full mt-2 lg:w-2/3 mx-auto">
-            {/* Content */}
             <div className="flex flex-col gap-4">
-          <h1 className="text-lg font-bold mt-5 mb5 text-black" style={{ fontSize: "32px" }}>คำร้องปัญหาของผู้ใช้</h1>
-              <p className="mt-4 text-lg">
-                โดย   {username}
-              </p>
-              <div className="flex flex-col w-full ">
+              <h1 className="text-lg font-bold mt-5 mb-5 text-black" style={{ fontSize: "32px" }}>คำร้องปัญหาของผู้ใช้</h1>
+              <p className="mt-4 text-lg">โดย {username}</p>
+              <div className="flex flex-col w-full">
                 <h1 className="text-lg font-bold mt-4" style={{ fontSize: "24px" }}>ปัญหา</h1>
-                <p className="mt-2 text-lg">
-                {report}
-                </p>
+                <p className="mt-2 text-lg">{report}</p>
                 <h1 className="text-lg font-bold mt-4" style={{ fontSize: "24px" }}>อีเมล</h1>
-                <p className="mt-2 text-lg">
-                {email}
-                </p>
+                <p className="mt-2 text-lg">{email}</p>
                 <div className="mt-10">
                   <button
-                    onClick={handleSubmit}
+                    onClick={() => handleSubmit1(id, email, "Your report has been successfully deleted.")}
                     className="w-full p-2 text-white rounded mt-6"
                     style={{ backgroundColor: "#33539B" }}
                   >
                     ลบคำร้อง
                   </button>
-                  <button
-                    onClick={handleSubmit1}
-                    className="w-full p-2 text-white rounded mt-4"
-                    style={{ backgroundColor: "#1976D2" }}
-                  >
-                    ติดต่อเจ้าของโครงงาน/บล็อก
-                  </button>
-                  <button
-                    onClick={handleSubmit2}
-                    className="w-full p-2 text-white rounded mt-4"
-                    style={{ backgroundColor: "#9B3933" }}
-                  >
-                    ลบโครงงาน/บล็อก
-                  </button>
                 </div>
               </div>
+            </div>
+          </div>
         </div>
-        </div>
-      </div>
-    </main>
+      </main>
     </div>
   );
-  
-}
+};
 
-export default Blog
+export default Blog;
