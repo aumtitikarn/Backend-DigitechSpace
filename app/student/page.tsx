@@ -1,9 +1,9 @@
 "use client";
 
 import Header from "../component/Header";
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Pagination from '../component/Pagination';
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Pagination from "../component/Pagination";
 
 interface Project {
   _id: string; // เปลี่ยนจาก number เป็น string เพื่อให้ตรงกับ MongoDB's _id
@@ -21,6 +21,7 @@ interface Project {
   firstname: string;
   lastname: string;
   housenum: string;
+  postalnumber: string;
 }
 
 const UserStudent: React.FC = () => {
@@ -42,16 +43,16 @@ const UserStudent: React.FC = () => {
     try {
       const response = await fetch("/api/studetuser", {
         method: "GET",
-        cache: "no-store"
+        cache: "no-store",
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to fetch projects");
       }
-  
+
       const data = await response.json();
       console.log("Fetched Data:", data); // ตรวจสอบข้อมูลที่ได้มา
-  
+
       // ตรวจสอบโครงสร้างข้อมูลและจัดการข้อมูลให้ถูกต้อง
       if (data && Array.isArray(data.studentusers)) {
         const formattedProjects = data.studentusers.map((user: any) => ({
@@ -59,21 +60,22 @@ const UserStudent: React.FC = () => {
           name: user.name,
           phonenumber: user.phonenumber,
           email: user.email,
-          district: user.SellInfo?.district || '', // อ้างอิงจาก SellInfo
-          fullname: user.SellInfo?.fullname || '',
-          namebank: user.SellInfo?.namebank || '',
-          nationajid: user.SellInfo?.nationalid || '',
-          numberbankacc: user.SellInfo?.numberbankacc || '',
-          province: user.SellInfo?.province || '',
-          subdistrict: user.SellInfo?.subdistrict || '',
+          district: user.SellInfo?.district || "", // อ้างอิงจาก SellInfo
+          fullname: user.SellInfo?.fullname || "",
+          namebank: user.SellInfo?.namebank || "",
+          nationajid: user.SellInfo?.nationalid || "",
+          numberbankacc: user.SellInfo?.numberbankacc || "",
+          postalnumber: user.SellInfo?.postalnumber || "",
+          province: user.SellInfo?.province || "",
+          subdistrict: user.SellInfo?.subdistrict || "",
           firstname: user.firstname,
           lastname: user.lastname,
-          housenum: user.SellInfo?.housenum || '',
+          housenum: user.SellInfo?.housenum || "",
         }));
         setProjects(formattedProjects);
       } else {
-        console.error('Data format is incorrect:', data);
-        setError('Data format is incorrect');
+        console.error("Data format is incorrect:", data);
+        setError("Data format is incorrect");
       }
     } catch (error) {
       console.error("Error loading projects:", error);
@@ -82,7 +84,6 @@ const UserStudent: React.FC = () => {
       setLoading(false);
     }
   };
-  
 
   // ใช้ useEffect เพื่อดึงข้อมูลเมื่อ component โหลด
   useEffect(() => {

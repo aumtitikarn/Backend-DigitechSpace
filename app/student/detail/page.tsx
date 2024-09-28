@@ -1,56 +1,140 @@
 "use client";
 
 import React from "react";
-import { useSearchParams } from "next/navigation"; // Ensure you import this if you want to use it
+import { useSearchParams } from "next/navigation";
 import Header from "../../component/Header";
+import { MdAccountCircle } from "react-icons/md";
+
+interface UserDetails {
+  username?: string | null;
+  housenum?: string | null;
+  phonenumber?: string | null;
+  email?: string | null;
+  district?: string | null;
+  fullname?: string | null;
+  namebank?: string | null;
+  nationajid?: string | null;
+  numberbankacc?: string | null;
+  province?: string | null;
+  subdistrict?: string | null;
+  firstname?: string | null;
+  lastname?: string | null;
+  postalnumber?: string | null;
+}
 
 const Detail: React.FC = () => {
   const searchParams = useSearchParams();
-  const username = searchParams.get("username");
-  const housenum = searchParams.get("housenum");
-  const phonenumber = searchParams.get("phonenumber");
-  const email = searchParams.get("email");
-  const district = searchParams.get("district");
-  const fullname = searchParams.get("fullname");
-  const namebank = searchParams.get("namebank");
-  const nationajid = searchParams.get("nationajid");
-  const numberbankacc = searchParams.get("numberbankacc");
-  const province = searchParams.get("province");
-  const subdistrict = searchParams.get("subdistrict");
-  const firstname = searchParams.get("firstname");
-  const lastname = searchParams.get("lastname");
+  const userDetails: UserDetails = {
+    username: searchParams.get("username"),
+    housenum: searchParams.get("housenum"),
+    phonenumber: searchParams.get("phonenumber"),
+    email: searchParams.get("email"),
+    district: searchParams.get("district"),
+    fullname: searchParams.get("fullname"),
+    namebank: searchParams.get("namebank"),
+    nationajid: searchParams.get("nationajid"),
+    numberbankacc: searchParams.get("numberbankacc"),
+    province: searchParams.get("province"),
+    subdistrict: searchParams.get("subdistrict"),
+    firstname: searchParams.get("firstname"),
+    lastname: searchParams.get("lastname"),
+    postalnumber: searchParams.get("postalnumber"),
+  };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden text-black">
       <Header />
       <main className="flex-grow">
-        <div className="lg:mx-60 mt-10 mb-5">
-          <div className="flex items-center justify-center lg:mb-10 mb-10">
-            <div className="rounded-full bg-gray-400 h-20 w-20 flex items-center justify-center">
-              <svg
-                className="h-10 w-10 text-gray-200"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-              </svg>
+        <div className="flex flex-col items-center justify-center my-10 w-full px-4">
+          <div className="flex flex-col lg:flex-row w-full max-w-[1430px] space-y-4 lg:space-y-0 lg:space-x-4">
+            <div className="w-full lg:w-[40%] h-auto flex-shrink-0 rounded-2xl border border-[#D0D8E9] bg-white shadow-[0px_0px_60.1px_-16px_#D9DDE5]">
+              <div className="p-10">
+                <div className="flex items-center space-x-4 p-4">
+                  <MdAccountCircle className="text-[100px] text-gray-600" />
+                  <div className="flex flex-col">
+                    <span className="text-[28px] font-bold text-[#213766E5]">
+                      {userDetails.username || "N/A"}
+                    </span>
+                    <span className="text-[20px] text-[#6C7996E5]">
+                      {userDetails.email || "N/A"}
+                    </span>
+                  </div>
+                </div>
+                <div className="w-full">
+                  <p className="text-[#6C7996A6] text-[16px] mb-1">ชื่อ - นามสกุล</p>
+                  <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                    {userDetails.fullname || "N/A"}
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
+                  <div className="w-full sm:w-1/2">
+                    <p className="text-[#6C7996A6] text-[16px] mb-1">เลขที่บัตรประชาชน</p>
+                    <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                      {userDetails.nationajid || "N/A"}
+                    </div>
+                  </div>
+                  <div className="w-full sm:w-1/2">
+                    <p className="text-[#6C7996A6] text-[16px] mb-1">หมายเลขโทรศัพท์</p>
+                    <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                      {userDetails.phonenumber || "N/A"}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
+                  <div className="w-full sm:w-1/2">
+                    <p className="text-[#6C7996A6] text-[16px] mb-1">ธนาคาร</p>
+                    <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                      {userDetails.namebank || "N/A"}
+                    </div>
+                  </div>
+                  <div className="w-full sm:w-1/2">
+                    <p className="text-[#6C7996A6] text-[16px] mb-1">เลขบัญชีธนาคาร</p>
+                    <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                      {userDetails.numberbankacc || "N/A"}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="w-full mt-2 lg:w-2/3 mx-auto">
-            <h2 className="text-xl font-bold mb-2 text-black">Username: {username}</h2>
-            <p className="text-lg text-gray-700 mb-2 text-black">ชื่อ-นามสกุล: {fullname}</p>
-            <p className="text-lg text-gray-700 mb-2 text-black">อีเมล: {email}</p>
-            <p className="text-lg text-gray-700 mb-2 text-black">เบอร์โทรศัพท์: {phonenumber}</p>
-            <p className="text-lg text-gray-700 mb-2 text-black">ชื่อ: {firstname}</p>
-            <p className="text-lg text-gray-700 mb-2 text-black">นามสกุล: {lastname}</p>
-            <p className="text-lg text-gray-700 mb-2 text-black">ธนาคาร: {namebank}</p>
-            <p className="text-lg text-gray-700 mb-2 text-black">เลขที่บัตรประชาชน: {nationajid}</p>
-            <p className="text-lg text-gray-700 mb-2 text-black">เลขที่บัญชีธนาคาร: {numberbankacc}</p>
-            <p className="text-lg text-gray-700 mb-2 text-black">ที่อยู่: {housenum} </p>
-            <p className="text-lg text-gray-700 mb-2 text-black">ตำบล: {subdistrict}</p>
-            <p className="text-lg text-gray-700 mb-2 text-black">อำเภอ: {district}</p>
-            <p className="text-lg text-gray-700 mb-2 text-black">จังหวัด: {province}</p>
+            <div className="w-full lg:w-[60%] h-auto flex-shrink-0 rounded-2xl border border-[#D0D8E9] bg-white shadow-[0px_0px_60.1px_-16px_#D9DDE5]">
+              <div className="p-10">
+                <p className="text-[28px] font-bold text-[#213766E5] mt-8">ที่อยู่</p>
+                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
+                  <div className="w-full sm:w-[40%]">
+                    <p className="text-[#6C7996A6] text-[16px] mb-1">บ้านเลขที่, ซอย, หมู่</p>
+                    <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                      {userDetails.housenum || "N/A"}
+                    </div>
+                  </div>
+                  <div className="w-full sm:w-[60%]">
+                    <p className="text-[#6C7996A6] text-[16px] mb-1">ตำบล</p>
+                    <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                      {userDetails.subdistrict || "N/A"}
+                    </div>
+                  </div>
+                </div>
+                <div className="w-full mt-3">
+                  <p className="text-[#6C7996A6] text-[16px] mb-1">อำเภอ</p>
+                  <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                    {userDetails.district || "N/A"}
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
+                  <div className="w-full sm:w-1/2">
+                    <p className="text-[#6C7996A6] text-[16px] mb-1">จังหวัด</p>
+                    <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                      {userDetails.province || "N/A"}
+                    </div>
+                  </div>
+                  <div className="w-full sm:w-1/2">
+                    <p className="text-[#6C7996A6] text-[16px] mb-1">รหัสไปรษณีย์</p>
+                    <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                      {userDetails.postalnumber || "N/A"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
