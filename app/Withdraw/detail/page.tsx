@@ -95,16 +95,18 @@ const Detail: React.FC = () => {
         }
 
         // บันทึกข้อความแจ้งเตือน
-        const notificationMessage = "คำร้องขอถอนเงินของท่านสำเร็จ"; 
+        const notificationMessage = "Your withdrawal request has been successful."; 
 
+        // ส่งข้อความแจ้งเตือนไปยัง API
         const notificationResponse = await fetch('/api/notification', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ email,   notificationValue: notificationMessage }), // ส่ง email และ notificationMessage
+            body: JSON.stringify({ email, notificationValue: notificationMessage }), // ส่ง email และ notificationMessage
         });
 
+        // ตรวจสอบผลลัพธ์จากการส่งข้อความแจ้งเตือน
         if (!notificationResponse.ok) {
             const notificationData = await notificationResponse.json();
             console.error("Failed to send notification:", notificationData);
@@ -141,19 +143,22 @@ const handleDelete = async (id: string | null, email: string) => {
 
       if (response.ok) {
           // บันทึกข้อความแจ้งเตือน
-          const notificationMessage = "คำร้องขอถอนเงินของท่านไม่สำเร็จเนื่องจากข้อมูลไม่ตรงกัน"; // Change the message as appropriate
+          const notificationMessage = "Your withdrawal request was unsuccessful due to inconsistent information."; // เปลี่ยนข้อความตามที่เหมาะสม
 
           const notificationResponse = await fetch('/api/notification', {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ email,notificationValue:notificationMessage }), // ส่ง email และ notificationMessage
+              body: JSON.stringify({ email, notificationValue: notificationMessage }), // ส่ง email และ notificationMessage
           });
 
           if (!notificationResponse.ok) {
               const notificationData = await notificationResponse.json();
               console.error("Failed to send notification:", notificationData);
+              alert("Failed to send notification. Please try again.");
+          } else {
+              alert("Notification sent successfully.");
           }
 
           alert("Project marked as failed successfully");
@@ -168,29 +173,51 @@ const handleDelete = async (id: string | null, email: string) => {
   }
 };
 
-const handleSubmit2 = async (id: string | null, email: string | undefined) => {
+const handleSubmit2 = async (id: string | null) => {
   if (!id) {
-      alert("Blog ID is missing");
-      return;
+    alert("Blog ID is missing");
+    return;
   }
 
-  const confirmed = confirm("Are you sure you want to contact the project owner?");
+  const email = withdrawalDetails?.receipt.email;
+  const fullname = userBankInfo?.fullname;
+
+  if (!email || !fullname) {
+    alert("Email or Author is missing");
+    return;
+  }
+
+  const confirmed = confirm("Are you sure?");
   if (!confirmed) return;
 
   try {
-      // ตรวจสอบว่าอีเมลที่ได้รับมีค่าหรือไม่
-      if (email) {
-          // สร้าง mailto link สำหรับส่งอีเมล
-          const mailtoLink = `mailto:${email}?subject=Notification&body=Hello, I would like to contact you about your project.`;
-          window.location.href = mailtoLink;
-      } else {
-          alert("Email is undefined.");
-      }
+    const response = await fetch(`/api/withdrawals`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id,
+        email,
+        fullname
+      }),
+    });
+
+    if (response.ok) {
+      alert("Email sent successfully!");
+    } else {
+      // Log status and message for debugging
+      const errorData = await response.json();
+      console.error("Error details:", errorData);
+      alert(`Failed to send email: ${errorData.msg || response.statusText}`);
+    }
   } catch (error) {
-      console.error("Error contacting project owner:", error);
-      alert("An error occurred while contacting the project owner.");
+    console.error("Error contacting project owner:", error);
+    alert("An error occurred while contacting the project owner.");
   }
 };
+
+
 
 
   if (loading) {
@@ -234,12 +261,13 @@ const handleSubmit2 = async (id: string | null, email: string | undefined) => {
                 เสร็จสิ้น
               </button>
               <button
-    onClick={() => handleSubmit2(id, withdrawalDetails?.receipt.email)}
-    className="w-full p-2 text-white rounded"
-    style={{ backgroundColor: "#1976D2" }}
+  onClick={() => handleSubmit2(id)}
+  className="w-full p-2 text-white rounded"
+  style={{ backgroundColor: "#1976D2" }}
 >
-    ติดต่อผู้ถอน
+  ติดต่อผู้ถอน
 </button>
+
               <button
                 onClick={() =>
                   handleDelete(id, withdrawalDetails?.receipt.email)

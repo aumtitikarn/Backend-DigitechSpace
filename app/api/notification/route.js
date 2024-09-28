@@ -14,16 +14,23 @@ export const POST = async (req) => {
     try {
         const notifications = await Notification.findOne({ email });
 
+        const notificationData = {
+            message: notificationValue, // เก็บข้อความแจ้งเตือน
+            timestamp: new Date(), // เก็บเวลาในตอนที่เพิ่ม
+        };
+
         if (notifications) {
-            notifications.notifications.push(notificationValue); // เพิ่มข้อความใหม่
-            await notifications.save();
+            // ถ้ามี notifications อยู่แล้ว ก็เพิ่มข้อความใหม่เข้าไป
+            notifications.notifications.push(notificationData);
+            await notifications.save(); // บันทึกการเปลี่ยนแปลง
             return new NextResponse(JSON.stringify({ message: "Notification added successfully" }), { status: 200 });
         } else {
+            // ถ้าไม่มี notifications ให้สร้างใหม่
             const newNotification = new Notification({
                 email,
-                notifications: [notificationValue],
+                notifications: [notificationData], // เพิ่ม notificationData เป็น array
             });
-            await newNotification.save();
+            await newNotification.save(); // บันทึกการสร้าง notification ใหม่
             return new NextResponse(JSON.stringify({ message: "New notification created successfully" }), { status: 201 });
         }
     } catch (error) {

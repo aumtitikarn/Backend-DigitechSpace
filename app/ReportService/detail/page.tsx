@@ -17,10 +17,12 @@ function Blog({ params }: { params: { _id: string } }) {
 
   const id = searchParams.get("id");
   const report = searchParams.get("report");
+  const username = searchParams.get("report");
   interface PostData {
     _id: string;
     report: string;
     email: string;
+    username:string;
     // Add any other properties that are in your post data
   }
 
@@ -96,7 +98,7 @@ function Blog({ params }: { params: { _id: string } }) {
             <div className="flex flex-col gap-4">
           <h1 className="text-lg font-bold mt-5 mb5 text-black" style={{ fontSize: "32px" }}>คำร้องปัญหาของผู้ใช้</h1>
               <p className="mt-4 text-lg">
-                โดย   {email}
+                โดย   {username}
               </p>
               <div className="flex flex-col w-full ">
                 <h1 className="text-lg font-bold mt-4" style={{ fontSize: "24px" }}>ปัญหา</h1>

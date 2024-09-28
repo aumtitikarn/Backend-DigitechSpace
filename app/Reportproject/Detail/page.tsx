@@ -72,7 +72,7 @@ const Detail: React.FC = () => {
         return;
     }
 
-    const confirmed = confirm("Are you sure you want to contact the project owner?");
+    const confirmed = confirm("Are you sure ?");
     if (!confirmed) return;
 
     try {
@@ -82,14 +82,13 @@ const Detail: React.FC = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                id, // ID ของโปรเจกต์
-                email, // อีเมลของเจ้าของโปรเจกต์
-                author, // ชื่อของผู้ติดต่อ
-                name, // ชื่อผู้ติดต่อ (ถ้ามี)
+                id,       // ID ของโปรเจกต์
+                email,    // อีเมลของเจ้าของโปรเจกต์
+                author,   // ชื่อของผู้ติดต่อ
+                name,     // ชื่อผู้ติดต่อ (ถ้ามี)
                 username, // ชื่อผู้ใช้ (ถ้ามี)
-                report, // รายงาน (ถ้ามี)
-                more, // ข้อมูลเพิ่มเติม (ถ้ามี)
-               
+                report,   // รายงาน (ถ้ามี)
+                more,     // ข้อมูลเพิ่มเติม (ถ้ามี)
             }),
         });
 
@@ -131,6 +130,24 @@ const Detail: React.FC = () => {
             const data = await response.json();
             alert(`Failed to delete project: ${data.msg}`);
         }
+        const notificationMessage = `Your project was deleted due to: ${report}`; 
+
+        const notificationResponse = await fetch('/api/notification', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                email,  // รับ email จาก sessions
+                notificationValue: notificationMessage 
+            }), // ส่ง email และ notificationMessage
+        });
+        
+        if (!notificationResponse.ok) {
+            const notificationData = await notificationResponse.json();
+            console.error("Failed to send notification:", notificationData);
+        }
+        
     } catch (error) {
         console.error("Error deleting project:", error);
         alert("An error occurred while deleting the project.");
