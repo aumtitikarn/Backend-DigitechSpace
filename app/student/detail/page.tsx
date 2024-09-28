@@ -20,6 +20,8 @@ interface UserDetails {
   firstname?: string | null;
   lastname?: string | null;
   postalnumber?: string | null;
+  facebook: string | null;
+  line: string | null;
 }
 
 const Detail: React.FC = () => {
@@ -39,6 +41,8 @@ const Detail: React.FC = () => {
     firstname: searchParams.get("firstname"),
     lastname: searchParams.get("lastname"),
     postalnumber: searchParams.get("postalnumber"),
+    facebook: searchParams.get("facebook"),
+    line: searchParams.get("line"),
   };
 
   return (
@@ -61,75 +65,149 @@ const Detail: React.FC = () => {
                   </div>
                 </div>
                 <div className="w-full">
-                  <p className="text-[#6C7996A6] text-[16px] mb-1">ชื่อ - นามสกุล</p>
+                  <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                    ชื่อ - นามสกุล
+                  </p>
                   <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
-                    {userDetails.fullname || "N/A"}
+                    <p className="font-semibold">
+                      {" "}
+                      {userDetails.fullname || "N/A"}{" "}
+                    </p>
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
                   <div className="w-full sm:w-1/2">
-                    <p className="text-[#6C7996A6] text-[16px] mb-1">เลขที่บัตรประชาชน</p>
+                    <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                      เลขที่บัตรประชาชน
+                    </p>
                     <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
-                      {userDetails.nationajid || "N/A"}
+                      <p className="font-semibold">
+                        {" "}
+                        {userDetails.nationajid || "N/A"}
+                      </p>
                     </div>
                   </div>
                   <div className="w-full sm:w-1/2">
-                    <p className="text-[#6C7996A6] text-[16px] mb-1">หมายเลขโทรศัพท์</p>
+                    <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                      หมายเลขโทรศัพท์
+                    </p>
                     <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
-                      {userDetails.phonenumber || "N/A"}
+                      <p className="font-semibold">
+                        {" "}
+                        {userDetails.phonenumber || "N/A"}
+                      </p>
                     </div>
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
                   <div className="w-full sm:w-1/2">
-                    <p className="text-[#6C7996A6] text-[16px] mb-1">ธนาคาร</p>
+                    <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                      ธนาคาร
+                    </p>
                     <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
-                      {userDetails.namebank || "N/A"}
+                      <p className="font-semibold">
+                        {" "}
+                        {userDetails.namebank || "N/A"}
+                      </p>
                     </div>
                   </div>
                   <div className="w-full sm:w-1/2">
-                    <p className="text-[#6C7996A6] text-[16px] mb-1">เลขบัญชีธนาคาร</p>
+                    <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                      เลขบัญชีธนาคาร
+                    </p>
                     <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
-                      {userDetails.numberbankacc || "N/A"}
+                      <p className="font-semibold">
+                        {" "}
+                        {userDetails.numberbankacc || "N/A"}
+                      </p>
                     </div>
+                  </div>
+                </div>
+                <div className="w-full mt-3">
+                  <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                    Facebook
+                  </p>
+                  <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                    <p className="font-semibold">
+                      {" "}
+                      {userDetails.facebook || "N/A"}
+                    </p>
+                  </div>
+                </div>
+                <div className="w-full mt-3">
+                  <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                    Line
+                  </p>
+                  <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                    <p className="font-semibold">
+                      {" "}
+                      {userDetails.line || "N/A"}
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
             <div className="w-full lg:w-[60%] h-auto flex-shrink-0 rounded-2xl border border-[#D0D8E9] bg-white shadow-[0px_0px_60.1px_-16px_#D9DDE5]">
               <div className="p-10">
-                <p className="text-[28px] font-bold text-[#213766E5] mt-8">ที่อยู่</p>
+                <p className="text-[28px] font-bold text-[#213766E5] mt-8 font-semibold">
+                  ที่อยู่
+                </p>
                 <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
                   <div className="w-full sm:w-[40%]">
-                    <p className="text-[#6C7996A6] text-[16px] mb-1">บ้านเลขที่, ซอย, หมู่</p>
+                    <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                      บ้านเลขที่, ซอย, หมู่
+                    </p>
                     <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
-                      {userDetails.housenum || "N/A"}
+                      <p className="font-semibold">
+                        {" "}
+                        {userDetails.housenum || "N/A"}
+                      </p>
                     </div>
                   </div>
                   <div className="w-full sm:w-[60%]">
-                    <p className="text-[#6C7996A6] text-[16px] mb-1">ตำบล</p>
+                    <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                      ตำบล
+                    </p>
                     <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
-                      {userDetails.subdistrict || "N/A"}
+                      <p className="font-semibold">
+                        {" "}
+                        {userDetails.subdistrict || "N/A"}
+                      </p>
                     </div>
                   </div>
                 </div>
                 <div className="w-full mt-3">
-                  <p className="text-[#6C7996A6] text-[16px] mb-1">อำเภอ</p>
+                  <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                    อำเภอ
+                  </p>
                   <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
-                    {userDetails.district || "N/A"}
+                    <p className="font-semibold">
+                      {" "}
+                      {userDetails.district || "N/A"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
                   <div className="w-full sm:w-1/2">
-                    <p className="text-[#6C7996A6] text-[16px] mb-1">จังหวัด</p>
+                    <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                      จังหวัด
+                    </p>
                     <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
-                      {userDetails.province || "N/A"}
+                      <p className="font-semibold">
+                        {" "}
+                        {userDetails.province || "N/A"}
+                      </p>
                     </div>
                   </div>
                   <div className="w-full sm:w-1/2">
-                    <p className="text-[#6C7996A6] text-[16px] mb-1">รหัสไปรษณีย์</p>
+                    <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                      รหัสไปรษณีย์
+                    </p>
                     <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
-                      {userDetails.postalnumber || "N/A"}
+                      <p className="font-semibold">
+                        {" "}
+                        {userDetails.postalnumber || "N/A"}
+                      </p>
                     </div>
                   </div>
                 </div>

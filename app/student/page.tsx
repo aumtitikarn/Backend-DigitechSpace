@@ -22,6 +22,8 @@ interface Project {
   lastname: string;
   housenum: string;
   postalnumber: string;
+  line: string;
+  facebook: string;
 }
 
 const UserStudent: React.FC = () => {
@@ -70,6 +72,8 @@ const UserStudent: React.FC = () => {
           subdistrict: user.SellInfo?.subdistrict || "",
           firstname: user.firstname,
           lastname: user.lastname,
+          facebook: user.facebook,
+          line: user.line,
           housenum: user.SellInfo?.housenum || "",
         }));
         setProjects(formattedProjects);
@@ -131,6 +135,8 @@ const UserStudent: React.FC = () => {
             subdistrict: project.subdistrict,
             firstname: project.firstname,
             lastname: project.lastname,
+            facebook: project.facebook,
+            line: project.line,
           },
         }}>
           {project.username}
