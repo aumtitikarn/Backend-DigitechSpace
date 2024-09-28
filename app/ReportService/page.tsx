@@ -9,6 +9,7 @@ interface PostData {
   _id: number; // Make sure this matches the type returned by the API
   report: string;
   email: string;
+  username:string;
   // Add other properties as needed
 }
 
@@ -85,10 +86,11 @@ const ReportService: React.FC = () => {
                               _id: val._id,
                               report: val.report,
                               email: val.email,
+                              username:val.username
                             },
                           }}
                         >
-                          {val.report}
+                          {val.username}
                         </Link>
                       </td>
                       <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">

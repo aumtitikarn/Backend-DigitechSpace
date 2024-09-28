@@ -142,7 +142,7 @@ const Detail: React.FC = () => {
 
         // บันทึกข้อความแจ้งเตือน
         const email = project?.email; // เปลี่ยนเป็นการดึง email จากผู้ส่งคำขอ หรือข้อมูลโปรเจกต์
-        const notificationMessage = `โปรเจกต์ "${project?.projectname}" ได้รับการอนุมัติเรียบร้อยแล้ว.`; 
+        const notificationMessage = `Project "${project?.projectname}" has been approved.`; 
 
         const notificationResponse = await fetch('/api/notification', {
             method: 'POST',
@@ -194,7 +194,7 @@ const handleNotApprove = async () => {
     }
     // บันทึกข้อความแจ้งเตือน
     const email = project?.email; // เปลี่ยนเป็นการดึง email จากผู้ส่งคำขอ หรือข้อมูลโปรเจกต์
-    const notificationMessage = `โครงงานของท่านไม่ผ่านการอนุมัติเนื่องจาก: ${rejectText}`; // เพิ่ม rejectText ในข้อความ
+    const notificationMessage = `Your project was not approved because: ${rejectText}`; // เพิ่ม rejectText ในข้อความ
 
     const notificationResponse = await fetch('/api/notification', {
         method: 'POST',

@@ -4,6 +4,7 @@ const postSchema = new Schema(
     {
         report: String,
         email: String,
+        username: String,
     },
     {
 
