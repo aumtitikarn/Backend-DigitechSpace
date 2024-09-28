@@ -1,6 +1,7 @@
 import { connectMongoDB } from "../../../../lib/mongodb";
 import PostSer from "../../../../models/postservice";
 import { NextResponse } from "next/server";
+import nodemailer from "nodemailer";
 
 export async function GET(req, { params }) {
     const { id } = params;

@@ -51,6 +51,13 @@ const Detail: React.FC = () => {
   
     if (result.isConfirmed) {
       try {
+        const res = await fetch(`/api/getreportservice/${id}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
         const response = await fetch("/api/getreportservice/delete", {
           method: "DELETE",
           headers: {
@@ -58,16 +65,10 @@ const Detail: React.FC = () => {
           },
           body: JSON.stringify({ id }),
         });
-            const res = await fetch(`/api/getreportservice/${id}`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
   
-        if (response.ok) {
+        if (response.ok&&res.ok) {
           Swal.fire('Deleted!', 'Report deleted successfully', 'success');
-          router.push("/Reportblog");
+          router.push("/ReportService");
         } else {
           const data = await response.json();
           Swal.fire('Error', `Failed to delete report: ${data.msg}`, 'error');
