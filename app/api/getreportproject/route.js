@@ -3,6 +3,9 @@ import Reportprojet from "../../../models/reportprojet";
 import Project from "../../../models/projects";
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import Order from "../../../models/orders"; // ตรวจสอบให้แน่ใจว่าเส้นทางถูกต้อง
+
+
 
 // Function to handle POST request
 // Function to handle POST request
@@ -99,22 +102,25 @@ export async function GET() {
     }
 }
 
+
 // Function to handle DELETE request
 export async function DELETE(req) {
   try {
       await connectMongoDB();
       const { projectId } = await req.json();
-
+      
       // Validate projectId
       if (!projectId) {
           return NextResponse.json({ msg: "Missing projectId" }, { status: 400 });
       }
 
-      // ลบ project จากคอลเลกชัน Reportprojet
       console.log("Deleting project with projectId:", projectId);
-      const deletedReport = await Reportprojet.findOneAndDelete({ projectId });
 
-      if (!deletedReport) {
+      // ลบ project จากคอลเลกชัน Reportprojet
+      const deletedReport = await Reportprojet.findOneAndDelete({ projectId });
+      const deletedOrders = await Order.deleteMany({ product }); // ลบจาก Orders
+
+      if (!deletedReport || !deletedOrders) {
           console.error("Project not found in Reportprojet for projectId:", projectId);
           return NextResponse.json({ msg: "Project not found in Reportprojet" }, { status: 404 });
       }
@@ -127,8 +133,8 @@ export async function DELETE(req) {
           return NextResponse.json({ msg: "Project not found in projects" }, { status: 404 });
       }
 
-      console.log("Project deleted successfully from both collections");
-      return NextResponse.json({ message: "Project deleted successfully from both collections" }, { status: 200 });
+      console.log("Project deleted successfully from all collections");
+      return NextResponse.json({ message: "Project deleted successfully from all collections" }, { status: 200 });
   } catch (error) {
       console.error("Error in DELETE handler:", error);
       return NextResponse.json({ msg: "Error deleting project" }, { status: 500 });
