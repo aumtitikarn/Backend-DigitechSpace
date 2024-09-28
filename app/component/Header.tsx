@@ -1,162 +1,213 @@
-'use client';
-
-import React, { useState } from 'react';
+import React, { useState, ReactNode } from 'react';
 import Link from 'next/link';
-import { FaUserCircle } from 'react-icons/fa';
-import { TiThMenu } from 'react-icons/ti';
+import { 
+  X, 
+  Menu, 
+  Users, 
+  ClipboardCheck, 
+  FileText, 
+  Wallet, 
+  HelpCircle, 
+  BarChart2,
+  UserCircle,
+  GraduationCap,
+  ShieldCheck,
+  ChevronDown,
+  ChevronUp,
+  LucideIcon 
+} from 'lucide-react';
 
-const Header: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSubMenuOpen, setIsSubMenuOpen] = useState<number | null>(null); // Track which submenu is open
+interface INavigationItemProps {
+  icon: LucideIcon;
+  label: string;
+  href?: string;
+  onItemClick?: () => void;
+  isActive?: boolean;
+  subItems?: ReactNode;
+  id: string;
+}
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+const NavigationItem: React.FC<INavigationItemProps> = ({ 
+  icon: Icon, 
+  label, 
+  href,
+  onItemClick, 
+  isActive = false, 
+  subItems, 
+  id 
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleItemClick = () => {
+    if (onItemClick) {
+      onItemClick();
+    }
+    if (subItems) {
+      setIsExpanded(!isExpanded);
+    }
   };
 
-  const toggleSubMenu = (index: number) => {
-    setIsSubMenuOpen(isSubMenuOpen === index ? null : index);
+  const content = (
+    <>
+      <div className="flex items-center space-x-2">
+        <Icon size={20} aria-hidden="true" />
+        <span>{label}</span>
+      </div>
+      {subItems && (
+        isExpanded ? (
+          <ChevronUp size={16} className="text-gray-400" aria-hidden="true" />
+        ) : (
+          <ChevronDown size={16} className="text-gray-400" aria-hidden="true" />
+        )
+      )}
+    </>
+  );
+
+  if (href) {
+    return (
+      <li>
+        <Link href={href} 
+          className={`flex items-center justify-between w-full p-2 hover:bg-gray-700 rounded ${isActive ? 'bg-gray-700' : ''}`}
+        >
+          {content}
+        </Link>
+      </li>
+    );
+  }
+
+  return (
+    <li>
+      <button 
+        onClick={handleItemClick} 
+        className={`flex items-center justify-between w-full p-2 hover:bg-gray-700 rounded ${isActive ? 'bg-gray-700' : ''}`}
+        aria-expanded={isExpanded}
+        aria-controls={subItems ? `${id}-subitems` : undefined}
+      >
+        {content}
+      </button>
+      {subItems && isExpanded && (
+        <ul id={`${id}-subitems`} className="ml-4 mt-2 space-y-2">
+          {subItems}
+        </ul>
+      )}
+    </li>
+  );
+};
+
+const Sidebar: React.FC = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeItem, setActiveItem] = useState<string | null>(null);
+
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+  const handleItemClick = (itemId: string) => {
+    setActiveItem(itemId);
+    // Additional logic can be added here
   };
 
   return (
-    <header className="bg-[#0B1E48] text-white py-4 px-6">
-     <div className="container mx-auto flex items-center justify-between">
-  {/* Menu Icon */}
-  <div className="flex items-center">
-    <TiThMenu className="text-3xl mr-4 cursor-pointer" onClick={toggleMenu} />
-  </div>
+    <div className="bg-[#0B1E48] text-white">
+      <header className="flex items-center justify-between p-4">
+        <Menu className="text-3xl cursor-pointer" onClick={toggleMenu} aria-label="Toggle menu" />
+        <img
+          src="https://m1r.ai/W8p5i.png"
+          alt="Digitech Space logo"
+          width={90}
+          height={90}
+        />
+        <div className="w-8 h-8 rounded-full bg-gray-300" aria-label="User profile"></div>
+      </header>
 
-  {/* Logo in the center */}
-  <div className="flex flex-grow items-center justify-center">
-    <img
-      src="https://m1r.ai/W8p5i.png"
-      alt="Digitech Space logo"
-      width={90}
-      height={90}
-    />
-  </div>
-
-  {/* User Icon */}
-  <div className="flex items-center">
-    <FaUserCircle className="text-3xl cursor-pointer hover:text-gray-300" />
-  </div>
-</div>
-      
       {/* Sliding Menu */}
       <div
         className={`fixed top-0 left-0 h-full w-64 bg-[#0B1E48] transform ${
           isMenuOpen ? 'translate-x-0' : '-translate-x-full'
         } transition-transform duration-300 ease-in-out z-50`}
+        aria-hidden={!isMenuOpen}
       >
-
         <div className="p-6">
-        <div className="container mx-auto flex items-center justify-between">
-    {/* Logo on the left */}
-    <img
-                  src="https://m1r.ai/W8p5i.png"
-                  alt="Digitech Space logo"
-                  width={100}
-                  height={100}
-                />
+          <div className="flex items-center justify-between mb-8">
+            <img
+              src="https://m1r.ai/W8p5i.png"
+              alt="Digitech Space logo"
+              width={100}
+              height={100}
+            />
+            <X className="text-3xl cursor-pointer" onClick={toggleMenu} aria-label="Close menu" />
+          </div>
 
-    {/* Close button on the right */}
-    <button className="text-white text-4xl ml-auto" onClick={toggleMenu}>
-      &times;
-    </button>
-  </div>
-          <ul className="mt-8 space-y-4">
-            {/* Menu Item 1 */}
-            <li>
-              <button
-                className="flex justify-between items-center w-full hover:text-gray-300"
-                onClick={() => toggleSubMenu(1)}
-              >
-                รายชื่อผู้ใช้
-                <span>{isSubMenuOpen === 1 ? '▲' : '▼'}</span>
-              </button>
-              {isSubMenuOpen === 1 && (
-                <ul className="mt-2 ml-4 space-y-2">
-                  <li>
-                    <Link href="/normal" className="hover:text-gray-300" onClick={toggleMenu}>
-                      ผู้ใช้ธรรมดา
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/student" className="hover:text-gray-300" onClick={toggleMenu}>
-                      นักศึกษา
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/admin" className="hover:text-gray-300" onClick={toggleMenu}>
-                      แอดมิน
-                    </Link>
-                  </li>
-                </ul>
-              )}
-            </li>
-
-            {/* Menu Item 2 */}
-            <li>
-              <Link href="/ApproveSell" className="hover:text-gray-300" onClick={toggleMenu}>
-                อนุมัติการขาย
-              </Link>
-            </li>
-
-            {/* Menu Item 3 */}
-            <li>
-              <button
-                className="flex justify-between items-center w-full hover:text-gray-300"
-                onClick={() => toggleSubMenu(2)}
-              >
-                รายงานของผู้ใช้
-                <span>{isSubMenuOpen === 2 ? '▲' : '▼'}</span>
-              </button>
-              {isSubMenuOpen === 2 && (
-                <ul className="mt-2 ml-4 space-y-2">
-                  <li>
-                    <Link href="/Reportproject" className="hover:text-gray-300" onClick={toggleMenu}>
-                      โครงงาน
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/Reportblog" className="hover:text-gray-300" onClick={toggleMenu}>
-                      บล็อก
-                    </Link>
-                  </li>
-                </ul>
-              )}
-            </li>
-
-            {/* Menu Item 4 */}
-            <li>
-              <Link href="/Withdraw" className="hover:text-gray-300" onClick={toggleMenu}>
-                คำร้องขอถอนเงิน
-              </Link>
-            </li>
-            <li>
-              <Link href="/ReportService" className="hover:text-gray-300" onClick={toggleMenu}>
-                คำร้องปัญหาของผู้ใช้
-              </Link>
-            </li>
-            <li>
-              <Link href="/Analyst" className="hover:text-gray-300" onClick={toggleMenu}>
-                สรุปผล
-              </Link>
-            </li>
-
-            {/* Add other menu items here */}
-          </ul>
+          <nav>
+            <ul className="space-y-4">
+              <NavigationItem 
+                id="users"
+                icon={Users} 
+                label="รายชื่อผู้ใช้" 
+                onItemClick={() => handleItemClick('users')}
+                isActive={activeItem === 'users'}
+                subItems={
+                  <>
+                    <li><Link href="/normal" className="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><UserCircle size={16} /><span>ผู้ใช้ทั่วไป</span></Link></li>
+                    <li><Link href="/student" className="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><GraduationCap size={16} /><span>นักศึกษา</span></Link></li>
+                    <li><Link href="/admin" className="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><ShieldCheck size={16} /><span>แอดมิน</span></Link></li>
+                  </>
+                }
+              />
+              <NavigationItem 
+                id="approve-sales"
+                icon={ClipboardCheck} 
+                label="อนุมัติการขาย" 
+                href="/ApproveSell"
+                isActive={activeItem === 'approve-sales'}
+              />
+              <NavigationItem 
+                id="user-reports"
+                icon={FileText} 
+                label="รายงานของผู้ใช้" 
+                onItemClick={() => handleItemClick('user-reports')}
+                isActive={activeItem === 'user-reports'}
+                subItems={
+                  <>
+                    <li><Link href="/Reportproject" className="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><FileText size={16} /><span>โครงงาน</span></Link></li>
+                    <li><Link href="/Reportblog" className="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded"><FileText size={16} /><span>บล็อก</span></Link></li>
+                  </>
+                }
+              />
+              <NavigationItem 
+                id="withdraw-requests"
+                icon={Wallet} 
+                label="คำร้องขอถอนเงิน" 
+                href="/Withdraw"
+                isActive={activeItem === 'withdraw-requests'}
+              />
+              <NavigationItem 
+                id="user-issues"
+                icon={HelpCircle} 
+                label="คำร้องปัญหาของผู้ใช้" 
+                href="/ReportService"
+                isActive={activeItem === 'user-issues'}
+              />
+              <NavigationItem 
+                id="summary"
+                icon={BarChart2} 
+                label="สรุปผล" 
+                href="/Analyst"
+                isActive={activeItem === 'summary'}
+              />
+            </ul>
+          </nav>
         </div>
       </div>
 
-      {/* Overlay to close the menu when clicking outside */}
+      {/* Overlay */}
       {isMenuOpen && (
         <div
           className="fixed inset-0 bg-black opacity-50 z-40"
           onClick={toggleMenu}
+          aria-hidden="true"
         ></div>
       )}
-    </header>
+    </div>
   );
 };
 
-export default Header;
+export default Sidebar; 
