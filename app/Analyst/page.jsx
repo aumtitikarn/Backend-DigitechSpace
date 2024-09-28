@@ -83,7 +83,7 @@ const page = () => {
 
     fetchFavoritesData();
   }, []);
-  
+
   const datafav = {
     labels: projectNames,  // ใช้ projectNames เป็น labels
     datasets: [
@@ -100,30 +100,30 @@ const page = () => {
 
   const [terms, setTerms] = useState([]);
   const [totalCount, setTotalCount] = useState(0); // State to hold the total count
-  
+
   useEffect(() => {
     async function fetchTerms() {
       try {
         const response = await fetch('/api/getsearch', {
           method: 'GET',
         });
-  
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-  
+
         const data = await response.json();
         console.log("ข้อมูลตาราง", data);
-        
+
         // Set the terms and the total count
-        setTerms(data.terms); 
+        setTerms(data.terms); // จะได้แค่ 10 รายการ
         setTotalCount(data.count); // Set total count from the API
-  
+
       } catch (error) {
         console.error("Error fetching search terms:", error);
       }
     }
-    
+
     fetchTerms();
   }, []);
 
@@ -167,6 +167,23 @@ const page = () => {
     fetchData();
   }, []);
 
+
+  const [totalUserCount, setTotalUserCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchUserCount() {
+      try {
+        const response = await fetch('/api/getanalyst'); // เปลี่ยนเป็น endpoint ที่ถูกต้อง
+        const data = await response.json();
+        console.log(data); // ตรวจสอบข้อมูลที่ถูกส่งกลับมาจาก API
+        setTotalUserCount(data.totalUserCount); // กำหนดค่าให้กับ state
+      } catch (error) {
+        console.error("Error fetching user count:", error);
+      }
+    }
+
+    fetchUserCount();
+  }, []);
 
 
   useEffect(() => {
@@ -220,42 +237,6 @@ const page = () => {
     redirect("/auth/signin");
     return null;
   }
-
-  const data1 = {
-    labels: ['Program', 'Model/3D', 'Website', 'Datasets', 'Photo/Art', 'MoblieApp', 'AI', 'IOT', 'Document', 'Other'],
-    datasets: [
-      {
-        label: 'Dataset',
-        backgroundColor: '#33539B',
-        hoverBackgroundColor: '#273E74',
-        data: [30000, 15000, 10000, 8000, 6000, 3000, 2000, 1500, 1000, 1000]
-      }
-    ]
-  };
-
-  const data2 = {
-    labels: ['Program', 'Model/3D', 'Website', 'Datasets', 'Photo/Art', 'MoblieApp', 'AI', 'IOT', 'Document', 'Other'],
-    datasets: [
-      {
-        label: 'Dataset',
-        backgroundColor: '#33539B',
-        hoverBackgroundColor: '#273E74',
-        data: [100, 90, 85, 75, 65, 50, 45, 45, 30, 25]
-      }
-    ]
-  };
-
-  const data3 = {
-    labels: ['นักเรียน', 'ศาสตราจารย์', 'นักพัฒนา', 'ดีไซเนอร์', 'ครู', 'นักวิจัย', 'อื่น'],
-    datasets: [
-      {
-        label: 'Dataset',
-        backgroundColor: '#33539B',
-        hoverBackgroundColor: '#273E74',
-        data: [100, 85, 75, 65, 50, 25, 20, 10]
-      }
-    ]
-  };
 
   return (
     <main>
@@ -350,7 +331,7 @@ const page = () => {
                 </div>
                 <div className="flex flex-row justify-center m-2">
                   <p className="font-semibold text-black">
-                    5K
+                    {totalUserCount !== undefined ? totalUserCount.toLocaleString() : 'Loading...'}
                   </p>
                 </div>
               </div>
@@ -375,23 +356,23 @@ const page = () => {
               </p>
 
               <table className="border-2 mt-10 mb-10" style={{ width: "992px" }}>
-      <thead>
-        <tr style={{ backgroundColor: "#33539B", color: "#ffff" }}>
-          <th className="w-1/12 text-center h-12">อันดับ</th>
-          <th className="w-3/12 h-12 text-start">คำค้นหา</th>
-          <th className="w-1/12 h-12 text-start">จำนวน</th>
-        </tr>
-      </thead>
-      <tbody className="text-black">
-        {terms.map((term, index) => (
-          <tr key={term._id}>
-            <td className="text-center h-14">{index + 1}</td>
-            <td className="h-14">{term.term}</td>
-            <td className="h-14">{term.count}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+                <thead>
+                  <tr style={{ backgroundColor: "#33539B", color: "#ffff" }}>
+                    <th className="w-1/12 text-center h-12">อันดับ</th>
+                    <th className="w-3/12 h-12 text-start">คำค้นหา</th>
+                    <th className="w-1/12 h-12 text-start">จำนวน</th>
+                  </tr>
+                </thead>
+                <tbody className="text-black">
+                  {terms.map((term, index) => (
+                    <tr key={term._id}>
+                      <td className="text-center h-14">{index + 1}</td>
+                      <td className="h-14">{term.term}</td>
+                      <td className="h-14">{term.count}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
             </div>
 
