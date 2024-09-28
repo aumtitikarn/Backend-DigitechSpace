@@ -52,11 +52,11 @@ const handleSubmit2 = async (id: string | null, email: string | undefined) => {
             </svg>
           </div>
           </div> <div className="w-full mt-2 lg:w-2/3 mx-auto">
-          <h2 className="text-xl font-bold mb-2">รายละเอียดของข้อมูลผู้ใช้</h2>
-          <p className="text-lg text-gray-700 mb-1">ชื่อผู้ใช้: {username || ""}</p>
-          <p className="text-lg text-gray-700 mb-1">อีเมล:  {email || ""}</p>
-          <p className="text-lg text-gray-700 mb-1">ชื่อ-นามสกุล:  {name || ""}</p>
-          <p className="text-lg text-gray-700 mb-1">เบอร์โทรศัพท์:  {phonenumber || ""}</p>
+          <h2 className="text-xl font-bold mb-2 text-black">รายละเอียดของข้อมูลผู้ใช้</h2>
+          <p className="text-lg text-gray-700 mb-1 text-black">ชื่อผู้ใช้: {username || ""}</p>
+          <p className="text-lg text-gray-700 mb-1 text-black">อีเมล:  {email || ""}</p>
+          <p className="text-lg text-gray-700 mb-1 text-black">ชื่อ-นามสกุล:  {name || ""}</p>
+          <p className="text-lg text-gray-700 mb-1 text-black">เบอร์โทรศัพท์:  {phonenumber || ""}</p>
           <p className="text-sm mt-20">
             ส่งเมลเฉพาะผู้ใช้
           </p>

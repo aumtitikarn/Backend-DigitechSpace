@@ -98,22 +98,22 @@ const UserStudent: React.FC = () => {
       <Header />
       <main className="flex-grow">
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
-          <h2 className="text-xl font-bold mb-4">รายชื่อของนักศึกษา</h2>
+          <h2 className="text-xl font-bold mb-4 text-black">รายชื่อของนักศึกษา</h2>
           <div className="w-full h-full flex flex-col">
             <table className="min-w-full border-collapse border border-gray-400">
               <thead>
                 <tr>
-                  <th className="border border-gray-400 p-2">#</th>
-                  <th className="border border-gray-400 p-2 lg:text-lg">Username</th>
-                  <th className="border border-gray-400 p-2 lg:text-lg">ชื่อ-นามสกุล</th>
-                  <th className="border border-gray-400 p-2 lg:text-lg">เบอร์โทรศัพท์</th>
+                  <th className="border border-gray-400 p-2 text-black">#</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg text-black">Username</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg text-black">ชื่อ-นามสกุล</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg text-black">เบอร์โทรศัพท์</th>
                 </tr>
               </thead>
               <tbody>
   {currentItems.map((project, index) => (
     <tr key={project.username}> {/* ใช้ username เป็น key */}
-      <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">{index + 1}.</td>
-      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+      <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg text-black" >{index + 1}.</td>
+      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
         <Link href={{
           pathname: `/student/detail`,
           query: {
@@ -135,15 +135,15 @@ const UserStudent: React.FC = () => {
           {project.username}
         </Link>
       </td>
-      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.name}</td>
-      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.phonenumber}</td>
+      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">{project.name}</td>
+      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">{project.phonenumber}</td>
     </tr>
   ))}
 </tbody>
 
             </table>
           </div>
-          <p className="text-sm mt-2">
+          <p className="text-sm mt-2 text-black">
             *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางคนนั้น
           </p>
           <Pagination

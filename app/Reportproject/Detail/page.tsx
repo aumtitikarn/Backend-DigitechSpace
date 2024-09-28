@@ -166,17 +166,17 @@ const Detail: React.FC = () => {
           <div className="w-full mt-2 lg:w-2/3 mx-auto">
             {/* Content */}
             <div className="flex flex-col gap-4">
-              <h2 className="text-xl font-bold mb-5">รายงานโครงงาน {name || ""}</h2>
-              <h3 className="text-lg text-gray-700 mb-2">โดย คุณ {username || ""}</h3>
-              <h4 className="text-xl font-bold mb-2">คำร้อง</h4>
-              <p className="text-lg text-gray-700 mb-2">{report || ""}</p>
-              <h4 className="text-xl font-bold mb-2">ข้อความเพิ่มเติม</h4>
-              <p className="text-lg text-gray-700 mb-2">{more || ""}</p>
-              <h4 className="text-xl font-bold mb-2">ข้อมูลเจ้าของโครงงาน</h4>
-              <p className="text-lg text-gray-700 mb-2">ชื่อ: {author || ""}</p>
-              <p className="text-lg text-gray-700 mb-2">อีเมล: {email || ""}</p>
-              <h4 className="text-xl font-bold mb-2">วันที่/เวลา</h4>
-              <p className="text-lg text-gray-700 mb-4">{formatDate(createdAt)}</p>
+              <h2 className="text-xl font-bold mb-5 text-black">รายงานโครงงาน {name || ""}</h2>
+              <h3 className="text-lg text-gray-700 mb-2 text-black">โดย คุณ {username || ""}</h3>
+              <h4 className="text-xl font-bold mb-2 text-black">คำร้อง</h4>
+              <p className="text-lg text-gray-700 mb-2 text-black">{report || ""}</p>
+              <h4 className="text-xl font-bold mb-2 text-black">ข้อความเพิ่มเติม</h4>
+              <p className="text-lg text-gray-700 mb-2 text-black">{more || ""}</p>
+              <h4 className="text-xl font-bold mb-2 text-black">ข้อมูลเจ้าของโครงงาน</h4>
+              <p className="text-lg text-gray-700 mb-2 text-black">ชื่อ: {author || ""}</p>
+              <p className="text-lg text-gray-700 mb-2 text-black">อีเมล: {email || ""}</p>
+              <h4 className="text-xl font-bold mb-2 text-black">วันที่/เวลา</h4>
+              <p className="text-lg text-gray-700 mb-4 text-black">{formatDate(createdAt)}</p>
             </div>
 
             {/* Buttons */}

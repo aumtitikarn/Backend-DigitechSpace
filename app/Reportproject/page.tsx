@@ -91,20 +91,20 @@ const Reportproject: React.FC = () => {
               <table className="min-w-full border-collapse border border-gray-400">
                 <thead>
                   <tr>
-                    <th className="border border-gray-400 p-2">#</th>
-                    <th className="border border-gray-400 p-2 lg:text-lg">ชื่อโครงการ</th>
-                    <th className="border border-gray-400 p-2 lg:text-lg">คำร้อง</th>
-                    <th className="border border-gray-400 p-2 lg:text-lg">ผู้รายงาน</th>
+                    <th className="border border-gray-400 p-2 text-black">#</th>
+                    <th className="border border-gray-400 p-2 lg:text-lg text-black">ชื่อโครงการ</th>
+                    <th className="border border-gray-400 p-2 lg:text-lg text-black">คำร้อง</th>
+                    <th className="border border-gray-400 p-2 lg:text-lg text-black">ผู้รายงาน</th>
                   </tr>
                 </thead>
                 <tbody>
                   {currentItems.length > 0 ? (
                     currentItems.map((val, index) => (
                       <tr key={val._id}>
-                        <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">
+                        <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg text-black">
                           {indexOfFirstItem + index + 1}
                         </td>
-                        <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                        <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
                           <Link
                             href={{
                               pathname: `/Reportproject/Detail`,
@@ -124,24 +124,24 @@ const Reportproject: React.FC = () => {
                             {val.name}
                           </Link>
                         </td>
-                        <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                        <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
                           {val.report}
                         </td>
-                        <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                        <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
                           {val.username}
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={4} className="text-center p-4">ไม่มีข้อมูลคำร้อง</td>
+                      <td colSpan={4} className="text-center p-4 text-black">ไม่มีข้อมูลคำร้อง</td>
                     </tr>
                   )}
                 </tbody>
               </table>
             </div>
           )}
-          <p className="text-sm mt-2">
+          <p className="text-sm mt-2 text-black">
             *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางคนนั้น
           </p>
 

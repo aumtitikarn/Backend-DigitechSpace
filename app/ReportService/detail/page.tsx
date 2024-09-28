@@ -81,12 +81,12 @@ const Blog: React.FC = () => {
           <div className="w-full mt-2 lg:w-2/3 mx-auto">
             <div className="flex flex-col gap-4">
               <h1 className="text-lg font-bold mt-5 mb-5 text-black" style={{ fontSize: "32px" }}>คำร้องปัญหาของผู้ใช้</h1>
-              <p className="mt-4 text-lg">โดย {username}</p>
+              <p className="mt-4 text-lg text-black">โดย {username}</p>
               <div className="flex flex-col w-full">
-                <h1 className="text-lg font-bold mt-4" style={{ fontSize: "24px" }}>ปัญหา</h1>
-                <p className="mt-2 text-lg">{report}</p>
-                <h1 className="text-lg font-bold mt-4" style={{ fontSize: "24px" }}>อีเมล</h1>
-                <p className="mt-2 text-lg">{email}</p>
+                <h1 className="text-lg font-bold mt-4 text-black" style={{ fontSize: "24px" }}>ปัญหา</h1>
+                <p className="mt-2 text-lg text-black">{report}</p>
+                <h1 className="text-lg font-bold mt-4 text-black" style={{ fontSize: "24px" }}>อีเมล</h1>
+                <p className="mt-2 text-lg text-black">{email}</p>
                 <div className="mt-10">
                   <button
                     onClick={() => handleSubmit1(id, email, "Your report has been successfully deleted.")}

@@ -235,22 +235,22 @@ const handleSubmit2 = async (id: string | null) => {
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
           <div className="flex flex-col justify-center w-full lg:w-2/3 mx-auto">
             <h1 className="text-lg font-bold mt-5 mb-5 text-black" style={{ fontSize: "36px" }}>คำร้องขอถอนเงิน</h1>
-            <p className="mt-2 text-lg">โดย {withdrawalDetails?.receipt.fullname || ""}</p>
+            <p className="mt-2 text-lg text-black">โดย {withdrawalDetails?.receipt.fullname || ""}</p>
 
-            <h1 className="text-xl font-bold mt-4" style={{ fontSize: "24px" }}>จำนวนเงิน</h1>
-            <p className="mt-2 text-lg">{withdrawalDetails?.withdrawn || 0} บาท</p>
+            <h1 className="text-xl font-bold mt-4 text-black" style={{ fontSize: "24px" }}>จำนวนเงิน</h1>
+            <p className="mt-2 text-lg text-black">{withdrawalDetails?.withdrawn || 0} บาท</p>
 
-            <h1 className="text-xl font-bold mt-4" style={{ fontSize: "24px" }}>ช่องทางการรับเงิน</h1>
-            <p className="mt-2 text-lg">ชื่อธนาคาร: {userBankInfo?.namebank || "ไม่พบข้อมูลธนาคาร"}</p>
-            <p className="mt-2 text-lg">เลขบัญชี: {userBankInfo?.numberbankacc || "ไม่พบเลขบัญชี"}</p>
-            <p className="mt-2 text-lg">ชื่อ: {userBankInfo?.fullname || "ไม่พบชื่อจริง"}</p>
+            <h1 className="text-xl font-bold mt-4 text-black" style={{ fontSize: "24px" }}>ช่องทางการรับเงิน</h1>
+            <p className="mt-2 text-lg text-black">ชื่อธนาคาร: {userBankInfo?.namebank || "ไม่พบข้อมูลธนาคาร"}</p>
+            <p className="mt-2 text-lg text-black">เลขบัญชี: {userBankInfo?.numberbankacc || "ไม่พบเลขบัญชี"}</p>
+            <p className="mt-2 text-lg text-black">ชื่อ: {userBankInfo?.fullname || "ไม่พบชื่อจริง"}</p>
 
-            <h1 className="text-xl font-bold mt-4" style={{ fontSize: "24px" }}>ข้อมูลผู้ขาย</h1>
-            <p className="mt-2 text-lg">ชื่อ: {userBankInfo?.firstname || "ไม่พบชื่อจริง"}</p>
-            <p className="mt-2 text-lg">นามสกุล: {userBankInfo?.lastname || "ไม่พบนามสกุล"}</p>
-            <p className="mt-2 text-lg">ชื่อผู้ใช้: {userBankInfo?.username || "ไม่พบชื่อผู้ใช้"}</p>
-            <p className="mt-2 text-lg">เบอร์โทร: {userBankInfo?.phonenumber || "ไม่พบเบอร์โทร"}</p>
-            <p className="mt-2 text-lg">อีเมล: {withdrawalDetails?.receipt.email || "ไม่พบอีเมล"}</p>
+            <h1 className="text-xl font-bold mt-4 text-black" style={{ fontSize: "24px" }}>ข้อมูลผู้ขาย</h1>
+            <p className="mt-2 text-lg text-black">ชื่อ: {userBankInfo?.firstname || "ไม่พบชื่อจริง"}</p>
+            <p className="mt-2 text-lg text-black">นามสกุล: {userBankInfo?.lastname || "ไม่พบนามสกุล"}</p>
+            <p className="mt-2 text-lg text-black">ชื่อผู้ใช้: {userBankInfo?.username || "ไม่พบชื่อผู้ใช้"}</p>
+            <p className="mt-2 text-lg text-black">เบอร์โทร: {userBankInfo?.phonenumber || "ไม่พบเบอร์โทร"}</p>
+            <p className="mt-2 text-lg text-black">อีเมล: {withdrawalDetails?.receipt.email || "ไม่พบอีเมล"}</p>
 
             <div className="mt-6 flex flex-col gap-4">
               <button

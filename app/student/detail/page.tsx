@@ -38,19 +38,19 @@ const Detail: React.FC = () => {
             </div>
           </div>
           <div className="w-full mt-2 lg:w-2/3 mx-auto">
-            <h2 className="text-xl font-bold mb-2">Username: {username}</h2>
-            <p className="text-lg text-gray-700 mb-2">ชื่อ-นามสกุล: {fullname}</p>
-            <p className="text-lg text-gray-700 mb-2">อีเมล: {email}</p>
-            <p className="text-lg text-gray-700 mb-2">เบอร์โทรศัพท์: {phonenumber}</p>
-            <p className="text-lg text-gray-700 mb-2">ชื่อ: {firstname}</p>
-            <p className="text-lg text-gray-700 mb-2">นามสกุล: {lastname}</p>
-            <p className="text-lg text-gray-700 mb-2">ธนาคาร: {namebank}</p>
-            <p className="text-lg text-gray-700 mb-2">เลขที่บัตรประชาชน: {nationajid}</p>
-            <p className="text-lg text-gray-700 mb-2">เลขที่บัญชีธนาคาร: {numberbankacc}</p>
-            <p className="text-lg text-gray-700 mb-2">ที่อยู่: {housenum} </p>
-            <p className="text-lg text-gray-700 mb-2">ตำบล: {subdistrict}</p>
-            <p className="text-lg text-gray-700 mb-2">อำเภอ: {district}</p>
-            <p className="text-lg text-gray-700 mb-2">จังหวัด: {province}</p>
+            <h2 className="text-xl font-bold mb-2 text-black">Username: {username}</h2>
+            <p className="text-lg text-gray-700 mb-2 text-black">ชื่อ-นามสกุล: {fullname}</p>
+            <p className="text-lg text-gray-700 mb-2 text-black">อีเมล: {email}</p>
+            <p className="text-lg text-gray-700 mb-2 text-black">เบอร์โทรศัพท์: {phonenumber}</p>
+            <p className="text-lg text-gray-700 mb-2 text-black">ชื่อ: {firstname}</p>
+            <p className="text-lg text-gray-700 mb-2 text-black">นามสกุล: {lastname}</p>
+            <p className="text-lg text-gray-700 mb-2 text-black">ธนาคาร: {namebank}</p>
+            <p className="text-lg text-gray-700 mb-2 text-black">เลขที่บัตรประชาชน: {nationajid}</p>
+            <p className="text-lg text-gray-700 mb-2 text-black">เลขที่บัญชีธนาคาร: {numberbankacc}</p>
+            <p className="text-lg text-gray-700 mb-2 text-black">ที่อยู่: {housenum} </p>
+            <p className="text-lg text-gray-700 mb-2 text-black">ตำบล: {subdistrict}</p>
+            <p className="text-lg text-gray-700 mb-2 text-black">อำเภอ: {district}</p>
+            <p className="text-lg text-gray-700 mb-2 text-black">จังหวัด: {province}</p>
           </div>
         </div>
       </main>

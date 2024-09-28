@@ -128,19 +128,19 @@ const Withdraw: React.FC = () => {
       <Header />
       <main className="flex-grow">
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
-          <h2 className="text-xl font-bold mb-4">คำร้องขอถอนเงิน</h2>
+          <h2 className="text-xl font-bold mb-4 text-black">คำร้องขอถอนเงิน</h2>
           <div className="w-full h-full flex flex-col">
             <table className="min-w-full border-collapse border border-gray-400">
               <thead>
                 <tr>
-                  <th className="border border-gray-400 p-2">#</th>
-                  <th className="border border-gray-400 p-2 lg:text-lg">
+                  <th className="border border-gray-400 p-2 text-black">#</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg text-black">
                     ผู้ส่งคำร้อง
                   </th>
-                  <th className="border border-gray-400 p-2 lg:text-lg">
+                  <th className="border border-gray-400 p-2 lg:text-lg text-black">
                     จำนวนเงิน(บาท)
                   </th>
-                  <th className="border border-gray-400 p-2 lg:text-lg">
+                  <th className="border border-gray-400 p-2 lg:text-lg text-black">
                     วันที่ส่งคำร้อง
                   </th>
                 </tr>
@@ -153,10 +153,10 @@ const Withdraw: React.FC = () => {
 
                   return (
                     <tr key={withdraw._id}>
-                      <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">
+                      <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg text-black">
                         {index + indexOfFirstItem + 1}.
                       </td>
-                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
                         {matchedProject ? (
                           <Link
                             href={`/Withdraw/detail?id=${withdraw._id}`}
@@ -167,10 +167,10 @@ const Withdraw: React.FC = () => {
                           withdraw.receipt.email
                         )}
                       </td>
-                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
                         {withdraw.withdrawn}
                       </td>
-                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
                         {new Date(withdraw.date).toLocaleDateString()}
                       </td>
                     </tr>
@@ -179,7 +179,7 @@ const Withdraw: React.FC = () => {
               </tbody>
             </table>
           </div>
-          <p className="text-sm mt-2">
+          <p className="text-sm mt-2 text-black">
             *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางคนนั้น
           </p>
           <Pagination

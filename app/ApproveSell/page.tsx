@@ -80,7 +80,7 @@ const ApproveSell: React.FC = () => {
       <Header />
       <main className="flex-grow">
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
-          <h2 className="text-xl font-bold mb-4">อนุมัติการขาย</h2>
+          <h2 className="text-xl font-bold mb-4 text-black">อนุมัติการขาย</h2>
           {loading ? (
             <p>Loading...</p>
           ) : error ? (
@@ -90,23 +90,23 @@ const ApproveSell: React.FC = () => {
               <thead>
                 <tr>
                   <th className="border border-gray-400 p-2 text-center text-sm lg:text-lg">#</th>
-                  <th className="border border-gray-400 p-2 lg:text-lg">ชื่อโครงการ</th>
-                  <th className="border border-gray-400 p-2 lg:text-lg">ผู้สร้าง</th>
-                  <th className="border border-gray-400 p-2 lg:text-lg">ราคา</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg text-black">ชื่อโครงการ</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg text-black">ผู้สร้าง</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg text-black">ราคา</th>
                 </tr>
               </thead>
               <tbody>
                 {currentItems.length > 0 ? (
                   currentItems.map((project, index) => (
                     <tr key={project._id}>
-                      <td className="border border-gray-400 p-2 text-center"> {indexOfFirstItem + index + 1}.</td>
-                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                      <td className="border border-gray-400 p-2 text-center text-black"> {indexOfFirstItem + index + 1}.</td>
+                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
                         <Link href={`/ApproveSell/Detail?_id=${project._id}`}>
                           {project.projectname}
                         </Link>
                       </td>
-                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.author}</td>
-                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">{project.price}</td>
+                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">{project.author}</td>
+                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">{project.price}</td>
                     </tr>
                   ))
                 ) : (
