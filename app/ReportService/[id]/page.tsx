@@ -127,7 +127,7 @@ const Detail: React.FC = () => {
                       <p className="font-bold mb-2 text-[#213766E5] text-[35px]">
                         รายงานปัญหา
                       </p>
-                      <h3 className="text-[16px] text-gray-700 mb-2 text-[#5D76AD]">
+                      <h3 className="text-[16px]  mb-2 text-[#5D76AD]">
                         โดย คุณ {ser.username || ""}
                       </h3>
                     </div>

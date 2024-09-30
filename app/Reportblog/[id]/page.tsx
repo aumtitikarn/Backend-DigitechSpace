@@ -47,7 +47,8 @@ const Detail: React.FC = () => {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'ใช่, ลบเลย!',
+      cancelButtonText: 'ยกเลิก'
     });
   
     if (result.isConfirmed) {
@@ -81,8 +82,8 @@ const Detail: React.FC = () => {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'ใช่',
-      cancelButtonText: 'ไม่'
+      confirmButtonText: 'ใช่, ติดต่อเลย!',
+      cancelButtonText: 'ยกเลิก'
     });
   
     if (result.isConfirmed) {
@@ -115,7 +116,8 @@ const Detail: React.FC = () => {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'ใช่, ลบเลย!',
+      cancelButtonText: 'ยกเลิก'
     });
   
     if (result.isConfirmed) {
@@ -191,10 +193,10 @@ const Detail: React.FC = () => {
                       <p className="font-bold mb-2 text-[#213766E5] text-[35px]">
                         รายงานบล็อก
                       </p>
-                      <h3 className="text-[18px] text-gray-700 mb-2 text-[#5D76AD] font-semibold">
+                      <h3 className="text-[18px]  mb-2 text-[#5D76AD] font-semibold">
                         {blog.blogname || ""}
                       </h3>
-                      <h3 className="text-[16px] text-gray-700 mb-2 text-[#5D76AD]">
+                      <h3 className="text-[16px]  mb-2 text-[#5D76AD]">
                         โดย คุณ {blog.author || ""}
                       </h3>
                     </div>
@@ -208,7 +210,7 @@ const Detail: React.FC = () => {
                       <p className="mt-5 text-[#6C7996A6] text-[16px] mb-1">
                         ข้อความเพิ่มเติม
                       </p>
-                      <div className="mt-3 w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                      <div className="mt-3 w-full h-auto p-3 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
                         {blog.report || ""}
                       </div>
                       <p className="mt-5 text-[#6C7996A6] text-[16px] mb-1">
