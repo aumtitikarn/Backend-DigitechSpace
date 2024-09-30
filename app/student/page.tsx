@@ -129,6 +129,7 @@ const UserStudent: React.FC = () => {
             district: project.district,
             fullname: project.fullname,
             namebank: project.namebank,
+            postalnumber: project.postalnumber,
             nationajid: project.nationajid,
             numberbankacc: project.numberbankacc,
             province: project.province,
