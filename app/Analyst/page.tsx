@@ -33,11 +33,39 @@ ChartJS.register(
   Legend,
 );
 
+interface Purchase {
+  date: string;
+  category: string;
+  price: number;
+}
+
+type DatasetType = {
+  label: string;
+  data: number[];  // ใช้ number[] แทน any[]
+  backgroundColor: string;
+};
+
+// กำหนด type สำหรับ roleData
+type RoleDataType = {
+  labels: string[];
+  datasets: DatasetType[];
+};
+
+type UserType = {
+  roleai: string;
+};
+
+
 const page = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedCategory1, setSelectedCategory1] = useState("");
 
-  const [roleData, setRoleData] = useState({
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+
+  const [purchaseHistory, setPurchaseHistory] = useState<Purchase[]>([]);
+
+  const [roleData, setRoleData] = useState<RoleDataType>({
     labels: [],
     datasets: [],
   });
@@ -132,30 +160,51 @@ const page = () => {
   const [error, setError] = useState(null);
   const [chartData, setChartData] = useState({});
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch('/api/getseller');
+  //       const salesData = await response.json(); // ต้อง parse JSON ก่อน
+
+  //       if (salesData && Array.isArray(salesData)) {
+  //         const categories = salesData.map((data) => data.category);
+  //         const prices = salesData.map((data) => data.price);
+
+  //         setChartData({
+  //           labels: categories,
+  //           datasets: [
+  //             {
+  //               label: 'Price',
+  //               data: prices,
+  //               backgroundColor: 'rgba(53, 83, 155, 0.5)',
+  //               borderColor: 'rgba(53, 83, 155, 1)',
+  //               borderWidth: 1,
+  //             },
+  //           ],
+  //         });
+  //       } else {
+  //         setError("Invalid data format or no data available");
+  //       }
+  //     } catch (error) {
+  //       setError('Error fetching data');
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/getseller');
-        const salesData = await response.json(); // ต้อง parse JSON ก่อน
-
+        const salesData = await response.json(); 
+    
         if (salesData && Array.isArray(salesData)) {
-          const categories = salesData.map((data) => data.category);
-          const prices = salesData.map((data) => data.price);
-
-          setChartData({
-            labels: categories,
-            datasets: [
-              {
-                label: 'Price',
-                data: prices,
-                backgroundColor: 'rgba(53, 83, 155, 0.5)',
-                borderColor: 'rgba(53, 83, 155, 1)',
-                borderWidth: 1,
-              },
-            ],
-          });
+          setPurchaseHistory(salesData); // อัปเดต purchaseHistory ถ้า salesData เป็น array
         } else {
-          setError('Invalid data format or no data available');
+          setError("Invalid data format or no data available");
         }
       } catch (error) {
         setError('Error fetching data');
@@ -163,7 +212,7 @@ const page = () => {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, []);
 
@@ -192,8 +241,8 @@ const page = () => {
         // เรียก API เพื่อนำข้อมูล role
         const result = await axios.get('/api/getanalyst');
         console.log('API Result:', result.data);
-        const normalRoles = result.data.normalUsers.map(user => user.roleai);
-        const studentRoles = result.data.studentUsers.map(user => user.roleai);
+        const normalRoles = result.data.normalUsers.map((user: UserType) => user.roleai);
+        const studentRoles = result.data.studentUsers.map((user: UserType) => user.roleai);
 
         // นับจำนวน role แต่ละประเภท
         const roles = ['student', 'other', 'developer'];
@@ -224,6 +273,92 @@ const page = () => {
     fetchData();  // เรียกฟังก์ชันเพื่อดึงข้อมูลเมื่อ component ถูก mount
   }, []);  // ใส่ dependency array ที่ว่างเพื่อให้ทำงานเพียงครั้งเดียว
 
+  const months = [
+    { value: 'All', label: "All" },
+    { value: "01", label: "January" },
+    { value: "02", label: "February" },
+    { value: "03", label: "March" },
+    { value: "04", label: "April" },
+    { value: "05", label: "May" },
+    { value: "06", label: "June" },
+    { value: "07", label: "July" },
+    { value: "08", label: "August" },
+    { value: "09", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
+  ];
+
+  // const years = [
+  //   { value: "2020", label: "2020" },
+  //   { value: "2021", label: "2021" },
+  //   { value: "2022", label: "2022" },
+  //   { value: "2023", label: "2023" },
+  //   { value: "2024", label: "2024" },
+  // ];
+
+  
+  const currentYear = new Date().getFullYear();
+  const years = ['All', ...Array.from({ length: 5 }, (_, i) => (currentYear - i).toString())];
+
+  const filteredPurchaseHistory = Array.isArray(purchaseHistory) ? purchaseHistory.filter((purchase) => {
+    const purchaseDate = new Date(purchase.date);
+    const purchaseMonth = (purchaseDate.getMonth() + 1).toString().padStart(2, '0');
+    const purchaseYear = purchaseDate.getFullYear().toString();
+  
+    const matchMonth = selectedMonth === 'All' || purchaseMonth === selectedMonth;
+    const matchYear = selectedYear === 'All' || purchaseYear === selectedYear;
+  
+    return matchMonth && matchYear;
+  }) : [];
+
+  useEffect(() => {
+    if (filteredPurchaseHistory && filteredPurchaseHistory.length > 0) {
+      const categories = filteredPurchaseHistory.map((data) => data.category);
+      const prices = filteredPurchaseHistory.map((data) => data.price);
+  
+      setChartData({
+        labels: categories,
+        datasets: [
+          {
+            label: 'Price',
+            data: prices,
+            backgroundColor: 'rgba(53, 83, 155, 0.5)',
+            borderColor: 'rgba(53, 83, 155, 1)',
+            borderWidth: 1,
+          },
+        ],
+      });
+    } else {
+      setChartData({
+        labels: [],
+        datasets: [],
+      });
+    }
+  }, [filteredPurchaseHistory]);
+
+    useEffect(() => {
+      console.log('Filtered history:', filteredPurchaseHistory);
+    }, [selectedMonth, selectedYear, purchaseHistory]);
+
+  // useEffect(() => {
+  //   const fetchPurchaseHistory = async () => {
+  //     try {
+  //       const response = await fetch("/api/withdrawal/getHistory");
+  //       if (response.ok) {
+  //         const data: Purchase[] = await response.json();
+  //         setPurchaseHistory(data);
+  //       } else {
+  //         throw new Error("Failed to fetch purchase history");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching purchase history:", error);
+  //     }
+  //   };
+  
+  //   fetchPurchaseHistory();
+  // }, []);
+
   const { data: session, status } = useSession();
 
   if (loading) return <div>Loading...</div>;
@@ -237,6 +372,8 @@ const page = () => {
     redirect("/auth/signin");
     return null;
   }
+  
+
 
   return (
     <main>
@@ -294,6 +431,32 @@ const page = () => {
                 <option value="Photo/Art">Photo/Art</option>
                 <option value="Other">Other</option>
               </select>
+
+              <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
+            >
+              <option value="" disabled>เลือกเดือน</option>
+              {months.map((month) => (
+                <option key={month.value} value={month.value}>
+                  {month.label}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
+            >
+              <option value="" disabled>เลือกปี</option>
+              {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+            </select>
             </div>
 
             <div className="flex flex-row w-full mt-5">
