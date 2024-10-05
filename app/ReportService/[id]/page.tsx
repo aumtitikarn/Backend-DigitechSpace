@@ -135,19 +135,19 @@ const Detail: React.FC = () => {
                       <p className="mt-5 text-[#6C7996A6] text-[16px] mb-1">
                         ปัญหา
                       </p>
-                      <div className="mt-3 w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                      <div className="mt-3 w-full h-auto p-3 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
                         {ser.report || ""}
                       </div>
                       <p className="mt-5 text-[#6C7996A6] text-[16px] mb-1">
                         อีเมล
                       </p>
-                      <div className="mt-3 w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                      <div className="mt-3 w-full h-auto p-3 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
                         {ser.email || ""}
                       </div>
                       <p className="mt-5 text-[#6C7996A6] text-[16px] mb-1">
                         วันที่/เวลา
                       </p>
-                      <div className="mt-3 w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                      <div className="mt-3 w-full h-auto p-3 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
                         {formatDate(ser.createdAt)}
                       </div>
                     </div>
