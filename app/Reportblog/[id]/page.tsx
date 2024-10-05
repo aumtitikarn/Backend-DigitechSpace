@@ -186,8 +186,7 @@ const Detail: React.FC = () => {
         <div className="flex items-center justify-center  my-10">
           <div className="w-auto lg:w-[878px] h-auto flex-shrink-0 rounded-2xl border border-[#D0D8E9] bg-white shadow-[0px_0px_60.1px_-16px_#D9DDE5]">
             <div className="p-10">
-              {postBlogs.length > 0 ? (
-                postBlogs.map((blog) => (
+              {postBlogs.map((blog) => (
                   <div className=" mb-5" key={blog._id}>
                     <div className="text-center">
                       <p className="font-bold mb-2 text-[#213766E5] text-[35px]">
@@ -240,10 +239,7 @@ const Detail: React.FC = () => {
                     <u className="text-[#80A1EB] hover:text-[#B7CCFC]" onClick={handleSubmit2}>ติดต่อเจ้าของบล็อก</u>
                     </div>
                   </div>
-                ))
-              ) : (
-                <p>No blogs available</p>
-              )}
+              ))}
             </div>
           </div>
         </div>
