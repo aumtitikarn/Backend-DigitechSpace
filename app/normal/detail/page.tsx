@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from "next/navigation"; // Ensure you import this if you want to use it
 import Header from "../../component/Header";
 import Link from "next/link";
 import { MdAccountCircle } from "react-icons/md";
+import Swal from 'sweetalert2';
 
 const Detail: React.FC = () => {
   const searchParams = useSearchParams();
@@ -16,34 +17,82 @@ const Detail: React.FC = () => {
   const facebook = searchParams.get("facebook");
   const line = searchParams.get("line");
 
-  const handleSubmit2 = async (
-    id: string | null,
-    email: string | undefined
-  ) => {
-    if (!id) {
-      alert("Blog ID is missing");
+  const [emailContent, setEmailContent] = useState('');
+  const [isSending, setIsSending] = useState(false);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      adjustHeight();
+    }
+  }, [emailContent]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEmailContent(e.target.value);
+    adjustHeight();
+  };
+
+  const adjustHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
+  const sendEmail = async () => {
+    if (!email) {
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: 'ไม่พบอีเมลของผู้ใช้',
+      });
       return;
     }
 
-    const confirmed = confirm(
-      "Are you sure you want to contact the project owner?"
-    );
-    if (!confirmed) return;
+    setIsSending(true);
 
     try {
-      // ตรวจสอบว่าอีเมลที่ได้รับมีค่าหรือไม่
-      if (email) {
-        // สร้าง mailto link สำหรับส่งอีเมล
-        const mailtoLink = `mailto:${email}?subject=Notification&body=Hello, I would like to contact you about your project.`;
-        window.location.href = mailtoLink;
+      const response = await fetch('/api/sendemail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          subject: "Digitech Space",
+          emailContent: emailContent,
+        }),
+      });
+
+      if (response.ok) {
+        Swal.fire({
+          icon: 'success',
+          title: 'สำเร็จ',
+          text: 'ส่งอีเมลสำเร็จ',
+        });
+        setEmailContent('');
       } else {
-        alert("Email is undefined.");
+        const errorData = await response.json();
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: `เกิดข้อผิดพลาดในการส่งอีเมล: ${errorData.message}`,
+        });
       }
     } catch (error) {
-      console.error("Error contacting project owner:", error);
-      alert("An error occurred while contacting the project owner.");
+      console.error('Error sending email:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: 'เกิดข้อผิดพลาดในการส่งอีเมล',
+      });
+    } finally {
+      setIsSending(false);
     }
   };
+
+
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
@@ -51,7 +100,7 @@ const Detail: React.FC = () => {
       <main className="flex-grow">
         <div className="lg:mx-60 mt-10 mb-5">
           <div className=" flex items-center justify-center lg:mb-10  mb-10 ">
-            <div className="w-full lg:w-auto h-auto flex-shrink-0 rounded-2xl border border-[#D0D8E9] bg-white shadow-[0px_0px_60.1px_-16px_#D9DDE5]">
+            <div className="w-auto lg:w-[878px] h-auto flex-shrink-0 rounded-2xl border border-[#D0D8E9] bg-white shadow-[0px_0px_60.1px_-16px_#D9DDE5]">
               <div className="p-10">
                 <div className="flex items-center space-x-4 p-4">
                   <MdAccountCircle className="text-[100px] text-gray-600" />
@@ -83,46 +132,43 @@ const Detail: React.FC = () => {
                   </div>
                 </div>
                 <div className="w-full mt-3">
-                    <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
-                      Facebook
-                    </p>
-                    <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
-                      <p className="font-semibold"> {facebook || "N/A"}</p>
-                    </div>
+                  <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                    Facebook
+                  </p>
+                  <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                    <p className="font-semibold"> {facebook || "N/A"}</p>
                   </div>
-                  <div className="w-full mt-3">
-                    <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
-                      Line
-                    </p>
-                    <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
-                      <p className="font-semibold"> {line || "N/A"}</p>
-                    </div>
+                </div>
+                <div className="w-full mt-3">
+                  <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                    Line
+                  </p>
+                  <div className="w-full h-[50px] px-4 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+                    <p className="font-semibold"> {line || "N/A"}</p>
                   </div>
+                </div>
+                <div className="my-10 w-full border-t-2 border-dashed border-[#9CB1E0] opacity-34"></div>
+                <div className="w-full mt-3">
+                  <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                    ส่งอีเมลหาผู้ใช้
+                  </p>
+                  <textarea
+                    ref={textareaRef}
+                    className="w-full min-h-[50px] px-4 py-2 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD] focus:outline-none focus:ring-2 focus:ring-[#5D76AD] resize-none overflow-hidden"
+                    placeholder="ข้อความอีเมล"
+                    value={emailContent}
+                    onChange={handleChange}
+                  />
+                  <button 
+                    className="mt-5 w-auto lg:w-full py-3 flex-shrink-0 rounded-[10px] bg-[#5D76AD] text-white font-semibold flex items-center justify-center hover:bg-[#4A5F8C] transition-colors duration-300"
+                    onClick={sendEmail}
+                    disabled={isSending}
+                  >
+                    {isSending ? 'กำลังส่ง...' : 'ส่งอีเมล'}
+                  </button>
+                </div>
               </div>
             </div>
-            {/* <div className="rounded-full bg-gray-400 h-20 w-20 flex items-center justify-center">
-            <svg className="h-10 w-10 text-gray-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-            </svg>
-          </div>
-          </div> <div className="w-full mt-2 lg:w-2/3 mx-auto">
-          <h2 className="text-xl font-bold mb-2 text-black">รายละเอียดของข้อมูลผู้ใช้</h2>
-          <p className="text-lg text-gray-700 mb-1 text-black">ชื่อผู้ใช้: {username || ""}</p>
-          <p className="text-lg text-gray-700 mb-1 text-black">อีเมล:  {email || ""}</p>
-          <p className="text-lg text-gray-700 mb-1 text-black">ชื่อ-นามสกุล:  {name || ""}</p>
-          <p className="text-lg text-gray-700 mb-1 text-black">เบอร์โทรศัพท์:  {phonenumber || ""}</p>
-          <p className="text-sm mt-20">
-            ส่งเมลเฉพาะผู้ใช้
-          </p>
-          <button className="w-full mt-2 bg-blue-600 text-white p-2 rounded-md" >
-              ส่งเมล
-            </button> */}
-            <p className="text-sm mt-20">
-            ส่งเมลเฉพาะผู้ใช้
-          </p>
-          <button className="w-full mt-2 bg-blue-600 text-white p-2 rounded-md" >
-              ส่งเมล
-            </button>
           </div>
         </div>
       </main>

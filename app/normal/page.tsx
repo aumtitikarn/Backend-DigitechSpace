@@ -117,10 +117,40 @@ const usernormal: React.FC = () => {
                       </Link>
                     </td>
                     <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
+                    <Link href={{
+                        pathname: `/normal/detail`,
+                        query: {
+                          id: project.id,
+                          username: project.username,
+                          name: project.name,
+                          phonenumber: project.phonenumber,
+                          firstname: project.firstname,
+                          lastname: project.lastname,
+                          email: project.email,
+                          facebook: project.facebook,
+                          line: project.line,
+                        },
+                      }}>
                       {project.name}
+                      </Link>
                     </td>
                     <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
+                    <Link href={{
+                        pathname: `/normal/detail`,
+                        query: {
+                          id: project.id,
+                          username: project.username,
+                          name: project.name,
+                          phonenumber: project.phonenumber,
+                          firstname: project.firstname,
+                          lastname: project.lastname,
+                          email: project.email,
+                          facebook: project.facebook,
+                          line: project.line,
+                        },
+                      }}>
                       {project.phonenumber}
+                      </Link>
                     </td>
                   </tr>
                 ))}
