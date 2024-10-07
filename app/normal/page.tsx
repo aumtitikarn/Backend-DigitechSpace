@@ -71,6 +71,43 @@ const usernormal: React.FC = () => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+  const handleSubmit2 = async (id: string | null, email: string | null,name: string | null) => {
+    // ตรวจสอบว่ามี ID, อีเมล และข้อความครบถ้วน
+    if (!id || !email ) {
+        alert("Blog ID, email, or message is missing");
+        return;
+    }
+
+    // ยืนยันการติดต่อกับเจ้าของโปรเจค
+    const confirmed = confirm("Are you sure you want to contact the project owner?");
+    if (!confirmed) return;
+
+    try {
+        // เรียก API เพื่อส่งข้อมูล
+        const response = await fetch("/api/normoluser", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ 
+                name: name,  // ใช้ชื่อจริงถ้ามี
+                email: email,
+               
+            }),
+        });
+
+        // ตรวจสอบการตอบกลับจาก API
+        const data = await response.json();
+        if (response.ok) {
+            alert(data.message); // แสดงข้อความสำเร็จ
+        } else {
+            alert(data.error); // แสดงข้อผิดพลาด
+        }
+    } catch (error) {
+        console.error("Error contacting project owner:", error);
+        alert("An error occurred while contacting the project owner."); // แสดงข้อผิดพลาด
+    }
+};
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
@@ -131,16 +168,9 @@ const usernormal: React.FC = () => {
           />
           {/* Textarea and Button */}
           <div className="mt-6">
-          <p className="text-sm mt-2">
-            ส่งเมลรวมทั้งหมด
-          </p>
-            <textarea
-              className="w-full h-28 border border-gray-400 p-2 rounded-md"
-              placeholder="ข้อความ"
-            ></textarea>
-            <button className="w-full mt-4 bg-blue-600 text-white p-2 rounded-md">
-              ส่งเมล
-            </button>
+          <button  onClick={() => handleSubmit2} className="w-full mt-2 bg-blue-600 text-white p-2 rounded-md">
+                ส่งเมล
+              </button>
           </div>
         </div>
       </main>

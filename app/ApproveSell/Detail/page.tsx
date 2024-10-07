@@ -36,7 +36,6 @@ const Detail: React.FC = () => {
   const [rejectText, setRejectText] = useState<string>("");
   const searchParams = useSearchParams();
   const router = useRouter();
-
   const id = searchParams.get("_id");
   
   useEffect(() => {
@@ -230,7 +229,6 @@ const handleNotApprove = async () => {
     }
   };
 
-  const imageUrl = project?.imageUrl || [];
   
   const handleDownload = async (fileName: string) => {
     if (!fileName) {
@@ -257,31 +255,34 @@ const handleNotApprove = async () => {
     }
   };
   
+
   const handlePrevClick = () => {
-    setCurrentIndex(
-      (prevIndex) => (prevIndex - 1 + imageUrl.length) % imageUrl.length
-    );
-  };
+    setCurrentIndex((prevIndex) => {
+        const imageUrlLength = project?.imageUrl.length ?? 0; // Default to 0 if project is null
+        return (prevIndex - 1 + imageUrlLength) % imageUrlLength;
+    });
+};
 
-  const handleNextClick = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % imageUrl.length);
-  };
+const handleNextClick = () => {
+    setCurrentIndex((prevIndex) => {
+        const imageUrlLength = project?.imageUrl.length ?? 0; // Default to 0 if project is null
+        return (prevIndex + 1) % imageUrlLength;
+    });
+};
 
-  return (
-    <main className="flex flex-col min-h-screen bg-[#FBFBFB]">
-      <Header />
-      <div className="lg:mx-64 lg:mt-20 lg:mb-20 mt-10 mb-10">
-        <div className="flex flex-col min-h-screen ">
-          {/* Slider Section */}
-          <div className="flex flex-col items-center p-4">
-            <div className="relative w-full h-auto overflow-hidden rounded-lg">
-              {imageUrl.length > 0 && (
-                <img
-                src={`/api/project/images/${imageUrl[currentIndex]}`}
-                  className="w-full h-auto object-cover rounded-lg"
-                  onError={(e) => console.error('Image failed to load:', e)}
-                />
-              )}
+return (
+  <main className="flex flex-col min-h-screen bg-[#FBFBFB]">
+    <Header />
+    <div className="lg:mx-64 lg:mt-20 lg:mb-20 mt-10 mb-10">
+      <div className="flex flex-col min-h-screen ">
+        {/* Slider Section */}
+        <div className="flex flex-col items-center p-4">
+        <div className="relative w-full h-[500px] overflow-hidden rounded-lg">
+            <img
+                src={`/api/project/images/${project?.imageUrl ? project.imageUrl[currentIndex] : 'defaultImage.jpg'}`}
+                  alt="Project Image"
+                   className="object-cover w-full h-full"
+                   />
               <button
                 onClick={handlePrevClick}
                 className="absolute left-10 top-1/2 transform -translate-y-1/2 text-gray-500 p-2 rounded-full text-4xl bg-gray-100"
@@ -294,9 +295,7 @@ const handleNotApprove = async () => {
               >
                 <FaChevronRight />
               </button>
-            </div>
-          </div>
-
+              </div>
           {/* Information Section */}
           <div className="w-full mt-4">
             {project ? (
@@ -350,17 +349,17 @@ const handleNotApprove = async () => {
                   </ul>
                   <div className="flex flex-col items-center mt-5">
                   {project.filesUrl.map((fileName, index) => (
-  <button
-    key={index}
-    onClick={() => handleDownload(fileName)}
-    className="bg-[#33529B] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base flex items-center justify-center mb-2"
-  >
-    ดาวน์โหลด 
-  </button>
-))}
-   </div>
+                  <button
+                     key={index}
+                      onClick={() => handleDownload(fileName)}
+                     className="bg-[#33529B] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base flex items-center justify-center mb-2"
+                      >
+                      ดาวน์โหลด 
+                    </button>
+                     ))}
+                    </div>
 
-                </div>
+                    </div>
 
                 {/* Buttons Section */}
                 <div className="flex justify-center mt-5 space-x-2 md:space-x-20 lg:space-x-10">
@@ -404,6 +403,7 @@ const handleNotApprove = async () => {
             )}
           </div>
         </div>
+      </div>
       </div>
     </main>
   );
