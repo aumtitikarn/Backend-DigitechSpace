@@ -3,6 +3,9 @@ import mongoose from 'mongoose';
 const normalUserSchema = new mongoose.Schema({
     name: String,
     roleai: String,
+    createdAt: {
+        type: Date,
+      },
 });
 
 

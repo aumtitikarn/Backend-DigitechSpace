@@ -18,11 +18,7 @@ export async function POST(req,{params}) {
     if (!blogData) {
       return NextResponse.json({ message: "Blog not found" }, { status: 404 });
     }
-    // const resetToken = crypto.randomBytes(20).toString("hex");
-    // const resetPasswordExpires = Date.now() + 3600000; // หมดอายุใน 1 ชั่วโมง
-    //   // บันทึก token ลงในฐานข้อมูล
-    //   blogData.resetPasswordToken = resetToken;
-    //   blogData.resetPasswordExpires = resetPasswordExpires;
+
       try {
         await blogData.save();
         console.log("Token saved for user:", blogData._id);
@@ -33,9 +29,6 @@ export async function POST(req,{params}) {
       }
   
       console.log("Token saved for user:", blogData._id);
-  
-      // const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-      // const resetUrl = `${baseUrl}/auth/forgot/changePass?token=${resetToken}`;
   
       // ตั้งค่า transporter
       let transporter = nodemailer.createTransport({
@@ -131,7 +124,6 @@ export async function GET(req, { params }) {
 
     const allPosts = await blog.find({});
     console.log("All posts:", allPosts);
-    //  const post = await db.collection('postblog').findOne({ _id: new ObjectId(id) });
     const post = await blog.findOne({ _id: new mongoose.Types.ObjectId(id) });
 
     console.log("get id backend :",id)
@@ -200,13 +192,17 @@ export async function DELETE(req, { params }) {
 
     if (notification) {
       // Add the new message to the existing notifications array
-      notification.notifications.push(notificationMessage);
+      notification.notifications.message.push(notificationMessage);
+      notification.notifications.times.push(new Date()); // เพิ่ม times ด้วยวันที่ปัจจุบัน
       await notification.save();
     } else {
       // If no notification record exists, create a new one
       const newNotification = new Notification({
         email: blogData.blogEmail,
-        notifications: [notificationMessage],
+        notifications: {
+          message: [notificationMessage],
+          times: [new Date()], // เพิ่ม times ด้วยวันที่ปัจจุบัน
+        },
       });
       await newNotification.save();
     }

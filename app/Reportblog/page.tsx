@@ -9,6 +9,7 @@ interface Project {
   blogname: string;
   username: string;
   report: string;
+  author: string;
   selectedReason: string;
   createdAt: Date;
 }
@@ -114,7 +115,7 @@ const Reportblog: React.FC = () => {
                           </Link>
                         </td>
                         <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
-                          {val.report}
+                          {val.selectedReason}
                         </td>
                         <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
                           {val.author}

@@ -3,6 +3,7 @@
 import Header from "../../component/Header";
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import Swal from 'sweetalert2';
 
 const Detail: React.FC = () => {
   const searchParams = useSearchParams();
@@ -71,155 +72,233 @@ const Detail: React.FC = () => {
 
   const handleComplete = async (id: string | null, email: string) => {
     if (!id) {
-        alert("Project ID is missing");
-        return;
-    }
-
-    const confirmed = confirm("Are you sure you want to mark this project as completed?");
-    if (!confirmed) return;
-
-    try {
-        const response = await fetch(`/api/withdrawals/${id}`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ status: "completed" }),
-        });
-
-        if (!response.ok) {
-            const data = await response.json();
-            alert(`Failed to mark project as completed: ${data.msg || "Unknown error"}`);
-           
-            return;
-        }
-
-        // บันทึกข้อความแจ้งเตือน
-        const notificationMessage = "Your withdrawal request has been successful."; 
-
-        // ส่งข้อความแจ้งเตือนไปยัง API
-        const notificationResponse = await fetch('/api/notification', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, notificationValue: notificationMessage }), // ส่ง email และ notificationMessage
-        });
-
-        // ตรวจสอบผลลัพธ์จากการส่งข้อความแจ้งเตือน
-        if (!notificationResponse.ok) {
-            const notificationData = await notificationResponse.json();
-            console.error("Failed to send notification:", notificationData);
-        }
-
-        alert("Project marked as completed successfully");
-        // Send notification to user
-
-    } catch (error) {
-        console.error("Error marking project as completed:", error);
-        alert("An error occurred while marking the project as completed.");
-        
-    }
-};
-
-
-const handleDelete = async (id: string | null, email: string) => {
-  if (!id) {
-      alert("Project ID is missing");
+      await Swal.fire({
+        icon: 'error',
+        title: 'ข้อผิดพลาด',
+        text: 'ไม่พบรหัสโครงการ',
+      });
       return;
-  }
-
-  const confirmed = confirm("Are you sure you want to mark this project as failed?");
-  if (!confirmed) return;
-
-  try {
-      const response = await fetch(`/api/withdrawals/${id}`, {
+    }
+  
+    const result = await Swal.fire({
+      title: 'คุณแน่ใจหรือไม่?',
+      text: "คุณโอนเงินให้ผู้ถอนแล้วใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ใช่, ทำเครื่องหมาย',
+      cancelButtonText: 'ยกเลิก'
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(`/api/withdrawals/${id}`, {
           method: "PATCH",
           headers: {
-              "Content-Type": "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: "completed" }),
+        });
+  
+        if (!response.ok) {
+          const data = await response.json();
+          await Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: ` ${data.msg || "ข้อผิดพลาดที่ไม่ทราบสาเหตุ"}`,
+          });
+          return;
+        }
+  
+        const notificationMessage = "คำขอถอนเงินของคุณสำเร็จแล้ว";
+  
+        const notificationResponse = await fetch("/api/notification", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, notificationValue: notificationMessage }),
+        });
+  
+        if (!notificationResponse.ok) {
+          const notificationData = await notificationResponse.json();
+          console.error("ไม่สามารถส่งการแจ้งเตือนได้:", notificationData);
+        }
+  
+        await Swal.fire({
+          icon: 'success',
+          title: 'สำเร็จ',
+          text: 'ทำเครื่องหมายโครงการว่าเสร็จสมบูรณ์เรียบร้อยแล้ว',
+        });
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการทำเครื่องหมายโครงการว่าเสร็จสมบูรณ์:", error);
+        await Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: 'เกิดข้อผิดพลาดในขณะทำเครื่องหมายโครงการว่าเสร็จสมบูรณ์',
+        });
+      }
+    }
+  };
+  
+  const handleDelete = async (id: string | null, email: string) => {
+    if (!id) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'ข้อผิดพลาด',
+        text: 'ไม่พบรหัสโครงการ',
+      });
+      return;
+    }
+  
+    const result = await Swal.fire({
+      title: 'คุณแน่ใจหรือไม่?',
+      text: "คุณไม่อนุมัติคำร้องนี้ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ใช่, ทำเครื่องหมาย',
+      cancelButtonText: 'ยกเลิก'
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(`/api/withdrawals/${id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ status: "failed" }),
-      });
-
-      if (response.ok) {
-          // บันทึกข้อความแจ้งเตือน
-          const notificationMessage = "Your withdrawal request was unsuccessful due to inconsistent information."; // เปลี่ยนข้อความตามที่เหมาะสม
-
-          const notificationResponse = await fetch('/api/notification', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ email, notificationValue: notificationMessage }), // ส่ง email และ notificationMessage
+        });
+  
+        if (response.ok) {
+          const notificationMessage = "คำขอถอนเงินของคุณไม่สำเร็จเนื่องจากข้อมูลไม่ตรงกัน";
+  
+          const notificationResponse = await fetch("/api/notification", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email,
+              notificationValue: notificationMessage,
+            }),
           });
-
+  
           if (!notificationResponse.ok) {
-              const notificationData = await notificationResponse.json();
-              console.error("Failed to send notification:", notificationData);
-              alert("Failed to send notification. Please try again.");
+            const notificationData = await notificationResponse.json();
+            console.error("ไม่สามารถส่งการแจ้งเตือนได้:", notificationData);
+            await Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'ไม่สามารถส่งการแจ้งเตือนได้ โปรดลองอีกครั้ง',
+            });
           } else {
-              alert("Notification sent successfully.");
+            await Swal.fire({
+              icon: 'success',
+              title: 'สำเร็จ',
+              text: 'ส่งการแจ้งเตือนเรียบร้อยแล้ว',
+            });
           }
-
-          alert("Project marked as failed successfully");
-
-      } else {
+  
+          await Swal.fire({
+            icon: 'success',
+            title: 'สำเร็จ',
+            text: 'ทำเครื่องหมายโครงการว่าล้มเหลวเรียบร้อยแล้ว',
+          });
+        } else {
           const data = await response.json();
-          alert(`Failed to mark project as failed: ${data.error || "Unknown error"}`);
+          await Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: `ไม่สามารถทำเครื่องหมายโครงการว่าล้มเหลวได้: ${data.error || "ข้อผิดพลาดที่ไม่ทราบสาเหตุ"}`,
+          });
+        }
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการทำเครื่องหมายโครงการว่าล้มเหลว:", error);
+        await Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: 'เกิดข้อผิดพลาดในขณะทำเครื่องหมายโครงการว่าล้มเหลว',
+        });
       }
-  } catch (error) {
-      console.error("Error marking project as failed:", error);
-      alert("An error occurred while marking the project as failed.");
-  }
-};
-
-const handleSubmit2 = async (id: string | null) => {
-  if (!id) {
-    alert("Blog ID is missing");
-    return;
-  }
-
-  const email = withdrawalDetails?.receipt.email;
-  const fullname = userBankInfo?.fullname;
-
-  if (!email || !fullname) {
-    alert("Email or Author is missing");
-    return;
-  }
-
-  const confirmed = confirm("Are you sure?");
-  if (!confirmed) return;
-
-  try {
-    const response = await fetch(`/api/withdrawals`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id,
-        email,
-        fullname
-      }),
-    });
-
-    if (response.ok) {
-      alert("Email sent successfully!");
-    } else {
-      // Log status and message for debugging
-      const errorData = await response.json();
-      console.error("Error details:", errorData);
-      alert(`Failed to send email: ${errorData.msg || response.statusText}`);
     }
-  } catch (error) {
-    console.error("Error contacting project owner:", error);
-    alert("An error occurred while contacting the project owner.");
-  }
-};
-
-
-
-
+  };
+  
+  const handleSubmit2 = async (id: string | null) => {
+    if (!id) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'ข้อผิดพลาด',
+        text: 'ไม่พบรหัสบล็อก',
+      });
+      return;
+    }
+  
+    const email = withdrawalDetails?.receipt.email;
+    const fullname = userBankInfo?.fullname;
+  
+    if (!email || !fullname) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'ข้อผิดพลาด',
+        text: 'ไม่พบอีเมลหรือชื่อผู้เขียน',
+      });
+      return;
+    }
+  
+    const result = await Swal.fire({
+      title: 'คุณแน่ใจหรือไม่?',
+      text: "คุณต้องการติดต่อผู้ถอนใช่หรือไม่?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ใช่, ดำเนินการ',
+      cancelButtonText: 'ยกเลิก'
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(`/api/withdrawals`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id,
+            email,
+            fullname,
+          }),
+        });
+  
+        if (response.ok) {
+          await Swal.fire({
+            icon: 'success',
+            title: 'สำเร็จ',
+            text: 'ส่งอีเมลเรียบร้อยแล้ว!',
+          });
+        } else {
+          const errorData = await response.json();
+          console.error("รายละเอียดข้อผิดพลาด:", errorData);
+          await Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: `ไม่สามารถส่งอีเมลได้: ${errorData.msg || response.statusText}`,
+          });
+        }
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการติดต่อเจ้าของโครงการ:", error);
+        await Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: 'เกิดข้อผิดพลาดในขณะติดต่อเจ้าของโครงการ',
+        });
+      }
+    }
+  };
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -232,54 +311,61 @@ const handleSubmit2 = async (id: string | null) => {
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
       <Header />
       <main className="flex-grow">
-        <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
-          <div className="flex flex-col justify-center w-full lg:w-2/3 mx-auto">
-            <h1 className="text-lg font-bold mt-5 mb-5 text-black" style={{ fontSize: "36px" }}>คำร้องขอถอนเงิน</h1>
-            <p className="mt-2 text-lg text-black">โดย {withdrawalDetails?.receipt.fullname || ""}</p>
-
-            <h1 className="text-xl font-bold mt-4 text-black" style={{ fontSize: "24px" }}>จำนวนเงิน</h1>
-            <p className="mt-2 text-lg text-black">{withdrawalDetails?.withdrawn || 0} บาท</p>
-
-            <h1 className="text-xl font-bold mt-4 text-black" style={{ fontSize: "24px" }}>ช่องทางการรับเงิน</h1>
-            <p className="mt-2 text-lg text-black">ชื่อธนาคาร: {userBankInfo?.namebank || "ไม่พบข้อมูลธนาคาร"}</p>
-            <p className="mt-2 text-lg text-black">เลขบัญชี: {userBankInfo?.numberbankacc || "ไม่พบเลขบัญชี"}</p>
-            <p className="mt-2 text-lg text-black">ชื่อ: {userBankInfo?.fullname || "ไม่พบชื่อจริง"}</p>
-
-            <h1 className="text-xl font-bold mt-4 text-black" style={{ fontSize: "24px" }}>ข้อมูลผู้ขาย</h1>
-            <p className="mt-2 text-lg text-black">ชื่อ: {userBankInfo?.firstname || "ไม่พบชื่อจริง"}</p>
-            <p className="mt-2 text-lg text-black">นามสกุล: {userBankInfo?.lastname || "ไม่พบนามสกุล"}</p>
-            <p className="mt-2 text-lg text-black">ชื่อผู้ใช้: {userBankInfo?.username || "ไม่พบชื่อผู้ใช้"}</p>
-            <p className="mt-2 text-lg text-black">เบอร์โทร: {userBankInfo?.phonenumber || "ไม่พบเบอร์โทร"}</p>
-            <p className="mt-2 text-lg text-black">อีเมล: {withdrawalDetails?.receipt.email || "ไม่พบอีเมล"}</p>
-
-            <div className="mt-6 flex flex-col gap-4">
-              <button
-                onClick={() => handleComplete(id, withdrawalDetails?.receipt.email)}
-                className="w-full p-2 text-white rounded"
-                style={{ backgroundColor: "#33539B" }}
-              >
-                เสร็จสิ้น
-              </button>
-              <button
-  onClick={() => handleSubmit2(id)}
-  className="w-full p-2 text-white rounded"
-  style={{ backgroundColor: "#1976D2" }}
->
-  ติดต่อผู้ถอน
-</button>
-
-              <button
-                onClick={() =>
-                  handleDelete(id, withdrawalDetails?.receipt.email)
-                }
-                className="w-full p-2 text-white rounded"
-                style={{ backgroundColor: "#FF3D00" }}
-              >
-                ไม่อนุมัติ
-              </button>
-            </div>
+      <div className="flex items-center justify-center  my-10">
+          <div className="w-auto lg:w-[878px] h-auto flex-shrink-0 rounded-2xl border border-[#D0D8E9] bg-white shadow-[0px_0px_60.1px_-16px_#D9DDE5]">
+            <div className="p-10">
+              <p className="font-bold  text-[#213766E5] text-[35px] text-center">
+                คำร้องขอถอนเงิน
+              </p>
+              <p className="text-[#6C7996] mt-5 font-semibold text-center">
+              จำนวนเงิน
+              </p>
+              <p className="text-[#5D76AD] mt-5 font-bold text-center text-[30px]">
+              {(withdrawalDetails?.withdrawn || 0).toLocaleString('th-TH')} THB
+              </p>
+              <div className="my-10 w-full border-t-2 border-dashed border-[#9CB1E0] opacity-34"></div>
+              <p className="text-[#6C7996] mt-5 font-semibold text-center">
+              จาก
+              </p>
+              <div className="font-semibold mt-2 w-full h-auto p-3  rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+              <p className="text-center">{userBankInfo?.fullname || "ไม่พบชื่อจริง"}</p>
+              </div>
+              <p className="text-[#6C7996] mt-10 font-semibold text-center">
+              ธนาคาร
+              </p>
+              <div className="font-semibold mt-2 w-full h-auto p-3  rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+              <p className="text-center">{userBankInfo?.namebank || "ไม่พบข้อมูลธนาคาร"}</p>
+              </div>
+              <p className="text-[#6C7996] mt-10 font-semibold text-center">
+              เลขบัญชี
+              </p>
+              <div className="font-semibold mt-2 w-full h-auto p-3  rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD]">
+              <p className="text-center">{userBankInfo?.numberbankacc || "ไม่พบเลขบัญชี"}</p>
+              </div>
+              <div className="flex justify-center mt-10">
+                      <div className="flex item-center space-x-[30px]">
+                        <button
+                          onClick={() =>
+                            handleDelete(id, withdrawalDetails?.receipt.email)
+                          }
+                          className="w-[172px] h-[66px] flex-shrink-0 rounded-[10px] border border-[#B7CCFC] bg-white text-[#213766E5] font-semibold flex items-center justify-center hover:bg-[#F0F5FF] transition-colors duration-300"
+                        >
+                         <p className="text-[#5D76AD]">ไม่อนุมัติ</p>
+                        </button>
+                        <button
+                          onClick={() => handleComplete(id, withdrawalDetails?.receipt.email)}
+                          className="w-[172px] h-[66px] flex-shrink-0 rounded-[10px] bg-[#5D76AD] text-white font-semibold flex items-center justify-center hover:bg-[#4A5F8C] transition-colors duration-300"
+                        >
+                          เสร็จสิ้น
+                        </button>
+                      </div>
+                    </div>
+                    <div className="text-center mt-5">
+                    <u className="text-[#80A1EB] hover:text-[#B7CCFC]" onClick={() => handleSubmit2(id)}>ติดต่อผู้ถอน</u>
+                    </div>
+                  </div>
+            </div>  
           </div>
-        </div>
       </main>
     </div>
   );

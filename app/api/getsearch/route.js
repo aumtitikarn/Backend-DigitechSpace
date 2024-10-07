@@ -7,9 +7,11 @@ export async function GET(req) {
     await connectMongoDB();
     console.log("MongoDB connection successful");
     
-    // Fetch search terms from MongoDB and sort by lastSearched in descending order (-1)
-    const terms = await searchterms.find({}).sort({ lastSearched: -1 });
-    const count = terms.length;  // Get the number of search terms
+    // Fetch search terms from MongoDB, sort by count in descending order (-1), and limit to 10 results
+    const terms = await searchterms.find({})
+      .sort({ count: -1 }) // เรียงจากมากไปน้อย
+      .limit(10); // จำกัดผลลัพธ์แค่ 10 รายการ
+    const count = terms.length; // Get the number of search terms (should be 10 or less)
 
     console.log("Search terms fetched:", terms);
     console.log("Total search terms count:", count);

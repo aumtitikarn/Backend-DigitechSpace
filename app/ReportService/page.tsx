@@ -26,7 +26,7 @@ const ReportService: React.FC = () => {
   // Function to fetch data from API
   const getPosts = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/getreportservice", {
+      const response = await fetch("/api/getreportservice", {
         method: "GET",
         cache: "no-store"
       });
@@ -81,7 +81,7 @@ const ReportService: React.FC = () => {
                       <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
                         <Link
                           href={{
-                            pathname: `/ReportService/detail/`,
+                            pathname: `/ReportService/${val._id}`,
                             query: {
                               _id: val._id,
                               report: val.report,

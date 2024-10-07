@@ -75,23 +75,23 @@ const usernormal: React.FC = () => {
       <Header />
       <main className="flex-grow">
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
-          <h2 className="text-xl font-bold mb-4">รายชื่อของแอดมิน</h2>
+          <h2 className="text-xl font-bold mb-4 text-black">รายชื่อของแอดมิน</h2>
           <div className="w-full h-full flex flex-col">
             <table className="min-w-full border-collapse border border-gray-400">
               <thead>
                 <tr>
-                  <th className="border border-gray-400 p-2">#</th>
-                  <th className="border border-gray-400 p-2 lg:text-lg">Username</th>
-                  <th className="border border-gray-400 p-2 lg:text-lg">อีเมล</th>
+                  <th className="border border-gray-400 p-2 text-black">#</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg text-black">Username</th>
+                  <th className="border border-gray-400 p-2 lg:text-lg text-black">อีเมล</th>
                 </tr>
               </thead>
               <tbody>
                 {currentItems.map((project, index) => (
                   <tr key={project.id}>
-                    <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg">
+                    <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg text-black">
                       {index + 1 + indexOfFirstItem}.
                     </td>
-                    <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                    <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
                       <Link
                         href={{
                           pathname: `/admin/detail`,
@@ -105,7 +105,7 @@ const usernormal: React.FC = () => {
                         {project.name}
                       </Link>
                     </td>
-                    <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg">
+                    <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
                       {project.email}
                     </td>
                   </tr>

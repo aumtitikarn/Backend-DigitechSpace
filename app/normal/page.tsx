@@ -13,6 +13,8 @@ interface Project {
   email: string;
   phonenumber: string;
   username: string;
+  facebook: string;
+  line: string;
 }
 
 const usernormal: React.FC = () => {
@@ -49,7 +51,9 @@ const usernormal: React.FC = () => {
           name: user.name,
           phonenumber: user.phonenumber,
           username: user.username,
-          email: user.email
+          email: user.email,
+          facebook: user.facebook,
+          line: user.line
         }));
         setProjects(formattedProjects);
       } else {
@@ -142,16 +146,48 @@ const usernormal: React.FC = () => {
                           firstname: project.firstname,
                           lastname: project.lastname,
                           email: project.email,
+                          facebook: project.facebook,
+                          line: project.line,
                         },
                       }}>
                         {project.username}
                       </Link>
                     </td>
                     <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
+                    <Link href={{
+                        pathname: `/normal/detail`,
+                        query: {
+                          id: project.id,
+                          username: project.username,
+                          name: project.name,
+                          phonenumber: project.phonenumber,
+                          firstname: project.firstname,
+                          lastname: project.lastname,
+                          email: project.email,
+                          facebook: project.facebook,
+                          line: project.line,
+                        },
+                      }}>
                       {project.name}
+                      </Link>
                     </td>
                     <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
+                    <Link href={{
+                        pathname: `/normal/detail`,
+                        query: {
+                          id: project.id,
+                          username: project.username,
+                          name: project.name,
+                          phonenumber: project.phonenumber,
+                          firstname: project.firstname,
+                          lastname: project.lastname,
+                          email: project.email,
+                          facebook: project.facebook,
+                          line: project.line,
+                        },
+                      }}>
                       {project.phonenumber}
+                      </Link>
                     </td>
                   </tr>
                 ))}

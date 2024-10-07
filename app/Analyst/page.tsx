@@ -33,11 +33,39 @@ ChartJS.register(
   Legend,
 );
 
+interface Purchase {
+  date: string;
+  category: string;
+  price: number;
+}
+
+type DatasetType = {
+  label: string;
+  data: number[];  // ใช้ number[] แทน any[]
+  backgroundColor: string;
+};
+
+// กำหนด type สำหรับ roleData
+type RoleDataType = {
+  labels: string[];
+  datasets: DatasetType[];
+};
+
+type UserType = {
+  roleai: string;
+};
+
+
 const page = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedCategory1, setSelectedCategory1] = useState("");
 
-  const [roleData, setRoleData] = useState({
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+
+  const [purchaseHistory, setPurchaseHistory] = useState<Purchase[]>([]);
+
+  const [roleData, setRoleData] = useState<RoleDataType>({
     labels: [],
     datasets: [],
   });
@@ -83,7 +111,7 @@ const page = () => {
 
     fetchFavoritesData();
   }, []);
-  
+
   const datafav = {
     labels: projectNames,  // ใช้ projectNames เป็น labels
     datasets: [
@@ -100,30 +128,30 @@ const page = () => {
 
   const [terms, setTerms] = useState([]);
   const [totalCount, setTotalCount] = useState(0); // State to hold the total count
-  
+
   useEffect(() => {
     async function fetchTerms() {
       try {
         const response = await fetch('/api/getsearch', {
           method: 'GET',
         });
-  
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-  
+
         const data = await response.json();
         console.log("ข้อมูลตาราง", data);
-        
+
         // Set the terms and the total count
-        setTerms(data.terms); 
+        setTerms(data.terms); // จะได้แค่ 10 รายการ
         setTotalCount(data.count); // Set total count from the API
-  
+
       } catch (error) {
         console.error("Error fetching search terms:", error);
       }
     }
-    
+
     fetchTerms();
   }, []);
 
@@ -132,30 +160,51 @@ const page = () => {
   const [error, setError] = useState(null);
   const [chartData, setChartData] = useState({});
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch('/api/getseller');
+  //       const salesData = await response.json(); // ต้อง parse JSON ก่อน
+
+  //       if (salesData && Array.isArray(salesData)) {
+  //         const categories = salesData.map((data) => data.category);
+  //         const prices = salesData.map((data) => data.price);
+
+  //         setChartData({
+  //           labels: categories,
+  //           datasets: [
+  //             {
+  //               label: 'Price',
+  //               data: prices,
+  //               backgroundColor: 'rgba(53, 83, 155, 0.5)',
+  //               borderColor: 'rgba(53, 83, 155, 1)',
+  //               borderWidth: 1,
+  //             },
+  //           ],
+  //         });
+  //       } else {
+  //         setError("Invalid data format or no data available");
+  //       }
+  //     } catch (error) {
+  //       setError('Error fetching data');
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/getseller');
-        const salesData = await response.json(); // ต้อง parse JSON ก่อน
-
+        const salesData = await response.json(); 
+    
         if (salesData && Array.isArray(salesData)) {
-          const categories = salesData.map((data) => data.category);
-          const prices = salesData.map((data) => data.price);
-
-          setChartData({
-            labels: categories,
-            datasets: [
-              {
-                label: 'Price',
-                data: prices,
-                backgroundColor: 'rgba(53, 83, 155, 0.5)',
-                borderColor: 'rgba(53, 83, 155, 1)',
-                borderWidth: 1,
-              },
-            ],
-          });
+          setPurchaseHistory(salesData); // อัปเดต purchaseHistory ถ้า salesData เป็น array
         } else {
-          setError('Invalid data format or no data available');
+          setError("Invalid data format or no data available");
         }
       } catch (error) {
         setError('Error fetching data');
@@ -163,10 +212,27 @@ const page = () => {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, []);
 
+
+  const [totalUserCount, setTotalUserCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchUserCount() {
+      try {
+        const response = await fetch('/api/getanalyst'); // เปลี่ยนเป็น endpoint ที่ถูกต้อง
+        const data = await response.json();
+        console.log(data); // ตรวจสอบข้อมูลที่ถูกส่งกลับมาจาก API
+        setTotalUserCount(data.totalUserCount); // กำหนดค่าให้กับ state
+      } catch (error) {
+        console.error("Error fetching user count:", error);
+      }
+    }
+
+    fetchUserCount();
+  }, []);
 
 
   useEffect(() => {
@@ -175,8 +241,8 @@ const page = () => {
         // เรียก API เพื่อนำข้อมูล role
         const result = await axios.get('/api/getanalyst');
         console.log('API Result:', result.data);
-        const normalRoles = result.data.normalUsers.map(user => user.roleai);
-        const studentRoles = result.data.studentUsers.map(user => user.roleai);
+        const normalRoles = result.data.normalUsers.map((user: UserType) => user.roleai);
+        const studentRoles = result.data.studentUsers.map((user: UserType) => user.roleai);
 
         // นับจำนวน role แต่ละประเภท
         const roles = ['student', 'other', 'developer'];
@@ -207,6 +273,92 @@ const page = () => {
     fetchData();  // เรียกฟังก์ชันเพื่อดึงข้อมูลเมื่อ component ถูก mount
   }, []);  // ใส่ dependency array ที่ว่างเพื่อให้ทำงานเพียงครั้งเดียว
 
+  const months = [
+    { value: 'All', label: "All" },
+    { value: "01", label: "January" },
+    { value: "02", label: "February" },
+    { value: "03", label: "March" },
+    { value: "04", label: "April" },
+    { value: "05", label: "May" },
+    { value: "06", label: "June" },
+    { value: "07", label: "July" },
+    { value: "08", label: "August" },
+    { value: "09", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
+  ];
+
+  // const years = [
+  //   { value: "2020", label: "2020" },
+  //   { value: "2021", label: "2021" },
+  //   { value: "2022", label: "2022" },
+  //   { value: "2023", label: "2023" },
+  //   { value: "2024", label: "2024" },
+  // ];
+
+  
+  const currentYear = new Date().getFullYear();
+  const years = ['All', ...Array.from({ length: 5 }, (_, i) => (currentYear - i).toString())];
+
+  const filteredPurchaseHistory = Array.isArray(purchaseHistory) ? purchaseHistory.filter((purchase) => {
+    const purchaseDate = new Date(purchase.date);
+    const purchaseMonth = (purchaseDate.getMonth() + 1).toString().padStart(2, '0');
+    const purchaseYear = purchaseDate.getFullYear().toString();
+  
+    const matchMonth = selectedMonth === 'All' || purchaseMonth === selectedMonth;
+    const matchYear = selectedYear === 'All' || purchaseYear === selectedYear;
+  
+    return matchMonth && matchYear;
+  }) : [];
+
+  useEffect(() => {
+    if (filteredPurchaseHistory && filteredPurchaseHistory.length > 0) {
+      const categories = filteredPurchaseHistory.map((data) => data.category);
+      const prices = filteredPurchaseHistory.map((data) => data.price);
+  
+      setChartData({
+        labels: categories,
+        datasets: [
+          {
+            label: 'Price',
+            data: prices,
+            backgroundColor: 'rgba(53, 83, 155, 0.5)',
+            borderColor: 'rgba(53, 83, 155, 1)',
+            borderWidth: 1,
+          },
+        ],
+      });
+    } else {
+      setChartData({
+        labels: [],
+        datasets: [],
+      });
+    }
+  }, [filteredPurchaseHistory]);
+
+    useEffect(() => {
+      console.log('Filtered history:', filteredPurchaseHistory);
+    }, [selectedMonth, selectedYear, purchaseHistory]);
+
+  // useEffect(() => {
+  //   const fetchPurchaseHistory = async () => {
+  //     try {
+  //       const response = await fetch("/api/withdrawal/getHistory");
+  //       if (response.ok) {
+  //         const data: Purchase[] = await response.json();
+  //         setPurchaseHistory(data);
+  //       } else {
+  //         throw new Error("Failed to fetch purchase history");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching purchase history:", error);
+  //     }
+  //   };
+  
+  //   fetchPurchaseHistory();
+  // }, []);
+
   const { data: session, status } = useSession();
 
   if (loading) return <div>Loading...</div>;
@@ -220,42 +372,8 @@ const page = () => {
     redirect("/auth/signin");
     return null;
   }
+  
 
-  const data1 = {
-    labels: ['Program', 'Model/3D', 'Website', 'Datasets', 'Photo/Art', 'MoblieApp', 'AI', 'IOT', 'Document', 'Other'],
-    datasets: [
-      {
-        label: 'Dataset',
-        backgroundColor: '#33539B',
-        hoverBackgroundColor: '#273E74',
-        data: [30000, 15000, 10000, 8000, 6000, 3000, 2000, 1500, 1000, 1000]
-      }
-    ]
-  };
-
-  const data2 = {
-    labels: ['Program', 'Model/3D', 'Website', 'Datasets', 'Photo/Art', 'MoblieApp', 'AI', 'IOT', 'Document', 'Other'],
-    datasets: [
-      {
-        label: 'Dataset',
-        backgroundColor: '#33539B',
-        hoverBackgroundColor: '#273E74',
-        data: [100, 90, 85, 75, 65, 50, 45, 45, 30, 25]
-      }
-    ]
-  };
-
-  const data3 = {
-    labels: ['นักเรียน', 'ศาสตราจารย์', 'นักพัฒนา', 'ดีไซเนอร์', 'ครู', 'นักวิจัย', 'อื่น'],
-    datasets: [
-      {
-        label: 'Dataset',
-        backgroundColor: '#33539B',
-        hoverBackgroundColor: '#273E74',
-        data: [100, 85, 75, 65, 50, 25, 20, 10]
-      }
-    ]
-  };
 
   return (
     <main>
@@ -313,6 +431,32 @@ const page = () => {
                 <option value="Photo/Art">Photo/Art</option>
                 <option value="Other">Other</option>
               </select>
+
+              <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
+            >
+              <option value="" disabled>เลือกเดือน</option>
+              {months.map((month) => (
+                <option key={month.value} value={month.value}>
+                  {month.label}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
+            >
+              <option value="" disabled>เลือกปี</option>
+              {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+            </select>
             </div>
 
             <div className="flex flex-row w-full mt-5">
@@ -350,7 +494,7 @@ const page = () => {
                 </div>
                 <div className="flex flex-row justify-center m-2">
                   <p className="font-semibold text-black">
-                    5K
+                    {totalUserCount !== undefined ? totalUserCount.toLocaleString() : 'Loading...'}
                   </p>
                 </div>
               </div>
@@ -375,23 +519,23 @@ const page = () => {
               </p>
 
               <table className="border-2 mt-10 mb-10" style={{ width: "992px" }}>
-      <thead>
-        <tr style={{ backgroundColor: "#33539B", color: "#ffff" }}>
-          <th className="w-1/12 text-center h-12">อันดับ</th>
-          <th className="w-3/12 h-12 text-start">คำค้นหา</th>
-          <th className="w-1/12 h-12 text-start">จำนวน</th>
-        </tr>
-      </thead>
-      <tbody className="text-black">
-        {terms.map((term, index) => (
-          <tr key={term._id}>
-            <td className="text-center h-14">{index + 1}</td>
-            <td className="h-14">{term.term}</td>
-            <td className="h-14">{term.count}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+                <thead>
+                  <tr style={{ backgroundColor: "#33539B", color: "#ffff" }}>
+                    <th className="w-1/12 text-center h-12">อันดับ</th>
+                    <th className="w-3/12 h-12 text-start">คำค้นหา</th>
+                    <th className="w-1/12 h-12 text-start">จำนวน</th>
+                  </tr>
+                </thead>
+                <tbody className="text-black">
+                  {terms.map((term, index) => (
+                    <tr key={term._id}>
+                      <td className="text-center h-14">{index + 1}</td>
+                      <td className="h-14">{term.term}</td>
+                      <td className="h-14">{term.count}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
             </div>
 
