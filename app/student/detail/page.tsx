@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from "next/navigation";
 import Header from "../../component/Header";
 import { MdAccountCircle } from "react-icons/md";
+import Swal from 'sweetalert2';
 
 interface UserDetails {
   username?: string | null;
@@ -43,6 +44,82 @@ const Detail: React.FC = () => {
     postalnumber: searchParams.get("postalnumber"),
     facebook: searchParams.get("facebook"),
     line: searchParams.get("line"),
+  };
+  const [emailContent, setEmailContent] = useState('');
+  const [isSending, setIsSending] = useState(false);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+ 
+
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      adjustHeight();
+    }
+  }, [emailContent]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEmailContent(e.target.value);
+    adjustHeight();
+  };
+
+  const adjustHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
+  const sendEmail = async () => {
+    if (!userDetails.email) {
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: 'ไม่พบอีเมลของผู้ใช้',
+      });
+      return;
+    }
+
+    setIsSending(true);
+
+    try {
+      const response = await fetch('/api/sendemail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: userDetails.email,
+          subject: "Digitech Space",
+          emailContent: emailContent,
+        }),
+      });
+
+      if (response.ok) {
+        Swal.fire({
+          icon: 'success',
+          title: 'สำเร็จ',
+          text: 'ส่งอีเมลสำเร็จ',
+        });
+        setEmailContent('');
+      } else {
+        const errorData = await response.json();
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: `เกิดข้อผิดพลาดในการส่งอีเมล: ${errorData.message}`,
+        });
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: 'เกิดข้อผิดพลาดในการส่งอีเมล',
+      });
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -153,7 +230,7 @@ const Detail: React.FC = () => {
                   ที่อยู่
                 </p>
                 <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
-                  <div className="w-full sm:w-[40%]">
+                  <div className="w-full sm:w-1/2">
                     <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
                       บ้านเลขที่, ซอย, หมู่
                     </p>
@@ -164,7 +241,7 @@ const Detail: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="w-full sm:w-[60%]">
+                  <div className="w-full sm:w-1/2">
                     <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
                       ตำบล
                     </p>
@@ -176,7 +253,8 @@ const Detail: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="w-full mt-3">
+                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
+                <div className="w-full sm:w-1/2">
                   <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
                     อำเภอ
                   </p>
@@ -187,7 +265,7 @@ const Detail: React.FC = () => {
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
+                
                   <div className="w-full sm:w-1/2">
                     <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
                       จังหวัด
@@ -199,6 +277,8 @@ const Detail: React.FC = () => {
                       </p>
                     </div>
                   </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
                   <div className="w-full sm:w-1/2">
                     <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
                       รหัสไปรษณีย์
@@ -209,7 +289,27 @@ const Detail: React.FC = () => {
                         {userDetails.postalnumber || "N/A"}
                       </p>
                     </div>
-                  </div>
+                    </div>
+                </div>
+                <div className="my-10 w-full border-t-2 border-dashed border-[#9CB1E0] opacity-34"></div>
+                <div className="w-full mt-3">
+                  <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                    ส่งอีเมลหาผู้ใช้
+                  </p>
+                  <textarea
+                    ref={textareaRef}
+                    className="w-full min-h-[50px] px-4 py-2 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD] focus:outline-none focus:ring-2 focus:ring-[#5D76AD] resize-none overflow-hidden"
+                    placeholder="ข้อความอีเมล"
+                    value={emailContent}
+                    onChange={handleChange}
+                  />
+                  <button 
+                    className="mt-5 w-auto lg:w-full py-3 flex-shrink-0 rounded-[10px] bg-[#5D76AD] text-white font-semibold flex items-center justify-center hover:bg-[#4A5F8C] transition-colors duration-300"
+                    onClick={sendEmail}
+                    disabled={isSending}
+                  >
+                    {isSending ? 'กำลังส่ง...' : 'ส่งอีเมล'}
+                  </button>
                 </div>
               </div>
             </div>
