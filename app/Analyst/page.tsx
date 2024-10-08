@@ -56,6 +56,10 @@ type UserType = {
   roleai: string;
 };
 
+type Sale = {
+  createdAt: string;
+};
+
 
 const page = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -71,9 +75,10 @@ const page = () => {
     datasets: [],
   });
 
+  const [rawSalesData, setRawSalesData] = useState<Sale[]>([]);; // State สำหรับเก็บข้อมูลดิบที่ดึงมาจาก API
   const [totalSales, setTotalSales] = useState(0);
-  const [totalCommission, setTotalCommission] = useState(0); // New state for commission
-
+  const [totalCommission, setTotalCommission] = useState(0);
+  
   useEffect(() => {
     async function fetchTotalSales() {
       try {
@@ -81,15 +86,45 @@ const page = () => {
           method: 'GET',
         });
         const data = await response.json();
-        setTotalSales(data.totalSales); // Total net sales
-        setTotalCommission(data.totalCommission); // 20% of net sales
+  
+        console.log("Sales data from API: ", data.transactions);  // ตรวจสอบข้อมูล
+        setRawSalesData(data.transactions || []); 
       } catch (error) {
         console.error("Error fetching total sales and commission:", error);
       }
     }
-
+  
     fetchTotalSales();
   }, []);
+  
+  useEffect(() => {
+    if (rawSalesData.length > 0) {
+      const filteredData = rawSalesData.filter((sale) => {
+        const saleDate = new Date(sale.createdAt);
+        const saleMonth = (saleDate.getMonth() + 1).toString().padStart(2, '0');
+        const saleYear = saleDate.getFullYear().toString();
+  
+        // ตรวจสอบค่าที่กรอง
+        console.log(`Sale Month: ${saleMonth}, Sale Year: ${saleYear}`);
+        console.log(`Selected Month: ${selectedMonth}, Selected Year: ${selectedYear}`);
+  
+        const matchMonth = selectedMonth === 'All' || saleMonth === selectedMonth;
+        const matchYear = selectedYear === 'All' || saleYear === selectedYear;
+  
+        return matchMonth && matchYear;
+      });
+  
+      console.log("Filtered Data: ", filteredData);
+  
+      const totalSalesFiltered = filteredData.reduce((acc, sale) => acc + sale.net, 0);
+      const totalCommissionFiltered = totalSalesFiltered * 0.2;
+  
+      setTotalSales(totalSalesFiltered);
+      setTotalCommission(totalCommissionFiltered);
+    }
+  }, [rawSalesData, selectedMonth, selectedYear]);
+
+
 
   const [projectNames, setProjectNames] = useState([]);
   const [projectCounts, setProjectCounts] = useState([]);
@@ -223,24 +258,25 @@ const page = () => {
   useEffect(() => {
     async function fetchUserCount() {
       try {
-        const response = await fetch('/api/getanalyst'); // เปลี่ยนเป็น endpoint ที่ถูกต้อง
+        const response = await fetch(`/api/getanalyst?month=${selectedMonth}&year=${selectedYear}`);
         const data = await response.json();
-        console.log(data); // ตรวจสอบข้อมูลที่ถูกส่งกลับมาจาก API
+        console.log(data); // ตรวจสอบข้อมูลที่ได้รับ
         setTotalUserCount(data.totalUserCount); // กำหนดค่าให้กับ state
       } catch (error) {
         console.error("Error fetching user count:", error);
       }
     }
-
+  
+    // เรียกฟังก์ชันนี้เมื่อ selectedMonth หรือ selectedYear เปลี่ยนแปลง
     fetchUserCount();
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // เรียก API เพื่อนำข้อมูล role
-        const result = await axios.get('/api/getanalyst');
+        const result = await axios.get(`/api/getanalyst?month=${selectedMonth}&year=${selectedYear}`);
         console.log('API Result:', result.data);
         const normalRoles = result.data.normalUsers.map((user: UserType) => user.roleai);
         const studentRoles = result.data.studentUsers.map((user: UserType) => user.roleai);
@@ -272,7 +308,7 @@ const page = () => {
     };
 
     fetchData();  // เรียกฟังก์ชันเพื่อดึงข้อมูลเมื่อ component ถูก mount
-  }, []);  // ใส่ dependency array ที่ว่างเพื่อให้ทำงานเพียงครั้งเดียว
+  }, [selectedMonth, selectedYear]);  // ใส่ dependency array ที่ว่างเพื่อให้ทำงานเพียงครั้งเดียว
 
   const months = [
     { value: 'All', label: "All" },
@@ -290,14 +326,6 @@ const page = () => {
     { value: "12", label: "December" },
   ];
 
-  // const years = [
-  //   { value: "2020", label: "2020" },
-  //   { value: "2021", label: "2021" },
-  //   { value: "2022", label: "2022" },
-  //   { value: "2023", label: "2023" },
-  //   { value: "2024", label: "2024" },
-  // ];
-
 
   const currentYear = new Date().getFullYear();
   const years = ['All', ...Array.from({ length: 5 }, (_, i) => (currentYear - i).toString())];
@@ -307,11 +335,11 @@ const page = () => {
     const purchaseMonth = (purchaseDate.getMonth() + 1).toString().padStart(2, '0');
     const purchaseYear = purchaseDate.getFullYear().toString();
 
-    console.log('Valid Date:', purchaseDate);
-    console.log('Purchase Month:', purchaseMonth);
-    console.log('Purchase Year:', purchaseYear);
+    // console.log('Valid Date:', purchaseDate);
+    // console.log('Purchase Month:', purchaseMonth);
+    // console.log('Purchase Year:', purchaseYear);
 
-    console.log('Checking purchase:', purchaseDate, 'Month:', purchaseMonth, 'Year:', purchaseYear);
+    // console.log('Checking purchase:', purchaseDate, 'Month:', purchaseMonth, 'Year:', purchaseYear);
 
     const matchMonth = selectedMonth === 'All' || purchaseMonth === selectedMonth;
     const matchYear = selectedYear === 'All' || purchaseYear === selectedYear;
@@ -345,9 +373,9 @@ const page = () => {
   }, [filteredPurchaseHistory]);
 
   useEffect(() => {
-    console.log('Selected month:', selectedMonth);
-    console.log('Selected year:', selectedYear);
-    console.log('Filtered history:', filteredPurchaseHistory);
+    // console.log('Selected month:', selectedMonth);
+    // console.log('Selected year:', selectedYear);
+    // console.log('Filtered history:', filteredPurchaseHistory);
   }, [selectedMonth, selectedYear, filteredPurchaseHistory]);
 
   // useEffect(() => {
