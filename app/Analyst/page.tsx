@@ -37,6 +37,7 @@ interface Purchase {
   date: string;
   category: string;
   price: number;
+  createdAt: string;
 }
 
 type DatasetType = {
@@ -199,8 +200,8 @@ const page = () => {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/getseller');
-        const salesData = await response.json(); 
-    
+        const salesData = await response.json();
+
         if (salesData && Array.isArray(salesData)) {
           setPurchaseHistory(salesData); // อัปเดต purchaseHistory ถ้า salesData เป็น array
         } else {
@@ -212,7 +213,7 @@ const page = () => {
         setLoading(false);
       }
     };
-  
+
     fetchData();
   }, []);
 
@@ -297,26 +298,32 @@ const page = () => {
   //   { value: "2024", label: "2024" },
   // ];
 
-  
+
   const currentYear = new Date().getFullYear();
   const years = ['All', ...Array.from({ length: 5 }, (_, i) => (currentYear - i).toString())];
 
   const filteredPurchaseHistory = Array.isArray(purchaseHistory) ? purchaseHistory.filter((purchase) => {
-    const purchaseDate = new Date(purchase.date);
+    const purchaseDate = new Date(purchase.createdAt);
     const purchaseMonth = (purchaseDate.getMonth() + 1).toString().padStart(2, '0');
     const purchaseYear = purchaseDate.getFullYear().toString();
-  
+
+    console.log('Valid Date:', purchaseDate);
+    console.log('Purchase Month:', purchaseMonth);
+    console.log('Purchase Year:', purchaseYear);
+
+    console.log('Checking purchase:', purchaseDate, 'Month:', purchaseMonth, 'Year:', purchaseYear);
+
     const matchMonth = selectedMonth === 'All' || purchaseMonth === selectedMonth;
     const matchYear = selectedYear === 'All' || purchaseYear === selectedYear;
-  
+
     return matchMonth && matchYear;
   }) : [];
 
   useEffect(() => {
     if (filteredPurchaseHistory && filteredPurchaseHistory.length > 0) {
-      const categories = filteredPurchaseHistory.map((data) => data.category);
-      const prices = filteredPurchaseHistory.map((data) => data.price);
-  
+      const categories = filteredPurchaseHistory.map((salesData) => salesData.category);
+      const prices = filteredPurchaseHistory.map((salesData) => salesData.price);
+
       setChartData({
         labels: categories,
         datasets: [
@@ -337,9 +344,11 @@ const page = () => {
     }
   }, [filteredPurchaseHistory]);
 
-    useEffect(() => {
-      console.log('Filtered history:', filteredPurchaseHistory);
-    }, [selectedMonth, selectedYear, purchaseHistory]);
+  useEffect(() => {
+    console.log('Selected month:', selectedMonth);
+    console.log('Selected year:', selectedYear);
+    console.log('Filtered history:', filteredPurchaseHistory);
+  }, [selectedMonth, selectedYear, filteredPurchaseHistory]);
 
   // useEffect(() => {
   //   const fetchPurchaseHistory = async () => {
@@ -355,7 +364,7 @@ const page = () => {
   //       console.error("Error fetching purchase history:", error);
   //     }
   //   };
-  
+
   //   fetchPurchaseHistory();
   // }, []);
 
@@ -372,7 +381,7 @@ const page = () => {
     redirect("/auth/signin");
     return null;
   }
-  
+
 
 
   return (
@@ -433,30 +442,30 @@ const page = () => {
               </select>
 
               <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
-            >
-              <option value="" disabled>เลือกเดือน</option>
-              {months.map((month) => (
-                <option key={month.value} value={month.value}>
-                  {month.label}
-                </option>
-              ))}
-            </select>
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
+              >
+                <option value="" disabled>เลือกเดือน</option>
+                {months.map((month) => (
+                  <option key={month.value} value={month.value}>
+                    {month.label}
+                  </option>
+                ))}
+              </select>
 
-            <select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-              className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
-            >
-              <option value="" disabled>เลือกปี</option>
-              {years.map((year) => (
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
+              >
+                <option value="" disabled>เลือกปี</option>
+                {years.map((year) => (
                   <option key={year} value={year}>
                     {year}
                   </option>
                 ))}
-            </select>
+              </select>
             </div>
 
             <div className="flex flex-row w-full mt-5">
