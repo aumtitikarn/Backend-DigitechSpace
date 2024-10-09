@@ -16,6 +16,7 @@ interface Project {
   username: string;
   facebook: string;
   line: string;
+  imageUrl: string; 
 }
 
 const usernormal: React.FC = () => {
@@ -131,7 +132,8 @@ const usernormal: React.FC = () => {
           username: user.username,
           email: user.email,
           facebook: user.facebook,
-          line: user.line
+          line: user.line,
+          imageUrl : user.imageUrl
         }));
         setProjects(formattedProjects);
       } else {
@@ -189,6 +191,7 @@ const usernormal: React.FC = () => {
                           email: project.email,
                           facebook: project.facebook,
                           line: project.line,
+                          imageUrl: project.imageUrl
                         },
                       }}>
                         {project.username}
@@ -207,6 +210,7 @@ const usernormal: React.FC = () => {
                           email: project.email,
                           facebook: project.facebook,
                           line: project.line,
+                          imageUrl: project.imageUrl
                         },
                       }}>
                       {project.name}
@@ -225,6 +229,7 @@ const usernormal: React.FC = () => {
                           email: project.email,
                           facebook: project.facebook,
                           line: project.line,
+                          imageUrl: project.imageUrl
                         },
                       }}>
                       {project.phonenumber}

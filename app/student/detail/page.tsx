@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Header from "../../component/Header";
 import { MdAccountCircle } from "react-icons/md";
 import Swal from 'sweetalert2';
+import Image from "next/image";
 
 interface UserDetails {
   username?: string | null;
@@ -23,6 +24,7 @@ interface UserDetails {
   postalnumber?: string | null;
   facebook: string | null;
   line: string | null;
+  imageUrl?: string | null;
 }
 
 const Detail: React.FC = () => {
@@ -44,6 +46,7 @@ const Detail: React.FC = () => {
     postalnumber: searchParams.get("postalnumber"),
     facebook: searchParams.get("facebook"),
     line: searchParams.get("line"),
+    imageUrl: searchParams.get("imageUrl"),
   };
   const [emailContent, setEmailContent] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -122,6 +125,33 @@ const Detail: React.FC = () => {
     }
   };
 
+  const getImageSource = () => {
+    const useProxy = (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`;
+  
+    const isValidHttpUrl = (string: string) => {
+      let url;
+      try {
+        url = new URL(string);
+      } catch (_) {
+        return false;
+      }
+      return url.protocol === "http:" || url.protocol === "https:";
+    };
+
+    if (userDetails.imageUrl && userDetails.imageUrl.length > 0) {
+      if (isValidHttpUrl(userDetails.imageUrl)) {
+        return useProxy(userDetails.imageUrl);
+      } else {
+        return `/api/imagesprofile/${userDetails.imageUrl}`;
+      }
+    }
+    
+    return null;
+  };
+
+  const imageSource = getImageSource();
+
+
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden text-black">
       <Header />
@@ -131,7 +161,27 @@ const Detail: React.FC = () => {
             <div className="w-full lg:w-[40%] h-auto flex-shrink-0 rounded-2xl border border-[#D0D8E9] bg-white shadow-[0px_0px_60.1px_-16px_#D9DDE5]">
               <div className="p-10">
                 <div className="flex items-center space-x-4 p-4">
-                  <MdAccountCircle className="text-[100px] text-gray-600" />
+                {imageSource ? (
+                  <Image
+                    width={95}
+                    height={95}
+                    src={imageSource}
+                    alt="Profile Image"
+                    unoptimized={true}
+                    style={{
+                      objectFit: "cover",
+                      borderRadius: "50%",
+                      width: "95px",
+                      height: "95px",
+                      margin: "15px",
+                    }}
+                  />
+                ) : (
+                  <MdAccountCircle
+                    className="text-[100px] text-gray-600"
+                    style={{ width: "95px", height: "95px", margin: "15px" }}
+                  />
+                )}
                   <div className="flex flex-col">
                     <span className="text-[28px] font-bold text-[#213766E5]">
                       {userDetails.username || "N/A"}
