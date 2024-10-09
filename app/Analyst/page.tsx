@@ -131,36 +131,39 @@ const page = () => {
 
   useEffect(() => {
     async function fetchFavoritesData() {
+      if (!selectedMonth || !selectedYear) return;
+  
       try {
-        const response = await fetch('/api/getfav', {
+        const response = await fetch(`/api/getfav?month=${selectedMonth}&year=${selectedYear}`, {
           method: 'GET',
         });
         const data = await response.json();
-
-        // สมมติว่าข้อมูลที่ส่งกลับจาก API มี projectNames และ projectCounts
-        setProjectNames(data.projectNames);  // กำหนดค่า projectNames
-        setProjectCounts(data.projectCounts);  // กำหนดค่า projectCounts
+        
+        // ตรวจสอบข้อมูลที่ fetch มา
+        console.log("Fetched data:", data); 
+        
+        setProjectNames(data.projectNames || []);  // ต้องเป็น array ของ string
+        setProjectCounts(data.projectCounts || []);  // ต้องเป็น array ของตัวเลข
       } catch (error) {
         console.error("Error fetching favorites data:", error);
       }
     }
-
+  
     fetchFavoritesData();
-  }, []);
-
+  }, [selectedMonth, selectedYear]);
+  
   const datafav = {
     labels: projectNames,  // ใช้ projectNames เป็น labels
     datasets: [
       {
         label: 'จำนวนโปรเจค',  // ชื่อชุดข้อมูล
-        data: projectCounts,  // ใช้ projectCounts เป็นข้อมูล
+        data: projectCounts,  // ใช้ projectCounts เป็นข้อมูล (ตรวจสอบว่าเป็น array ของตัวเลข)
         backgroundColor: 'rgba(53, 83, 155, 0.5)',
         borderColor: 'rgba(53, 83, 155, 1)',
         borderWidth: 1,
       },
     ],
   };
-
 
   const [terms, setTerms] = useState([]);
   const [totalCount, setTotalCount] = useState(0); // State to hold the total count
