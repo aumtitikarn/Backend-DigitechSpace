@@ -84,15 +84,6 @@ const Detail: React.FC = () => {
 
     fetchAdditionalData();
   }, []);
-
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
-
-  if (!session) {
-    redirect("/auth/signin");
-    return null;
-  }
   useEffect(() => {
     if (!id) return;
 
@@ -118,6 +109,16 @@ const Detail: React.FC = () => {
 
     updateStatusToPending();
   }, [id]);
+
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
+  if (!session) {
+    redirect("/auth/signin");
+    return null;
+  }
+  
   const handleApprove = async () => {
     if (!id) return;
 
@@ -274,11 +275,11 @@ const handleNotApprove = async () => {
         <div className="flex flex-col min-h-screen ">
           {/* Slider Section */}
           <div className="flex flex-col items-center p-4">
-            <div className="relative w-full h-auto overflow-hidden rounded-lg">
+            <div className="relative w-full h-[500px] overflow-hidden rounded-lg">
               {imageUrl.length > 0 && (
                 <img
                 src={`/api/project/images/${imageUrl[currentIndex]}`}
-                  className="w-full h-auto object-cover rounded-lg"
+                  className="w-full h-full object-cover"
                   onError={(e) => console.error('Image failed to load:', e)}
                 />
               )}
@@ -361,26 +362,6 @@ const handleNotApprove = async () => {
    </div>
 
                 </div>
-
-                {/* Buttons Section */}
-                <div className="flex justify-center mt-5 space-x-2 md:space-x-20 lg:space-x-10">
-                  <button
-                    onClick={() => handleNotApprove()}
-                    className={`bg-[#666666] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base ${!rejectText ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    disabled={!rejectText}
-                  >
-                    ไม่อนุมัติ
-                  </button>
-                  
-                  <button
-                    onClick={() => handleApprove()}
-                    className="bg-[#33529B] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Processing...' : 'อนุมัติ'}
-                  </button>
-                </div>
-
                 {statusMessage && (
                   <p className={`mt-2 ${statusMessage.includes('failed') ? 'text-red-500' : 'text-green-500'}`}>
                     {statusMessage}
@@ -403,6 +384,24 @@ const handleNotApprove = async () => {
               <p>Loading project details...</p>
             )}
           </div>
+          {/* Buttons Section */}
+          <div className="flex justify-center mt-5 space-x-2 md:space-x-20 lg:space-x-10">
+                  <button
+                    onClick={() => handleNotApprove()}
+                    className={`bg-[#666666] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base ${!rejectText ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    disabled={!rejectText}
+                  >
+                    ไม่อนุมัติ
+                  </button>
+                  
+                  <button
+                    onClick={() => handleApprove()}
+                    className="bg-[#33529B] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Processing...' : 'อนุมัติ'}
+                  </button>
+                </div>
         </div>
       </div>
     </main>
