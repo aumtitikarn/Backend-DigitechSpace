@@ -13,6 +13,7 @@ const projects = mongoose.models.projects || mongoose.model('projects', new mong
     category: String,
     filesUrl: Array,
     status: String,
+    createdAt: Date,
   }));
 
   export { projects };

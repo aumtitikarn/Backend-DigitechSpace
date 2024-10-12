@@ -10,36 +10,31 @@ export async function GET(req) {
     const transactions = await orders.find({}).lean();
     console.log("Fetched transactions:", transactions); // Log transactions
 
-    // Check if transactions array is empty
     if (transactions.length === 0) {
       console.log("No transactions found.");
     }
 
-    // Debug: Log net values for each transaction
     transactions.forEach(order => {
-      console.log(`Order net value: ${order.net}`);
+      console.log(`Order net value: ${order.net}, createdAt: ${order.createdAt}`);
     });
 
-    // Calculate total sales by summing the 'net' field
     const totalSales = transactions.reduce((acc, order) => acc + order.net, 0);
     console.log("Total Sales:", totalSales);
 
-    // Calculate total commission as 20% of net
     const totalCommission = transactions.reduce((acc, order) => {
       const commission = order.net * 0.2;
-      console.log(`Commission for order (${order._id}): ${commission}`); // Debug each commission
+      console.log(`Commission for order (${order._id}): ${commission}`);
       return acc + commission;
     }, 0);
 
-    console.log("Total Commission (20% of Net):", totalCommission);
-
-    return new Response(JSON.stringify({ totalSales, totalCommission }), {
+    // ส่ง transactions กลับไปด้วย โดยมี createdAt เพื่อใช้หาเดือนและปี
+    return new Response(JSON.stringify({ totalSales, totalCommission, transactions }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     console.error("Error fetching transactions:", error);
-    return new Response(JSON.stringify({ message: "Error fetching data" }), {
+    return new Response(JSON.stringify({ message: "Error fetching data", error: error.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

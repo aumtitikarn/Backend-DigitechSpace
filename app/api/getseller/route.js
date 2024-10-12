@@ -24,7 +24,6 @@ export async function GET(req) {
     console.log("Product IDs from orders: ", productIds);
 
     // Fetch products that were sold based on the product IDs
-    console.log("Product IDs to fetch: ", productIds); // Log the product IDs array
     const products = await projects.find({ _id: { $in: productIds } });
     console.log("Fetched Products: ", products);
 
@@ -36,11 +35,17 @@ export async function GET(req) {
       });
     }
 
-    // Prepare sales data with price and category
-    const salesData = products.map((product) => ({
-      price: product.price,
-      category: product.category,
-    }));
+    // Prepare sales data with price, category, and createdAt
+    const salesData = products.map((product) => {
+      // Find the corresponding order for this product
+      const correspondingOrder = orders.find(order => order.product.toString() === product._id.toString());
+      
+      return {
+        price: product.price,
+        category: product.category,
+        createdAt: correspondingOrder ? correspondingOrder.createdAt : null // Use the createdAt from the corresponding order
+      };
+    });
 
     // Return the sales data as JSON with a 200 status
     return new Response(JSON.stringify(salesData), {

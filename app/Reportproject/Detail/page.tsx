@@ -1,7 +1,7 @@
 "use client";
 
 import Header from "../../component/Header";
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 
@@ -16,7 +16,6 @@ const Detail: React.FC = () => {
   const email = searchParams.get("email");
   const author = searchParams.get("author");
   const projectId = searchParams.get("projectId");
- 
 
   // Function to format date
   const formatDate = (timestamp: string | null) => {
@@ -228,6 +227,9 @@ const Detail: React.FC = () => {
     }
   };
 
+
+
+
   
 
   return (
@@ -294,55 +296,7 @@ const Detail: React.FC = () => {
         </div>
       </main>
     </div>
-    // <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
-    //   <Header />
-    //   <main className="flex-grow">
-    //     <div className="lg:mx-60 mt-10 mb-5 mx-20">
-    //       {/* Container for content and buttons */}
-    //       <div className="w-full mt-2 lg:w-2/3 mx-auto">
-    //         {/* Content */}
-    //         <div className="flex flex-col gap-4">
-    //           <h2 className="text-xl font-bold mb-5 text-black">รายงานโครงงาน {name || ""}</h2>
-    //           <h3 className="text-lg text-gray-700 mb-2 text-black">โดย คุณ {username || ""}</h3>
-    //           <h4 className="text-xl font-bold mb-2 text-black">คำร้อง</h4>
-    //           <p className="text-lg text-gray-700 mb-2 text-black">{report || ""}</p>
-    //           <h4 className="text-xl font-bold mb-2 text-black">ข้อความเพิ่มเติม</h4>
-    //           <p className="text-lg text-gray-700 mb-2 text-black">{more || ""}</p>
-    //           <h4 className="text-xl font-bold mb-2 text-black">ข้อมูลเจ้าของโครงงาน</h4>
-    //           <p className="text-lg text-gray-700 mb-2 text-black">ชื่อ: {author || ""}</p>
-    //           <p className="text-lg text-gray-700 mb-2 text-black">อีเมล: {email || ""}</p>
-    //           <h4 className="text-xl font-bold mb-2 text-black">วันที่/เวลา</h4>
-    //           <p className="text-lg text-gray-700 mb-4 text-black">{formatDate(createdAt)}</p>
-    //         </div>
-
-    //         {/* Buttons */}
-    //         <div className="mt-6 flex flex-col gap-4">
-    //           <button
-    //             onClick={() => handleSubmit1(id)}
-    //             className="w-full p-2 text-white rounded"
-    //             style={{ backgroundColor: "#33539B" }}
-    //           >
-    //             ลบคำร้อง
-    //           </button>
-    //           <button
-    //              onClick={() => handleSubmit2(id)}
-    //             className="w-full p-2 text-white rounded"
-    //             style={{ backgroundColor: "#1976D2" }}
-    //           >
-    //             ติดต่อเจ้าของโครงงาน/บล็อก
-    //           </button>
-    //           <button
-    //             onClick={() => handleSubmit3(projectId)}
-    //             className="w-full p-2 text-white rounded"
-    //             style={{ backgroundColor: "#9B3933" }}
-    //           >
-    //             ลบโครงงาน/บล็อก
-    //           </button>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   </main>
-    // </div>
+  
   );
 };
 

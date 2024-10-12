@@ -1,9 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from "next/navigation";
 import Header from "../../component/Header";
 import { MdAccountCircle } from "react-icons/md";
+import Swal from 'sweetalert2';
+import Image from "next/image";
 
 interface UserDetails {
   username?: string | null;
@@ -22,6 +24,7 @@ interface UserDetails {
   postalnumber?: string | null;
   facebook: string | null;
   line: string | null;
+  imageUrl?: string | null;
 }
 
 const Detail: React.FC = () => {
@@ -43,7 +46,111 @@ const Detail: React.FC = () => {
     postalnumber: searchParams.get("postalnumber"),
     facebook: searchParams.get("facebook"),
     line: searchParams.get("line"),
+    imageUrl: searchParams.get("imageUrl"),
   };
+  const [emailContent, setEmailContent] = useState('');
+  const [isSending, setIsSending] = useState(false);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+ 
+
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      adjustHeight();
+    }
+  }, [emailContent]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEmailContent(e.target.value);
+    adjustHeight();
+  };
+
+  const adjustHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
+  const sendEmail = async () => {
+    if (!userDetails.email) {
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: 'ไม่พบอีเมลของผู้ใช้',
+      });
+      return;
+    }
+
+    setIsSending(true);
+
+    try {
+      const response = await fetch('/api/sendemail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: userDetails.email,
+          subject: "Digitech Space",
+          emailContent: emailContent,
+        }),
+      });
+
+      if (response.ok) {
+        Swal.fire({
+          icon: 'success',
+          title: 'สำเร็จ',
+          text: 'ส่งอีเมลสำเร็จ',
+        });
+        setEmailContent('');
+      } else {
+        const errorData = await response.json();
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: `เกิดข้อผิดพลาดในการส่งอีเมล: ${errorData.message}`,
+        });
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: 'เกิดข้อผิดพลาดในการส่งอีเมล',
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const getImageSource = () => {
+    const useProxy = (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`;
+  
+    const isValidHttpUrl = (string: string) => {
+      let url;
+      try {
+        url = new URL(string);
+      } catch (_) {
+        return false;
+      }
+      return url.protocol === "http:" || url.protocol === "https:";
+    };
+
+    if (userDetails.imageUrl && userDetails.imageUrl.length > 0) {
+      if (isValidHttpUrl(userDetails.imageUrl)) {
+        return useProxy(userDetails.imageUrl);
+      } else {
+        return `/api/imagesprofile/${userDetails.imageUrl}`;
+      }
+    }
+    
+    return null;
+  };
+
+  const imageSource = getImageSource();
+
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden text-black">
@@ -54,7 +161,27 @@ const Detail: React.FC = () => {
             <div className="w-full lg:w-[40%] h-auto flex-shrink-0 rounded-2xl border border-[#D0D8E9] bg-white shadow-[0px_0px_60.1px_-16px_#D9DDE5]">
               <div className="p-10">
                 <div className="flex items-center space-x-4 p-4">
-                  <MdAccountCircle className="text-[100px] text-gray-600" />
+                {imageSource ? (
+                  <Image
+                    width={95}
+                    height={95}
+                    src={imageSource}
+                    alt="Profile Image"
+                    unoptimized={true}
+                    style={{
+                      objectFit: "cover",
+                      borderRadius: "50%",
+                      width: "95px",
+                      height: "95px",
+                      margin: "15px",
+                    }}
+                  />
+                ) : (
+                  <MdAccountCircle
+                    className="text-[100px] text-gray-600"
+                    style={{ width: "95px", height: "95px", margin: "15px" }}
+                  />
+                )}
                   <div className="flex flex-col">
                     <span className="text-[28px] font-bold text-[#213766E5]">
                       {userDetails.username || "N/A"}
@@ -153,7 +280,7 @@ const Detail: React.FC = () => {
                   ที่อยู่
                 </p>
                 <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
-                  <div className="w-full sm:w-[40%]">
+                  <div className="w-full sm:w-1/2">
                     <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
                       บ้านเลขที่, ซอย, หมู่
                     </p>
@@ -164,7 +291,7 @@ const Detail: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="w-full sm:w-[60%]">
+                  <div className="w-full sm:w-1/2">
                     <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
                       ตำบล
                     </p>
@@ -176,7 +303,8 @@ const Detail: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="w-full mt-3">
+                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
+                <div className="w-full sm:w-1/2">
                   <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
                     อำเภอ
                   </p>
@@ -187,7 +315,7 @@ const Detail: React.FC = () => {
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
+                
                   <div className="w-full sm:w-1/2">
                     <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
                       จังหวัด
@@ -199,6 +327,8 @@ const Detail: React.FC = () => {
                       </p>
                     </div>
                   </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-3">
                   <div className="w-full sm:w-1/2">
                     <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
                       รหัสไปรษณีย์
@@ -209,7 +339,27 @@ const Detail: React.FC = () => {
                         {userDetails.postalnumber || "N/A"}
                       </p>
                     </div>
-                  </div>
+                    </div>
+                </div>
+                <div className="my-10 w-full border-t-2 border-dashed border-[#9CB1E0] opacity-34"></div>
+                <div className="w-full mt-3">
+                  <p className="text-[#6C7996A6] text-[16px] mb-1 font-semibold">
+                    ส่งอีเมลหาผู้ใช้
+                  </p>
+                  <textarea
+                    ref={textareaRef}
+                    className="w-full min-h-[50px] px-4 py-2 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD] focus:outline-none focus:ring-2 focus:ring-[#5D76AD] resize-none overflow-hidden"
+                    placeholder="ข้อความอีเมล"
+                    value={emailContent}
+                    onChange={handleChange}
+                  />
+                  <button 
+                    className="mt-5 w-auto lg:w-full py-3 flex-shrink-0 rounded-[10px] bg-[#5D76AD] text-white font-semibold flex items-center justify-center hover:bg-[#4A5F8C] transition-colors duration-300"
+                    onClick={sendEmail}
+                    disabled={isSending}
+                  >
+                    {isSending ? 'กำลังส่ง...' : 'ส่งอีเมล'}
+                  </button>
                 </div>
               </div>
             </div>

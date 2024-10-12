@@ -66,16 +66,6 @@ const Detail: React.FC = () => {
     fetchProject();
   }, [id]);
 
-
-
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
-
-  if (!session) {
-    redirect("/auth/signin");
-    return null;
-  }
   useEffect(() => {
     if (!id) return;
 
@@ -101,6 +91,16 @@ const Detail: React.FC = () => {
 
     updateStatusToPending();
   }, [id]);
+
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
+  if (!session) {
+    redirect("/auth/signin");
+    return null;
+  }
+  
   const handleApprove = async () => {
     if (!id) return;
 
@@ -268,6 +268,7 @@ return (
                   alt="Project Image"
                    className="object-cover w-full h-full"
                    />
+
               <button
                 onClick={handlePrevClick}
                 className="absolute left-10 top-1/2 transform -translate-y-1/2 text-gray-500 p-2 rounded-full text-4xl bg-gray-100"
@@ -356,6 +357,7 @@ return (
                      ))}
                     </div>
 
+
                     </div>
 
                 {/* Buttons Section */}
@@ -376,7 +378,6 @@ return (
                     {isLoading ? 'Processing...' : 'อนุมัติ'}
                   </button>
                 </div>
-
                 {statusMessage && (
                   <p className={`mt-2 ${statusMessage.includes('failed') ? 'text-red-500' : 'text-green-500'}`}>
                     {statusMessage}
@@ -399,6 +400,24 @@ return (
               <p>Loading project details...</p>
             )}
           </div>
+          {/* Buttons Section */}
+          <div className="flex justify-center mt-5 space-x-2 md:space-x-20 lg:space-x-10">
+                  <button
+                    onClick={() => handleNotApprove()}
+                    className={`bg-[#666666] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base ${!rejectText ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    disabled={!rejectText}
+                  >
+                    ไม่อนุมัติ
+                  </button>
+                  
+                  <button
+                    onClick={() => handleApprove()}
+                    className="bg-[#33529B] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Processing...' : 'อนุมัติ'}
+                  </button>
+                </div>
         </div>
       </div>
       </div>

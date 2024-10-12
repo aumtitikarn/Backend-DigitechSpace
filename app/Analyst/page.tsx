@@ -37,6 +37,13 @@ interface Purchase {
   date: string;
   category: string;
   price: number;
+  createdAt: string;
+}
+
+interface Term {
+  _id: string;
+  term: string;
+  count: number;
 }
 
 type DatasetType = {
@@ -55,6 +62,10 @@ type UserType = {
   roleai: string;
 };
 
+type Sale = {
+  createdAt: string;
+};
+
 
 const page = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -70,8 +81,9 @@ const page = () => {
     datasets: [],
   });
 
+  const [rawSalesData, setRawSalesData] = useState<Sale[]>([]);; // State สำหรับเก็บข้อมูลดิบที่ดึงมาจาก API
   const [totalSales, setTotalSales] = useState(0);
-  const [totalCommission, setTotalCommission] = useState(0); // New state for commission
+  const [totalCommission, setTotalCommission] = useState(0);
 
   useEffect(() => {
     async function fetchTotalSales() {
@@ -80,8 +92,9 @@ const page = () => {
           method: 'GET',
         });
         const data = await response.json();
-        setTotalSales(data.totalSales); // Total net sales
-        setTotalCommission(data.totalCommission); // 20% of net sales
+
+        console.log("Sales data from API: ", data.transactions);  // ตรวจสอบข้อมูล
+        setRawSalesData(data.transactions || []);
       } catch (error) {
         console.error("Error fetching total sales and commission:", error);
       }
@@ -90,34 +103,67 @@ const page = () => {
     fetchTotalSales();
   }, []);
 
+  useEffect(() => {
+    if (rawSalesData.length > 0) {
+      const filteredData = rawSalesData.filter((sale) => {
+        const saleDate = new Date(sale.createdAt);
+        const saleMonth = (saleDate.getMonth() + 1).toString().padStart(2, '0');
+        const saleYear = saleDate.getFullYear().toString();
+
+        // ตรวจสอบค่าที่กรอง
+        console.log(`Sale Month: ${saleMonth}, Sale Year: ${saleYear}`);
+        console.log(`Selected Month: ${selectedMonth}, Selected Year: ${selectedYear}`);
+
+        const matchMonth = selectedMonth === 'All' || saleMonth === selectedMonth;
+        const matchYear = selectedYear === 'All' || saleYear === selectedYear;
+
+        return matchMonth && matchYear;
+      });
+
+      console.log("Filtered Data: ", filteredData);
+
+      const totalSalesFiltered = filteredData.reduce((acc, sale) => acc + sale.net, 0);
+      const totalCommissionFiltered = totalSalesFiltered * 0.2;
+
+      setTotalSales(totalSalesFiltered);
+      setTotalCommission(totalCommissionFiltered);
+    }
+  }, [rawSalesData, selectedMonth, selectedYear]);
+
+
+
   const [projectNames, setProjectNames] = useState([]);
   const [projectCounts, setProjectCounts] = useState([]);
 
   useEffect(() => {
     async function fetchFavoritesData() {
+      if (!selectedMonth || !selectedYear) return;
+
       try {
-        const response = await fetch('/api/getfav', {
+        const response = await fetch(`/api/getfav?month=${selectedMonth}&year=${selectedYear}`, {
           method: 'GET',
         });
         const data = await response.json();
 
-        // สมมติว่าข้อมูลที่ส่งกลับจาก API มี projectNames และ projectCounts
-        setProjectNames(data.projectNames);  // กำหนดค่า projectNames
-        setProjectCounts(data.projectCounts);  // กำหนดค่า projectCounts
+        // ตรวจสอบข้อมูลที่ fetch มา
+        console.log("Fetched data:", data);
+
+        setProjectNames(data.projectNames || []);  // ต้องเป็น array ของ string
+        setProjectCounts(data.projectCounts || []);  // ต้องเป็น array ของตัวเลข
       } catch (error) {
         console.error("Error fetching favorites data:", error);
       }
     }
 
     fetchFavoritesData();
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
   const datafav = {
     labels: projectNames,  // ใช้ projectNames เป็น labels
     datasets: [
       {
         label: 'จำนวนโปรเจค',  // ชื่อชุดข้อมูล
-        data: projectCounts,  // ใช้ projectCounts เป็นข้อมูล
+        data: projectCounts,  // ใช้ projectCounts เป็นข้อมูล (ตรวจสอบว่าเป็น array ของตัวเลข)
         backgroundColor: 'rgba(53, 83, 155, 0.5)',
         borderColor: 'rgba(53, 83, 155, 1)',
         borderWidth: 1,
@@ -125,36 +171,35 @@ const page = () => {
     ],
   };
 
-
-  const [terms, setTerms] = useState([]);
-  const [totalCount, setTotalCount] = useState(0); // State to hold the total count
+  const [terms, setTerms] = useState<Term[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
 
   useEffect(() => {
     async function fetchTerms() {
       try {
-        const response = await fetch('/api/getsearch', {
+        const response = await fetch(`/api/getsearch?month=${selectedMonth}&year=${selectedYear}`, {
           method: 'GET',
         });
-
+  
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-
-        const data = await response.json();
+  
+        const data: { terms: Term[]; count: number } = await response.json();
+  
         console.log("ข้อมูลตาราง", data);
-
+  
         // Set the terms and the total count
         setTerms(data.terms); // จะได้แค่ 10 รายการ
         setTotalCount(data.count); // Set total count from the API
-
+  
       } catch (error) {
         console.error("Error fetching search terms:", error);
       }
     }
-
+  
     fetchTerms();
-  }, []);
-
+  }, [selectedMonth, selectedYear]);
 
   const [loading, setLoading] = useState(true);  // เพิ่ม state สำหรับ loading
   const [error, setError] = useState(null);
@@ -199,8 +244,8 @@ const page = () => {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/getseller');
-        const salesData = await response.json(); 
-    
+        const salesData = await response.json();
+
         if (salesData && Array.isArray(salesData)) {
           setPurchaseHistory(salesData); // อัปเดต purchaseHistory ถ้า salesData เป็น array
         } else {
@@ -212,7 +257,7 @@ const page = () => {
         setLoading(false);
       }
     };
-  
+
     fetchData();
   }, []);
 
@@ -222,24 +267,25 @@ const page = () => {
   useEffect(() => {
     async function fetchUserCount() {
       try {
-        const response = await fetch('/api/getanalyst'); // เปลี่ยนเป็น endpoint ที่ถูกต้อง
+        const response = await fetch(`/api/getanalyst?month=${selectedMonth}&year=${selectedYear}`);
         const data = await response.json();
-        console.log(data); // ตรวจสอบข้อมูลที่ถูกส่งกลับมาจาก API
+        console.log(data); // ตรวจสอบข้อมูลที่ได้รับ
         setTotalUserCount(data.totalUserCount); // กำหนดค่าให้กับ state
       } catch (error) {
         console.error("Error fetching user count:", error);
       }
     }
 
+    // เรียกฟังก์ชันนี้เมื่อ selectedMonth หรือ selectedYear เปลี่ยนแปลง
     fetchUserCount();
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // เรียก API เพื่อนำข้อมูล role
-        const result = await axios.get('/api/getanalyst');
+        const result = await axios.get(`/api/getanalyst?month=${selectedMonth}&year=${selectedYear}`);
         console.log('API Result:', result.data);
         const normalRoles = result.data.normalUsers.map((user: UserType) => user.roleai);
         const studentRoles = result.data.studentUsers.map((user: UserType) => user.roleai);
@@ -271,7 +317,7 @@ const page = () => {
     };
 
     fetchData();  // เรียกฟังก์ชันเพื่อดึงข้อมูลเมื่อ component ถูก mount
-  }, []);  // ใส่ dependency array ที่ว่างเพื่อให้ทำงานเพียงครั้งเดียว
+  }, [selectedMonth, selectedYear]);  // ใส่ dependency array ที่ว่างเพื่อให้ทำงานเพียงครั้งเดียว
 
   const months = [
     { value: 'All', label: "All" },
@@ -289,34 +335,32 @@ const page = () => {
     { value: "12", label: "December" },
   ];
 
-  // const years = [
-  //   { value: "2020", label: "2020" },
-  //   { value: "2021", label: "2021" },
-  //   { value: "2022", label: "2022" },
-  //   { value: "2023", label: "2023" },
-  //   { value: "2024", label: "2024" },
-  // ];
 
-  
   const currentYear = new Date().getFullYear();
   const years = ['All', ...Array.from({ length: 5 }, (_, i) => (currentYear - i).toString())];
 
   const filteredPurchaseHistory = Array.isArray(purchaseHistory) ? purchaseHistory.filter((purchase) => {
-    const purchaseDate = new Date(purchase.date);
+    const purchaseDate = new Date(purchase.createdAt);
     const purchaseMonth = (purchaseDate.getMonth() + 1).toString().padStart(2, '0');
     const purchaseYear = purchaseDate.getFullYear().toString();
-  
+
+    // console.log('Valid Date:', purchaseDate);
+    // console.log('Purchase Month:', purchaseMonth);
+    // console.log('Purchase Year:', purchaseYear);
+
+    // console.log('Checking purchase:', purchaseDate, 'Month:', purchaseMonth, 'Year:', purchaseYear);
+
     const matchMonth = selectedMonth === 'All' || purchaseMonth === selectedMonth;
     const matchYear = selectedYear === 'All' || purchaseYear === selectedYear;
-  
+
     return matchMonth && matchYear;
   }) : [];
 
   useEffect(() => {
     if (filteredPurchaseHistory && filteredPurchaseHistory.length > 0) {
-      const categories = filteredPurchaseHistory.map((data) => data.category);
-      const prices = filteredPurchaseHistory.map((data) => data.price);
-  
+      const categories = filteredPurchaseHistory.map((salesData) => salesData.category);
+      const prices = filteredPurchaseHistory.map((salesData) => salesData.price);
+
       setChartData({
         labels: categories,
         datasets: [
@@ -337,9 +381,11 @@ const page = () => {
     }
   }, [filteredPurchaseHistory]);
 
-    useEffect(() => {
-      console.log('Filtered history:', filteredPurchaseHistory);
-    }, [selectedMonth, selectedYear, purchaseHistory]);
+  useEffect(() => {
+    // console.log('Selected month:', selectedMonth);
+    // console.log('Selected year:', selectedYear);
+    // console.log('Filtered history:', filteredPurchaseHistory);
+  }, [selectedMonth, selectedYear, filteredPurchaseHistory]);
 
   // useEffect(() => {
   //   const fetchPurchaseHistory = async () => {
@@ -355,7 +401,7 @@ const page = () => {
   //       console.error("Error fetching purchase history:", error);
   //     }
   //   };
-  
+
   //   fetchPurchaseHistory();
   // }, []);
 
@@ -372,7 +418,7 @@ const page = () => {
     redirect("/auth/signin");
     return null;
   }
-  
+
 
 
   return (
@@ -396,67 +442,32 @@ const page = () => {
                 ประจำเดือน
               </p>
               {/* Category Dropdown */}
+
               <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
                 className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
               >
-                <option value="" disabled>Select Category</option>
-                <option value="Document">Document</option>
-                <option value="Model/3D">Model/3D</option>
-                <option value="Website">Website</option>
-                <option value="MobileApp">MobileApp</option>
-                <option value="Datasets">Datasets</option>
-                <option value="AI">AI</option>
-                <option value="IOT">IOT</option>
-                <option value="Program">Program</option>
-                <option value="Photo/Art">Photo/Art</option>
-                <option value="Other">Other</option>
+                <option value="" disabled>เลือกเดือน</option>
+                {months.map((month) => (
+                  <option key={month.value} value={month.value}>
+                    {month.label}
+                  </option>
+                ))}
               </select>
 
               <select
-                value={selectedCategory1}
-                onChange={(e) => setSelectedCategory1(e.target.value)}
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
                 className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
               >
-                <option value="" disabled>Select Category</option>
-                <option value="Document">Document</option>
-                <option value="Model/3D">Model/3D</option>
-                <option value="Website">Website</option>
-                <option value="MobileApp">MobileApp</option>
-                <option value="Datasets">Datasets</option>
-                <option value="AI">AI</option>
-                <option value="IOT">IOT</option>
-                <option value="Program">Program</option>
-                <option value="Photo/Art">Photo/Art</option>
-                <option value="Other">Other</option>
-              </select>
-
-              <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
-            >
-              <option value="" disabled>เลือกเดือน</option>
-              {months.map((month) => (
-                <option key={month.value} value={month.value}>
-                  {month.label}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-              className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
-            >
-              <option value="" disabled>เลือกปี</option>
-              {years.map((year) => (
+                <option value="" disabled>เลือกปี</option>
+                {years.map((year) => (
                   <option key={year} value={year}>
                     {year}
                   </option>
                 ))}
-            </select>
+              </select>
             </div>
 
             <div className="flex flex-row w-full mt-5">
@@ -536,7 +547,6 @@ const page = () => {
                   ))}
                 </tbody>
               </table>
-
             </div>
 
             <div className="flex flex-col w-full mt-5">
