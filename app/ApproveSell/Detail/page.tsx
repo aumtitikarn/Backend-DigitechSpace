@@ -400,24 +400,6 @@ return (
               <p>Loading project details...</p>
             )}
           </div>
-          {/* Buttons Section */}
-          <div className="flex justify-center mt-5 space-x-2 md:space-x-20 lg:space-x-10">
-                  <button
-                    onClick={() => handleNotApprove()}
-                    className={`bg-[#666666] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base ${!rejectText ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    disabled={!rejectText}
-                  >
-                    ไม่อนุมัติ
-                  </button>
-                  
-                  <button
-                    onClick={() => handleApprove()}
-                    className="bg-[#33529B] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Processing...' : 'อนุมัติ'}
-                  </button>
-                </div>
         </div>
       </div>
       </div>
