@@ -10,7 +10,6 @@ interface Project {
   projectname: string;
   description: string;
   price: number;
-  author: string;
   receive: string[];
   permission: boolean;
   rathing: number;
@@ -20,6 +19,9 @@ interface Project {
   filesUrl: string[];
   imageUrl: string[];
   status?: string; // Add this if status is optional
+  email: string;
+  profileImage: string;
+  authorName: string;
 }
 
 const ApproveSell: React.FC = () => {
@@ -101,11 +103,14 @@ const ApproveSell: React.FC = () => {
                     <tr key={project._id}>
                       <td className="border border-gray-400 p-2 text-center text-black"> {indexOfFirstItem + index + 1}.</td>
                       <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
-                        <Link href={`/ApproveSell/Detail?_id=${project._id}`}>
-                          {project.projectname}
-                        </Link>
+                      <Link 
+  href={`/ApproveSell/Detail?_id=${project._id}&profileImage=${encodeURIComponent(project.profileImage)}&authorName=${encodeURIComponent(project.authorName)}`}
+>
+  {project.projectname}
+</Link>
+
                       </td>
-                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">{project.author}</td>
+                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">{project.authorName}</td>
                       <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">{project.price}</td>
                     </tr>
                   ))

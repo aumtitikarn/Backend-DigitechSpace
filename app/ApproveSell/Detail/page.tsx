@@ -9,14 +9,12 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Link from "next/link";
 import Header from "../../component/Header";
 import { useRouter } from 'next/navigation';
-
+import Image from "next/image";
 interface Project {
   _id: string;
   projectname: string;
   description: string;
-  email: string;
   price: number;
-  author: string;
   receive: string[];
   permission: boolean;
   rathing: number;
@@ -25,6 +23,9 @@ interface Project {
   category: string;
   filesUrl: string[];
   imageUrl: string[];
+  status?: string; // Add this if status is optional
+  email: string;
+
 }
 
 const Detail: React.FC = () => {
@@ -37,6 +38,9 @@ const Detail: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get("_id");
+  const profileImage = searchParams.get("profileImage");
+  const authorName = searchParams.get("authorName");
+
   
   useEffect(() => {
     const fetchProject = async () => {
@@ -62,27 +66,7 @@ const Detail: React.FC = () => {
     fetchProject();
   }, [id]);
 
-  useEffect(() => {
-    const fetchAdditionalData = async () => {
-      try {
-        const response = await fetch(`http://localhost:3000/api/project`, {
-          method: "GET",
-          cache: "no-store"
-        });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch additional project data');
-        }
-
-        const data = await response.json();
-        console.log('Additional data:', data);
-      } catch (error) {
-        console.error('Error fetching additional project data:', error);
-      }
-    };
-
-    fetchAdditionalData();
-  }, []);
 
   if (status === "loading") {
     return <p>Loading...</p>;
@@ -158,6 +142,7 @@ const Detail: React.FC = () => {
         }
 
         setStatusMessage('Project approved successfully and notification sent.');
+        router.back();
     } catch (error) {
         console.error('Error approving project:', error);
         setStatusMessage(`Approval failed.`); // แสดงข้อความผิดพลาดที่ชัดเจน
@@ -210,7 +195,7 @@ const handleNotApprove = async () => {
     }
 
     setStatusMessage('Project has been successfully rejected and notification has been sent.');
-
+    router.back();
     // Redirect to the ApproveSell page
     router.push('/ApproveSell');
   } catch (error) {
@@ -307,11 +292,23 @@ return (
                     </p>
                     <div className="flex items-center">
                       <p className="text-sm text-gray-600 mr-2">by</p>
-                      <span className="text-gray-500 mr-2 text-2xl">
-                        <MdAccountCircle />
-                      </span>
+                      <span className="text-gray-500  text-3xl mr-2">
+                      {profileImage ? (
+                        <Image
+                          src={profileImage}
+                          alt="Author Profile"
+                          width={30}
+                          height={30}
+                          className="rounded-full"
+                        />
+                      ) : (
+                        <span className="text-gray-500 text-3xl mr-2">
+                          <MdAccountCircle />
+                        </span>
+                      )}
+                    </span>
                       <p className="text-sm text-gray-600 truncate w-[150px]">
-                        {project.author}
+                        {authorName}
                       </p>
                     </div>
                     <p className="text-lg font-bold mt-3 text-[#33529B]">

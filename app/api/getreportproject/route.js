@@ -3,11 +3,9 @@ import Reportprojet from "../../../models/reportprojet";
 import Project from "../../../models/projects";
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
-import Order from "../../../models/orders"; // ตรวจสอบให้แน่ใจว่าเส้นทางถูกต้อง
+import Order from "../../../models/orders"; 
+import Favorites from "../../../models/favorites";
 
-
-
-// Function to handle POST request
 // Function to handle POST request
 export async function POST(req) {
   try {
@@ -102,41 +100,51 @@ export async function GET() {
     }
 }
 
-
 // Function to handle DELETE request
 export async function DELETE(req) {
   try {
-      await connectMongoDB();
-      const { projectId } = await req.json();
-      
-      // Validate projectId
-      if (!projectId) {
-          return NextResponse.json({ msg: "Missing projectId" }, { status: 400 });
-      }
+    // Connect to the MongoDB database
+    await connectMongoDB();
 
-      console.log("Deleting project with projectId:", projectId);
+    // Extract the projectId from the request body
+    const { projectId } = await req.json();
 
-      // ลบ project จากคอลเลกชัน Reportprojet
-      const deletedReport = await Reportprojet.findOneAndDelete({ projectId });
-      const deletedOrders = await Order.deleteMany({ product }); // ลบจาก Orders
+    // Validate if the projectId exists
+    if (!projectId) {
+      return NextResponse.json({ msg: "Missing projectId" }, { status: 400 });
+    }
 
-      if (!deletedReport || !deletedOrders) {
-          console.error("Project not found in Reportprojet for projectId:", projectId);
-          return NextResponse.json({ msg: "Project not found in Reportprojet" }, { status: 404 });
-      }
+    console.log("Deleting project and associated data with projectId:", projectId);
 
-      // ลบ project จากคอลเลกชัน projects โดยตรวจสอบ _id ตรงกับ projectId
-      const deletedProject = await Project.findByIdAndDelete(projectId);
+    // ลบคำร้องที่เกี่ยวข้องกับ projectId ใน Reportprojet
+    const deletedReportprojet = await Reportprojet.deleteMany({ projectId });
+    console.log("Deleted reports:", deletedReportprojet.deletedCount);
 
-      if (!deletedProject) {
-          console.error("Project not found in projects for _id:", projectId);
-          return NextResponse.json({ msg: "Project not found in projects" }, { status: 404 });
-      }
+    // ลบ projectId ที่ตรงกันจาก Orders collection
+    const deletedOrders = await Order.deleteMany({ product: projectId });
+    console.log("Deleted orders:", deletedOrders.deletedCount); // ใช้ deleteMany เพื่อให้แน่ใจว่าลบได้ทั้งหมด
 
-      console.log("Project deleted successfully from all collections");
-      return NextResponse.json({ message: "Project deleted successfully from all collections" }, { status: 200 });
+    // ลบ projectId จาก Favorites collection โดยใช้ $pull
+    const deletedFavorites = await Favorites.updateMany(
+      {},
+      { $pull: { projectId: projectId } }
+    );
+    console.log("Updated favorites:", deletedFavorites.modifiedCount);
+
+    // ลบ project จาก projects collection
+    const deletedProject = await Project.findOneAndDelete({ _id: projectId });
+
+    // ตรวจสอบว่าลบ project สำเร็จหรือไม่
+    if (!deletedProject || !deletedOrders) {
+      console.error("Project not found in projects for _id:", projectId);
+      return NextResponse.json({ msg: "Project not found in projects" }, { status: 404 });
+    }
+
+    console.log("Project and associated data deleted successfully");
+    return NextResponse.json({ message: "Project and associated data deleted successfully" }, { status: 200 });
+
   } catch (error) {
-      console.error("Error in DELETE handler:", error);
-      return NextResponse.json({ msg: "Error deleting project" }, { status: 500 });
+    console.error("Error in DELETE handler:", error);
+    return NextResponse.json({ msg: "Error deleting project and associated data", error: error.message }, { status: 500 });
   }
 }

@@ -200,7 +200,7 @@ const Detail: React.FC = () => {
           });
         }
 
-        const notificationMessage = `โครงงานของคุณถูกลบเนื่องจาก: ${report}`;
+        const notificationMessage = `Your project was deleted because: ${report}`;
         const notificationResponse = await fetch('/api/notification', {
           method: 'POST',
           headers: {
