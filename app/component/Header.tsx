@@ -14,8 +14,12 @@ import {
   ShieldCheck,
   ChevronDown,
   ChevronUp,
-  LucideIcon 
+  LucideIcon,
+  LogOut 
 } from 'lucide-react';
+import { MdAccountCircle } from "react-icons/md";
+import { signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface INavigationItemProps {
   icon: LucideIcon;
@@ -97,12 +101,21 @@ const NavigationItem: React.FC<INavigationItemProps> = ({
 const Sidebar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeItem, setActiveItem] = useState<string | null>(null);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const router = useRouter();
+  const { data: session } = useSession();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const toggleProfileDropdown = () => setIsProfileDropdownOpen(!isProfileDropdownOpen);
 
   const handleItemClick = (itemId: string) => {
     setActiveItem(itemId);
     // Additional logic can be added here
+  };
+
+  const handleLogout = async () => {
+    const data = await signOut({ redirect: false, callbackUrl: '/' });
+    router.push(data.url);
   };
 
   return (
@@ -115,7 +128,31 @@ const Sidebar: React.FC = () => {
           width={90}
           height={90}
         />
-        <div className="w-8 h-8 rounded-full bg-gray-300" aria-label="User profile"></div>
+      <div className="relative">
+          <button
+            onClick={toggleProfileDropdown}
+            className="focus:outline-none"
+            aria-haspopup="true"
+            aria-expanded={isProfileDropdownOpen}
+          >
+            <MdAccountCircle className="text-[40px] text-white"/>
+          </button>
+          {isProfileDropdownOpen && (
+            <div className="w-[300px] absolute right-0 mt-2 p-4 bg-white rounded-md shadow-lg  z-10">
+              <div className=" text-sm text-gray-700 ">
+                <strong className="font-bold">แอดมิน</strong> {session?.user?.name}
+              </div>
+              <div className="border-t border-gray-200 my-3"></div>
+              <button
+                onClick={handleLogout}
+                className="block w-full text-left  text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <LogOut className="inline-block mr-2" size={16} />
+                ออกจากระบบ
+              </button>
+            </div>
+          )}
+        </div>
       </header>
 
       {/* Sliding Menu */}

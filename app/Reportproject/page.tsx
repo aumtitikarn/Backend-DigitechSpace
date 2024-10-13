@@ -21,7 +21,7 @@ const Reportproject: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const getPosts = async () => {
     setLoading(true);
@@ -87,59 +87,62 @@ const Reportproject: React.FC = () => {
           ) : error ? (
             <p className="text-red-500">{error}</p>
           ) : (
-            <div className="w-full h-full flex flex-col">
-              <table className="min-w-full border-collapse border border-gray-400">
-                <thead>
-                  <tr>
-                    <th className="border border-gray-400 p-2 text-black">#</th>
-                    <th className="border border-gray-400 p-2 lg:text-lg text-black">ชื่อโครงการ</th>
-                    <th className="border border-gray-400 p-2 lg:text-lg text-black">คำร้อง</th>
-                    <th className="border border-gray-400 p-2 lg:text-lg text-black">ผู้รายงาน</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentItems.length > 0 ? (
-                    currentItems.map((val, index) => (
-                      <tr key={val._id}>
-                        <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg text-black">
-                          {indexOfFirstItem + index + 1}
-                        </td>
-                        <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
-                          <Link
-                            href={{
-                              pathname: `/Reportproject/Detail`,
-                              query: {
-                                id: val._id,
-                                name: val.name,
-                                username: val.username,
-                                report: val.report,
-                                more: val.more,
-                                email: val.email,
-                                author: val.author,
-                                projectId: val.projectId,
-                                createdAt: formatDate(val.createdAt),
-                              },
-                            }}
-                          >
-                            {val.name}
-                          </Link>
-                        </td>
-                        <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
-                          {val.report}
-                        </td>
-                        <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
-                          {val.username}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={4} className="text-center p-4 text-black">ไม่มีข้อมูลคำร้อง</td>
+            <div className="w-full h-full flex flex-col overflow-hidden rounded-lg shadow-lg">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-[#0B1E48]">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">#</th>
+                  <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ชื่อโครงงาน</th>
+                  <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">คำร้อง</th>
+                  <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ผู้รายงาน</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {currentItems.length > 0 ? (
+                  currentItems.map((val, index) => (
+                    <tr key={val._id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                        {indexOfFirstItem + index + 1}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                        <Link
+                          href={{
+                            pathname: `/Reportproject/Detail`,
+                            query: {
+                              id: val._id,
+                              name: val.name,
+                              username: val.username,
+                              report: val.report,
+                              more: val.more,
+                              email: val.email,
+                              author: val.author,
+                              projectId: val.projectId,
+                              createdAt: formatDate(val.createdAt),
+                            },
+                          }}
+                          className="text-black"
+                        >
+                          {val.name}
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                        {val.report}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                        {val.username}
+                      </td>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                      ไม่มีข้อมูลคำร้อง
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
           )}
           <p className="text-sm mt-2 text-black">
             *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางคนนั้น

@@ -33,7 +33,7 @@ const UserStudent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -185,31 +185,49 @@ const UserStudent: React.FC = () => {
           <h2 className="text-xl font-bold mb-4 text-black">
             รายชื่อของนักศึกษา
           </h2>
-          <div className="w-full h-full flex flex-col">
-            <table className="min-w-full border-collapse border border-gray-400">
-              <thead>
+          <div className="w-full h-full flex flex-col overflow-hidden rounded-lg shadow-lg">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-[#0B1E48]">
                 <tr>
-                  <th className="border border-gray-400 p-2 text-black">#</th>
-                  <th className="border border-gray-400 p-2 lg:text-lg text-black">
-                    Username
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                  >
+                    #
                   </th>
-                  <th className="border border-gray-400 p-2 lg:text-lg text-black">
-                    ชื่อ-นามสกุล
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                  >
+                    ชื่อผู้ใช้
                   </th>
-                  <th className="border border-gray-400 p-2 lg:text-lg text-black">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                  >
+                    ชื่อ - นามสกุล
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                  >
+                    อีเมล
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                  >
                     เบอร์โทรศัพท์
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white divide-y divide-gray-200">
                 {currentItems.map((project, index) => (
-                  <tr key={project.username}>
-                    {" "}
-                    {/* ใช้ username เป็น key */}
-                    <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg text-black">
-                      {index + 1}.
+                  <tr key={project.username} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {index + 1 + indexOfFirstItem}.
                     </td>
-                    <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
                       <Link
                         href={{
                           pathname: `/student/detail`,
@@ -234,10 +252,10 @@ const UserStudent: React.FC = () => {
                           },
                         }}
                       >
-                        {project.username}
+                        {project.username || "-"}
                       </Link>
                     </td>
-                    <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
                       <Link
                         href={{
                           pathname: `/student/detail`,
@@ -262,10 +280,10 @@ const UserStudent: React.FC = () => {
                           },
                         }}
                       >
-                        {project.name}
+                        {project.name || "-"}
                       </Link>
                     </td>
-                    <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
                       <Link
                         href={{
                           pathname: `/student/detail`,
@@ -290,7 +308,35 @@ const UserStudent: React.FC = () => {
                           },
                         }}
                       >
-                        {project.phonenumber}
+                        {project.email || "-"}
+                      </Link>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                      <Link
+                        href={{
+                          pathname: `/student/detail`,
+                          query: {
+                            username: project.username,
+                            housenum: project.housenum,
+                            phonenumber: project.phonenumber,
+                            email: project.email,
+                            district: project.district,
+                            fullname: project.fullname,
+                            namebank: project.namebank,
+                            postalnumber: project.postalnumber,
+                            nationajid: project.nationajid,
+                            numberbankacc: project.numberbankacc,
+                            province: project.province,
+                            subdistrict: project.subdistrict,
+                            firstname: project.firstname,
+                            lastname: project.lastname,
+                            facebook: project.facebook,
+                            line: project.line,
+                            imageUrl: project.imageUrl,
+                          },
+                        }}
+                      >
+                        {project.phonenumber || "-"}
                       </Link>
                     </td>
                   </tr>
