@@ -21,18 +21,16 @@ const usernormal: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = projects.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(projects.length / itemsPerPage);
-  const [emailContent, setEmailContent] = useState('');
+  const [emailContent, setEmailContent] = useState("");
   const [isSending, setIsSending] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
- 
-
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -47,7 +45,7 @@ const usernormal: React.FC = () => {
 
   const adjustHeight = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
@@ -55,21 +53,21 @@ const usernormal: React.FC = () => {
   const sendEmail = async () => {
     if (projects.length === 0) {
       Swal.fire({
-        icon: 'error',
-        title: 'เกิดข้อผิดพลาด',
-        text: 'ไม่พบรายชื่อผู้ใช้',
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "ไม่พบรายชื่อผู้ใช้",
       });
       return;
     }
-  
+
     setIsSending(true);
-  
+
     try {
-      const emails = projects.map(project => project.email);
-      const response = await fetch('/api/sendemailall', {
-        method: 'POST',
+      const emails = projects.map((project) => project.email);
+      const response = await fetch("/api/sendemailall", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           emails: emails,
@@ -77,29 +75,29 @@ const usernormal: React.FC = () => {
           emailContent: emailContent,
         }),
       });
-  
+
       if (response.ok) {
         const result = await response.json();
         Swal.fire({
-          icon: 'success',
-          title: 'สำเร็จ',
+          icon: "success",
+          title: "สำเร็จ",
           text: result.message,
         });
-        setEmailContent('');
+        setEmailContent("");
       } else {
         const errorData = await response.json();
         Swal.fire({
-          icon: 'error',
-          title: 'เกิดข้อผิดพลาด',
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
           text: `เกิดข้อผิดพลาดในการส่งอีเมล: ${errorData.message}`,
         });
       }
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error("Error sending email:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'เกิดข้อผิดพลาด',
-        text: 'เกิดข้อผิดพลาดในการส่งอีเมล',
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "เกิดข้อผิดพลาดในการส่งอีเมล",
       });
     } finally {
       setIsSending(false);
@@ -130,7 +128,7 @@ const usernormal: React.FC = () => {
           numberphone: user.numberphone,
           facebook: user.facebook,
           line: user.line,
-          imageUrl: user.imageUrl
+          imageUrl: user.imageUrl,
         }));
         setProjects(formattedProjects);
       } else {
@@ -164,59 +162,94 @@ const usernormal: React.FC = () => {
           <h2 className="text-xl font-bold mb-4 text-black">
             รายชื่อของแอดมิน
           </h2>
-          <div className="w-full h-full flex flex-col">
-            <table className="min-w-full border-collapse border border-gray-400">
-              <thead>
+          <div className="w-full h-full flex flex-col overflow-hidden rounded-lg shadow-lg">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-[#0B1E48]">
                 <tr>
-                  <th className="border border-gray-400 p-2 text-black">#</th>
-                  <th className="border border-gray-400 p-2 lg:text-lg text-black">
-                    Username
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                  >
+                    #
                   </th>
-                  <th className="border border-gray-400 p-2 lg:text-lg text-black">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                  >
+                    ชื่อ - นามสกุล
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                  >
                     อีเมล
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                  >
+                    เบอร์โทร
                   </th>
                 </tr>
               </thead>
-              <tbody>
-                {currentItems.map((project, index) => (
-                  <tr key={project.id}>
-                    <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg text-black">
+              <tbody className="bg-white divide-y divide-gray-200">
+                {currentItems.map((admin, index) => (
+                  <tr key={admin.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
                       {index + 1 + indexOfFirstItem}.
                     </td>
-                    <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
                       <Link
                         href={{
                           pathname: `/admin/detail`,
                           query: {
-                            id: project.id,
-                            name: project.name,
-                            email: project.email,
-                            numberphone: project.numberphone,
-                            facebook: project.facebook,
-                            line: project.line,
-                            imageUrl: project.imageUrl
+                            id: admin.id,
+                            name: admin.name,
+                            email: admin.email,
+                            numberphone: admin.numberphone,
+                            facebook: admin.facebook,
+                            line: admin.line,
+                            imageUrl: admin.imageUrl,
                           },
                         }}
                       >
-                        {project.name}
+                        {admin.name}
                       </Link>
                     </td>
-                    <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
-                    <Link
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                      <Link
                         href={{
                           pathname: `/admin/detail`,
                           query: {
-                            id: project.id,
-                            name: project.name,
-                            email: project.email,
-                            numberphone: project.numberphone,
-                            facebook: project.facebook,
-                            line: project.line,
-                            imageUrl: project.imageUrl
+                            id: admin.id,
+                            name: admin.name,
+                            email: admin.email,
+                            numberphone: admin.numberphone,
+                            facebook: admin.facebook,
+                            line: admin.line,
+                            imageUrl: admin.imageUrl,
                           },
                         }}
                       >
-                      {project.email}
+                        {admin.email}
+                      </Link>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                      <Link
+                        href={{
+                          pathname: `/admin/detail`,
+                          query: {
+                            id: admin.id,
+                            name: admin.name,
+                            email: admin.email,
+                            numberphone: admin.numberphone,
+                            facebook: admin.facebook,
+                            line: admin.line,
+                            imageUrl: admin.imageUrl,
+                          },
+                        }}
+                      >
+                        {admin.numberphone}
                       </Link>
                     </td>
                   </tr>
@@ -233,25 +266,25 @@ const usernormal: React.FC = () => {
             onPageChange={handlePageChange}
           />
           <div className="mt-6 w-auto lg:w-[1000px] h-auto p-4 flex-shrink-0 rounded-2xl border border-[#D0D8E9] bg-white shadow-[0px_0px_60.1px_-16px_#D9DDE5]">
-          <div className="w-full mt-3">
-                  <p className="text-[#6C7996A6] text-[16px] mb-3 font-semibold">
-                    ส่งอีเมลหาแอดมินทั้งหมด
-                  </p>
-                  <textarea
-                    ref={textareaRef}
-                    className="w-full min-h-[50px] px-4 py-2 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD] focus:outline-none focus:ring-2 focus:ring-[#5D76AD] resize-none overflow-hidden"
-                    placeholder="ข้อความอีเมล"
-                    value={emailContent}
-                    onChange={handleChange}
-                  />
-                  <button 
-                    className="mt-5 w-auto lg:w-full py-3 flex-shrink-0 rounded-[10px] bg-[#5D76AD] text-white font-semibold flex items-center justify-center hover:bg-[#4A5F8C] transition-colors duration-300"
-                    onClick={sendEmail}
-                    disabled={isSending}
-                  >
-                    {isSending ? 'กำลังส่ง...' : 'ส่งอีเมล'}
-                  </button>
-                </div>
+            <div className="w-full mt-3">
+              <p className="text-[#6C7996A6] text-[16px] mb-3 font-semibold">
+                ส่งอีเมลหาแอดมินทั้งหมด
+              </p>
+              <textarea
+                ref={textareaRef}
+                className="w-full min-h-[50px] px-4 py-2 flex items-center rounded-[9px] border border-[rgba(208,216,233,0.41)] bg-[#F5F5F6] text-[#5D76AD] focus:outline-none focus:ring-2 focus:ring-[#5D76AD] resize-none overflow-hidden"
+                placeholder="ข้อความอีเมล"
+                value={emailContent}
+                onChange={handleChange}
+              />
+              <button
+                className="mt-5 w-auto lg:w-full py-3 flex-shrink-0 rounded-[10px] bg-[#5D76AD] text-white font-semibold flex items-center justify-center hover:bg-[#4A5F8C] transition-colors duration-300"
+                onClick={sendEmail}
+                disabled={isSending}
+              >
+                {isSending ? "กำลังส่ง..." : "ส่งอีเมล"}
+              </button>
+            </div>
           </div>
         </div>
       </main>

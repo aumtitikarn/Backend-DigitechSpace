@@ -28,16 +28,15 @@ interface Project {
   numberbankacc: string;
   fullname: string;
   phonenumber: string;
-  firstname:  string;
-  lastname:  string;
-  username:   string;
-
+  firstname: string;
+  lastname: string;
+  username: string;
 }
 
 const Withdraw: React.FC = () => {
   const [withdraws, setWithdraws] = useState<WithdrawData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -60,13 +59,13 @@ const Withdraw: React.FC = () => {
       if (data && Array.isArray(data.studentusers)) {
         const formattedProjects = data.studentusers.map((user: any) => ({
           email: user.email,
-          firstname: user.firstname ,
-          lastname: user.lastname ,
-          username:  user.username ,
+          firstname: user.firstname,
+          lastname: user.lastname,
+          username: user.username,
           namebank: user.SellInfo?.namebank || "",
           numberbankacc: user.SellInfo?.numberbankacc || "",
-          fullname:  user.SellInfo?.fullname || "",
-          phonenumber:  user.SellInfo?.phonenumber|| "",
+          fullname: user.SellInfo?.fullname || "",
+          phonenumber: user.SellInfo?.phonenumber || "",
         }));
         setProjects(formattedProjects);
       } else {
@@ -129,37 +128,52 @@ const Withdraw: React.FC = () => {
       <main className="flex-grow">
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
           <h2 className="text-xl font-bold mb-4 text-black">คำร้องขอถอนเงิน</h2>
-          <div className="w-full h-full flex flex-col">
-            <table className="min-w-full border-collapse border border-gray-400">
-              <thead>
+          <div className="w-full h-full flex flex-col overflow-hidden rounded-lg shadow-lg">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-[#0B1E48]">
                 <tr>
-                  <th className="border border-gray-400 p-2 text-black">#</th>
-                  <th className="border border-gray-400 p-2 lg:text-lg text-black">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                  >
+                    #
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                  >
                     ผู้ส่งคำร้อง
                   </th>
-                  <th className="border border-gray-400 p-2 lg:text-lg text-black">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                  >
                     จำนวนเงิน(บาท)
                   </th>
-                  <th className="border border-gray-400 p-2 lg:text-lg text-black">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                  >
                     วันที่ส่งคำร้อง
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white divide-y divide-gray-200">
                 {currentItems.map((withdraw, index) => {
                   const matchedProject = findProjectByEmail(
                     withdraw.receipt.email
                   );
 
                   return (
-                    <tr key={withdraw._id}>
-                      <td className="border border-gray-400 p-2 text-center text-sm lg:text-lg text-black">
+                    <tr key={withdraw._id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
                         {index + indexOfFirstItem + 1}.
                       </td>
-                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
                         {matchedProject ? (
                           <Link
                             href={`/Withdraw/detail?id=${withdraw._id}`}
+                            className="text-black"
                           >
                             {withdraw.receipt.fullname}
                           </Link>
@@ -167,11 +181,21 @@ const Withdraw: React.FC = () => {
                           withdraw.receipt.email
                         )}
                       </td>
-                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                      <Link
+                            href={`/Withdraw/detail?id=${withdraw._id}`}
+                            className="text-black"
+                          >
                         {withdraw.withdrawn}
+                        </Link>
                       </td>
-                      <td className="border border-gray-400 p-2 text-sm truncate max-w-xs lg:text-lg text-black">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                      <Link
+                            href={`/Withdraw/detail?id=${withdraw._id}`}
+                            className="text-black"
+                          >
                         {new Date(withdraw.date).toLocaleDateString()}
+                        </Link>
                       </td>
                     </tr>
                   );

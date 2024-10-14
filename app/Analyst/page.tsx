@@ -71,8 +71,8 @@ const page = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedCategory1, setSelectedCategory1] = useState("");
 
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("All"); 
+  const [selectedYear, setSelectedYear] = useState("All"); 
 
   const [purchaseHistory, setPurchaseHistory] = useState<Purchase[]>([]);
 
