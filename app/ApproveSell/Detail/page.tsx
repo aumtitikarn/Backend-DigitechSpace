@@ -10,11 +10,14 @@ import Link from "next/link";
 import Header from "../../component/Header";
 import { useRouter } from 'next/navigation';
 import Image from "next/image";
+
 interface Project {
   _id: string;
   projectname: string;
   description: string;
+  email: string;
   price: number;
+  author: string;
   receive: string[];
   permission: boolean;
   rathing: number;
@@ -23,9 +26,6 @@ interface Project {
   category: string;
   filesUrl: string[];
   imageUrl: string[];
-  status?: string; // Add this if status is optional
-  email: string;
-
 }
 
 const Detail: React.FC = () => {
@@ -37,6 +37,7 @@ const Detail: React.FC = () => {
   const [rejectText, setRejectText] = useState<string>("");
   const searchParams = useSearchParams();
   const router = useRouter();
+
   const id = searchParams.get("_id");
   const profileImage = searchParams.get("profileImage");
   const authorName = searchParams.get("authorName");
@@ -47,7 +48,7 @@ const Detail: React.FC = () => {
       if (!id) return;
 
       try {
-        const response = await fetch(`http://localhost:3000/api/project/id/${id}`, {
+        const response = await fetch(`/api/project/id/${id}`, {
           method: "GET",
           cache: "no-store",
         });
@@ -66,6 +67,27 @@ const Detail: React.FC = () => {
     fetchProject();
   }, [id]);
 
+  useEffect(() => {
+    const fetchAdditionalData = async () => {
+      try {
+        const response = await fetch(`/api/project`, {
+          method: "GET",
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch additional project data');
+        }
+
+        const data = await response.json();
+        console.log('Additional data:', data);
+      } catch (error) {
+        console.error('Error fetching additional project data:', error);
+      }
+    };
+
+    fetchAdditionalData();
+  }, []);
   useEffect(() => {
     if (!id) return;
 
@@ -142,7 +164,6 @@ const Detail: React.FC = () => {
         }
 
         setStatusMessage('Project approved successfully and notification sent.');
-        router.back();
     } catch (error) {
         console.error('Error approving project:', error);
         setStatusMessage(`Approval failed.`); // แสดงข้อความผิดพลาดที่ชัดเจน
@@ -195,7 +216,7 @@ const handleNotApprove = async () => {
     }
 
     setStatusMessage('Project has been successfully rejected and notification has been sent.');
-    router.back();
+
     // Redirect to the ApproveSell page
     router.push('/ApproveSell');
   } catch (error) {
@@ -214,6 +235,7 @@ const handleNotApprove = async () => {
     }
   };
 
+  const imageUrl = project?.imageUrl || [];
   
   const handleDownload = async (fileName: string) => {
     if (!fileName) {
@@ -240,35 +262,31 @@ const handleNotApprove = async () => {
     }
   };
   
-
   const handlePrevClick = () => {
-    setCurrentIndex((prevIndex) => {
-        const imageUrlLength = project?.imageUrl.length ?? 0; // Default to 0 if project is null
-        return (prevIndex - 1 + imageUrlLength) % imageUrlLength;
-    });
-};
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + imageUrl.length) % imageUrl.length
+    );
+  };
 
-const handleNextClick = () => {
-    setCurrentIndex((prevIndex) => {
-        const imageUrlLength = project?.imageUrl.length ?? 0; // Default to 0 if project is null
-        return (prevIndex + 1) % imageUrlLength;
-    });
-};
+  const handleNextClick = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % imageUrl.length);
+  };
 
-return (
-  <main className="flex flex-col min-h-screen bg-[#FBFBFB]">
-    <Header />
-    <div className="lg:mx-64 lg:mt-20 lg:mb-20 mt-10 mb-10">
-      <div className="flex flex-col min-h-screen ">
-        {/* Slider Section */}
-        <div className="flex flex-col items-center p-4">
-        <div className="relative w-full h-[500px] overflow-hidden rounded-lg">
-            <img
-                src={`/api/project/images/${project?.imageUrl ? project.imageUrl[currentIndex] : 'defaultImage.jpg'}`}
-                  alt="Project Image"
-                   className="object-cover w-full h-full"
-                   />
-
+  return (
+    <main className="flex flex-col min-h-screen bg-[#FBFBFB]">
+      <Header />
+      <div className="lg:mx-64 lg:mt-20 lg:mb-20 mt-10 mb-10">
+        <div className="flex flex-col min-h-screen ">
+          {/* Slider Section */}
+          <div className="flex flex-col items-center p-4">
+            <div className="relative w-full h-[500px] overflow-hidden rounded-lg">
+              {imageUrl.length > 0 && (
+                <img
+                src={`/api/project/images/${imageUrl[currentIndex]}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => console.error('Image failed to load:', e)}
+                />
+              )}
               <button
                 onClick={handlePrevClick}
                 className="absolute left-10 top-1/2 transform -translate-y-1/2 text-gray-500 p-2 rounded-full text-4xl bg-gray-100"
@@ -281,7 +299,9 @@ return (
               >
                 <FaChevronRight />
               </button>
-              </div>
+            </div>
+          </div>
+
           {/* Information Section */}
           <div className="w-full mt-4">
             {project ? (
@@ -293,21 +313,21 @@ return (
                     </p>
                     <div className="flex items-center">
                       <p className="text-sm text-gray-600 mr-2">by</p>
-                      <span className="text-gray-500  text-3xl mr-2">
+                     <span className="text-gray-500  text-3xl mr-2">
                       {profileImage ? (
-                        <Image
-                          src={profileImage}
-                          alt="Author Profile"
-                          width={30}
-                          height={30}
-                          className="rounded-full"
-                        />
+                         <Image
+                         src={profileImage}
+                         alt="Author Profile"
+                         width={30}
+                         height={30}
+                         className="w-8 h-8 rounded-full" // ทำให้ภาพเป็นวงกลมและขนาด 30px
+                       />
                       ) : (
                         <span className="text-gray-500 text-3xl mr-2">
                           <MdAccountCircle />
                         </span>
                       )}
-                    </span>
+                    </span> 
                       <p className="text-sm text-gray-600 truncate w-[150px]">
                         {authorName}
                       </p>
@@ -347,36 +367,16 @@ return (
                   </ul>
                   <div className="flex flex-col items-center mt-5">
                   {project.filesUrl.map((fileName, index) => (
-                  <button
-                     key={index}
-                      onClick={() => handleDownload(fileName)}
-                     className="bg-[#33529B] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base flex items-center justify-center mb-2"
-                      >
-                      ดาวน์โหลด 
-                    </button>
-                     ))}
-                    </div>
+  <button
+    key={index}
+    onClick={() => handleDownload(fileName)}
+    className="bg-[#33529B] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base flex items-center justify-center mb-2"
+  >
+    ดาวน์โหลด 
+  </button>
+))}
+   </div>
 
-
-                    </div>
-
-                {/* Buttons Section */}
-                <div className="flex justify-center mt-5 space-x-2 md:space-x-20 lg:space-x-10">
-                  <button
-                    onClick={() => handleNotApprove()}
-                    className={`bg-[#666666] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base ${!rejectText ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    disabled={!rejectText}
-                  >
-                    ไม่อนุมัติ
-                  </button>
-                  
-                  <button
-                    onClick={() => handleApprove()}
-                    className="bg-[#33529B] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Processing...' : 'อนุมัติ'}
-                  </button>
                 </div>
                 {statusMessage && (
                   <p className={`mt-2 ${statusMessage.includes('failed') ? 'text-red-500' : 'text-green-500'}`}>
@@ -400,8 +400,25 @@ return (
               <p>Loading project details...</p>
             )}
           </div>
+          {/* Buttons Section */}
+          <div className="flex justify-center mt-5 space-x-2 md:space-x-20 lg:space-x-10">
+                  <button
+                    onClick={() => handleNotApprove()}
+                    className={`bg-[#666666] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base ${!rejectText ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    disabled={!rejectText}
+                  >
+                    ไม่อนุมัติ
+                  </button>
+                  
+                  <button
+                    onClick={() => handleApprove()}
+                    className="bg-[#33529B] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Processing...' : 'อนุมัติ'}
+                  </button>
+                </div>
         </div>
-      </div>
       </div>
     </main>
   );

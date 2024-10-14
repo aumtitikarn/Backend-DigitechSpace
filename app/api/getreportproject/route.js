@@ -116,26 +116,26 @@ export async function DELETE(req) {
 
     console.log("Deleting project and associated data with projectId:", projectId);
 
-    // ลบคำร้องที่เกี่ยวข้องกับ projectId ใน Reportprojet
+    // 1. Delete related reports in Reportprojet
     const deletedReportprojet = await Reportprojet.deleteMany({ projectId });
     console.log("Deleted reports:", deletedReportprojet.deletedCount);
 
-    // ลบ projectId ที่ตรงกันจาก Orders collection
+    // 2. Delete matching projectId from Orders collection
     const deletedOrders = await Order.deleteMany({ product: projectId });
-    console.log("Deleted orders:", deletedOrders.deletedCount); // ใช้ deleteMany เพื่อให้แน่ใจว่าลบได้ทั้งหมด
+    console.log("Deleted orders:", deletedOrders.deletedCount);
 
-    // ลบ projectId จาก Favorites collection โดยใช้ $pull
+    // 3. Remove projectId from Favorites collection using $pull
     const deletedFavorites = await Favorites.updateMany(
       {},
       { $pull: { projectId: projectId } }
     );
     console.log("Updated favorites:", deletedFavorites.modifiedCount);
 
-    // ลบ project จาก projects collection
+    // 4. Delete project from projects collection
     const deletedProject = await Project.findOneAndDelete({ _id: projectId });
 
-    // ตรวจสอบว่าลบ project สำเร็จหรือไม่
-    if (!deletedProject || !deletedOrders) {
+    // Check if the project was found and deleted
+    if (!deletedProject) {
       console.error("Project not found in projects for _id:", projectId);
       return NextResponse.json({ msg: "Project not found in projects" }, { status: 404 });
     }

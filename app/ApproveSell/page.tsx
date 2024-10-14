@@ -37,7 +37,7 @@ const ApproveSell: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch("http://localhost:3000/api/project", {
+        const response = await fetch("api/project", {
           method: "GET",
           cache: "no-store",
         });
