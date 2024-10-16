@@ -87,8 +87,10 @@ const Reportproject: React.FC = () => {
           ) : error ? (
             <p className="text-red-500">{error}</p>
           ) : (
-            <div className="w-full h-full flex flex-col overflow-hidden rounded-lg shadow-lg">
-            <table className="min-w-full divide-y divide-gray-200">
+            <div className="overflow-x-auto">
+            <div className="inline-block min-w-full align-middle ">
+              <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 rounded-lg">
+                <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-[#0B1E48]">
                 <tr>
                   <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">#</th>
@@ -141,7 +143,9 @@ const Reportproject: React.FC = () => {
                   </tr>
                 )}
               </tbody>
-            </table>
+              </table>
+              </div>
+            </div>
           </div>
           )}
           <p className="text-sm mt-2 text-black">

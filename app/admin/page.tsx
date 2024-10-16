@@ -162,8 +162,10 @@ const usernormal: React.FC = () => {
           <h2 className="text-xl font-bold mb-4 text-black">
             รายชื่อของแอดมิน
           </h2>
-          <div className="w-full h-full flex flex-col overflow-hidden rounded-lg shadow-lg">
-            <table className="min-w-full divide-y divide-gray-200">
+          <div className="overflow-x-auto">
+            <div className="inline-block min-w-full align-middle ">
+              <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 rounded-lg shadow-sm">
+                <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-[#0B1E48]">
                 <tr>
                   <th
@@ -255,7 +257,9 @@ const usernormal: React.FC = () => {
                   </tr>
                 ))}
               </tbody>
-            </table>
+              </table>
+              </div>
+            </div>
           </div>
           <p className="text-sm mt-2">
             *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางคนนั้น
@@ -265,7 +269,7 @@ const usernormal: React.FC = () => {
             totalPages={totalPages}
             onPageChange={handlePageChange}
           />
-          <div className="mt-6 w-auto lg:w-[1000px] h-auto p-4 flex-shrink-0 rounded-2xl border border-[#D0D8E9] bg-white shadow-[0px_0px_60.1px_-16px_#D9DDE5]">
+          <div className="mt-6 w-auto lg:w-auto h-auto p-4 flex-shrink-0 rounded-2xl border border-[#D0D8E9] bg-white shadow-[0px_0px_60.1px_-16px_#D9DDE5]">
             <div className="w-full mt-3">
               <p className="text-[#6C7996A6] text-[16px] mb-3 font-semibold">
                 ส่งอีเมลหาแอดมินทั้งหมด
@@ -278,7 +282,7 @@ const usernormal: React.FC = () => {
                 onChange={handleChange}
               />
               <button
-                className="mt-5 w-auto lg:w-full py-3 flex-shrink-0 rounded-[10px] bg-[#5D76AD] text-white font-semibold flex items-center justify-center hover:bg-[#4A5F8C] transition-colors duration-300"
+                className="mt-5 w-full lg:w-full py-3 flex-shrink-0 rounded-[10px] bg-[#5D76AD] text-white font-semibold flex items-center justify-center hover:bg-[#4A5F8C] transition-colors duration-300"
                 onClick={sendEmail}
                 disabled={isSending}
               >
