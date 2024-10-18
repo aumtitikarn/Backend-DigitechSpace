@@ -204,136 +204,140 @@ const usernormal: React.FC = () => {
           <h2 className="text-xl font-bold mb-4 text-black">
             รายชื่อของผู้ใช้ธรรมดา
           </h2>
-          <div className="w-full h-full flex flex-col overflow-hidden rounded-lg shadow-lg">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-[#0B1E48]">
-                <tr>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
-                  >
-                    #
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
-                  >
-                    ชื่อบัญชี
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
-                  >
-                    ชื่อ - นามสกุล
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
-                  >
-                    อีเมล
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
-                  >
-                    เบอร์โทรศัพท์
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {currentItems.map((project, index) => (
-                  <tr key={project.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {index + 1 + indexOfFirstItem}.
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                      <Link
-                        href={{
-                          pathname: `/normal/detail`,
-                          query: {
-                            id: project.id,
-                            username: project.username,
-                            name: project.name,
-                            phonenumber: project.phonenumber,
-                            firstname: project.firstname,
-                            lastname: project.lastname,
-                            email: project.email,
-                            facebook: project.facebook,
-                            line: project.line,
-                            imageUrl: project.imageUrl,
-                          },
-                        }}
+          <div className="overflow-x-auto">
+            <div className="inline-block min-w-full align-middle">
+              <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 rounded-lg shadow-sm">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-[#0B1E48]">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
                       >
-                        {project.username || "-"}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                      <Link
-                        href={{
-                          pathname: `/normal/detail`,
-                          query: {
-                            id: project.id,
-                            username: project.username,
-                            name: project.name,
-                            phonenumber: project.phonenumber,
-                            firstname: project.firstname,
-                            lastname: project.lastname,
-                            email: project.email,
-                            facebook: project.facebook,
-                            line: project.line,
-                            imageUrl: project.imageUrl,
-                          },
-                        }}
+                        #
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
                       >
-                        {project.name || "-"}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                      <Link
-                        href={{
-                          pathname: `/normal/detail`,
-                          query: {
-                            id: project.id,
-                            username: project.username,
-                            name: project.name,
-                            phonenumber: project.phonenumber,
-                            firstname: project.firstname,
-                            lastname: project.lastname,
-                            email: project.email,
-                            facebook: project.facebook,
-                            line: project.line,
-                            imageUrl: project.imageUrl,
-                          },
-                        }}
+                        ชื่อบัญชี
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
                       >
-                        {project.email || "-"}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                      <Link
-                        href={{
-                          pathname: `/normal/detail`,
-                          query: {
-                            id: project.id,
-                            username: project.username,
-                            name: project.name,
-                            phonenumber: project.phonenumber,
-                            firstname: project.firstname,
-                            lastname: project.lastname,
-                            email: project.email,
-                            facebook: project.facebook,
-                            line: project.line,
-                            imageUrl: project.imageUrl,
-                          },
-                        }}
+                        ชื่อ - นามสกุล
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
                       >
-                        {project.phonenumber || "-"}
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                        อีเมล
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                      >
+                        เบอร์โทรศัพท์
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {currentItems.map((project, index) => (
+                      <tr key={project.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {index + 1 + indexOfFirstItem}.
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                          <Link
+                            href={{
+                              pathname: `/normal/detail`,
+                              query: {
+                                id: project.id,
+                                username: project.username,
+                                name: project.name,
+                                phonenumber: project.phonenumber,
+                                firstname: project.firstname,
+                                lastname: project.lastname,
+                                email: project.email,
+                                facebook: project.facebook,
+                                line: project.line,
+                                imageUrl: project.imageUrl,
+                              },
+                            }}
+                          >
+                            {project.username || "-"}
+                          </Link>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                          <Link
+                            href={{
+                              pathname: `/normal/detail`,
+                              query: {
+                                id: project.id,
+                                username: project.username,
+                                name: project.name,
+                                phonenumber: project.phonenumber,
+                                firstname: project.firstname,
+                                lastname: project.lastname,
+                                email: project.email,
+                                facebook: project.facebook,
+                                line: project.line,
+                                imageUrl: project.imageUrl,
+                              },
+                            }}
+                          >
+                            {project.name || "-"}
+                          </Link>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                          <Link
+                            href={{
+                              pathname: `/normal/detail`,
+                              query: {
+                                id: project.id,
+                                username: project.username,
+                                name: project.name,
+                                phonenumber: project.phonenumber,
+                                firstname: project.firstname,
+                                lastname: project.lastname,
+                                email: project.email,
+                                facebook: project.facebook,
+                                line: project.line,
+                                imageUrl: project.imageUrl,
+                              },
+                            }}
+                          >
+                            {project.email || "-"}
+                          </Link>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                          <Link
+                            href={{
+                              pathname: `/normal/detail`,
+                              query: {
+                                id: project.id,
+                                username: project.username,
+                                name: project.name,
+                                phonenumber: project.phonenumber,
+                                firstname: project.firstname,
+                                lastname: project.lastname,
+                                email: project.email,
+                                facebook: project.facebook,
+                                line: project.line,
+                                imageUrl: project.imageUrl,
+                              },
+                            }}
+                          >
+                            {project.phonenumber || "-"}
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
           <p className="text-sm mt-2 text-black">
             *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางคนนั้น
@@ -344,7 +348,7 @@ const usernormal: React.FC = () => {
             onPageChange={handlePageChange}
           />
 
-          <div className="mt-6 w-auto lg:w-[1000px] h-auto p-4 flex-shrink-0 rounded-2xl border border-[#D0D8E9] bg-white shadow-[0px_0px_60.1px_-16px_#D9DDE5]">
+          <div className="mt-6 w-auto lg:w-auto h-auto p-4 flex-shrink-0 rounded-2xl border border-[#D0D8E9] bg-white shadow-[0px_0px_60.1px_-16px_#D9DDE5]">
             <div className="w-full mt-3">
               <p className="text-[#6C7996A6] text-[16px] mb-3 font-semibold">
                 ส่งอีเมลหาผู้ใช้ทั้งหมด
@@ -357,7 +361,7 @@ const usernormal: React.FC = () => {
                 onChange={handleChange}
               />
               <button
-                className="mt-5 w-auto lg:w-full py-3 flex-shrink-0 rounded-[10px] bg-[#5D76AD] text-white font-semibold flex items-center justify-center hover:bg-[#4A5F8C] transition-colors duration-300"
+                className="mt-5 w-full lg:w-full py-3 flex-shrink-0 rounded-[10px] bg-[#5D76AD] text-white font-semibold flex items-center justify-center hover:bg-[#4A5F8C] transition-colors duration-300"
                 onClick={sendEmail}
                 disabled={isSending}
               >

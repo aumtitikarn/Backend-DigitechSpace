@@ -128,8 +128,10 @@ const Withdraw: React.FC = () => {
       <main className="flex-grow">
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
           <h2 className="text-xl font-bold mb-4 text-black">คำร้องขอถอนเงิน</h2>
-          <div className="w-full h-full flex flex-col overflow-hidden rounded-lg shadow-lg">
-            <table className="min-w-full divide-y divide-gray-200">
+          <div className="overflow-x-auto">
+            <div className="inline-block min-w-full align-middle">
+              <div className="overflow-hidden border border-gray-200 sm:rounded-lg shadow-sm">
+                <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-[#0B1E48]">
                 <tr>
                   <th
@@ -201,7 +203,9 @@ const Withdraw: React.FC = () => {
                   );
                 })}
               </tbody>
-            </table>
+              </table>
+              </div>
+            </div>
           </div>
           <p className="text-sm mt-2 text-black">
             *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางคนนั้น
