@@ -15,7 +15,8 @@ import {
   ChevronDown,
   ChevronUp,
   LucideIcon,
-  LogOut 
+  LogOut,
+  Siren
 } from 'lucide-react';
 import { MdAccountCircle } from "react-icons/md";
 import { signOut, useSession } from 'next-auth/react';
@@ -222,6 +223,13 @@ const Sidebar: React.FC = () => {
                 label="คำร้องปัญหาของผู้ใช้" 
                 href="/ReportService"
                 isActive={activeItem === 'user-issues'}
+              />
+              <NavigationItem 
+                id="policy"
+                icon={Siren} 
+                label="นโยบาย" 
+                href="/policy"
+                isActive={activeItem === 'policy'}
               />
               <NavigationItem 
                 id="summary"
