@@ -120,9 +120,12 @@ export async function DELETE(req) {
     const deletedReportprojet = await Reportprojet.deleteMany({ projectId });
     console.log("Deleted reports:", deletedReportprojet.deletedCount);
 
-    // 2. Delete matching projectId from Orders collection
-    const deletedOrders = await Order.deleteMany({ product: projectId });
-    console.log("Deleted orders:", deletedOrders.deletedCount);
+    // 2. Update matching orders in Orders collection to set status to 'delete'
+    const updatedOrders = await Order.updateMany(
+      { product: projectId }, // ค้นหาคำสั่งที่ตรงกับ projectId
+      { status: 'delete' } // เปลี่ยนสถานะเป็น 'delete'
+    );
+    console.log("Updated orders to 'delete':", updatedOrders.modifiedCount);
 
     // 3. Remove projectId from Favorites collection using $pull
     const deletedFavorites = await Favorites.updateMany(

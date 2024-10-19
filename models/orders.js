@@ -1,19 +1,47 @@
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
-    // Reference to the product (project)
-    product:{ type: String, required: true }, 
-    
-    // Example of additional fields
-    email: { type: String, required: true },   // Customer email
-    amount: { type: Number, required: true },  // Amount paid
-    net: { type: Number },                     // Net amount after service fee
-    servicefee: { type: Number },              // Service fee
-    typec: { type: String, default: "credit_card" }, // Payment type
-    chargeId: { type: String },                // External payment service ID
-    status: { type: String, default: "pending" },    // Payment status (e.g., successful, pending)
-    createdAt: { type: Date, default: Date.now }     // Order creation time
+  email: {
+    type: String,
+    required: true,
+  },
+  product: {
+    type: String,
+    required: true,
+  },
+  amount: {
+    type: Number,
+    required: true,
+  },
+  net: {
+    type: Number,
+    required: true,
+    get: (v) => parseFloat(v.toFixed(2)),
+  },
+  servicefee: {
+    type: Number,
+    required: true,
+    get: (v) => parseFloat(v.toFixed(2)),
+  },
+  typec: {
+    type: String,
+    required: true,
+  },
+  chargeId: {
+    type: String,
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ['successful', 'delete'], // กำหนดค่า status เป็น 'successful' หรือ 'delete'
+    required: 'successful',
+  },
+  check: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-// Export the model, check if already defined or create a new one
-export default mongoose.models.Order || mongoose.model("Order", orderSchema);
+const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
+
+export default Order;
