@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import Header from "../component/Header"
+import Header from "../component/Header";
 import Link from "next/link";
 import { Doughnut, Line, Pie, Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
+  ChartData,
   CategoryScale,
   LinearScale,
   BarElement,
@@ -19,6 +20,7 @@ import {
   Legend,
 } from 'chart.js';
 import axios from 'axios'; // เพิ่มการ import axios
+import { useRouter } from 'next/navigation';
 
 // Register the necessary components
 ChartJS.register(
@@ -64,10 +66,14 @@ type UserType = {
 
 type Sale = {
   createdAt: string;
+  net: number;
 };
 
 
 const page = () => {
+
+  const router = useRouter();
+
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedCategory1, setSelectedCategory1] = useState("");
 
@@ -75,6 +81,7 @@ const page = () => {
   const [selectedYear, setSelectedYear] = useState("All"); 
 
   const [purchaseHistory, setPurchaseHistory] = useState<Purchase[]>([]);
+  const [error, setError] = useState<null | string>(null);
 
   const [roleData, setRoleData] = useState<RoleDataType>({
     labels: [],
@@ -84,6 +91,7 @@ const page = () => {
   const [rawSalesData, setRawSalesData] = useState<Sale[]>([]);; // State สำหรับเก็บข้อมูลดิบที่ดึงมาจาก API
   const [totalSales, setTotalSales] = useState(0);
   const [totalCommission, setTotalCommission] = useState(0);
+
 
   useEffect(() => {
     async function fetchTotalSales() {
@@ -132,8 +140,8 @@ const page = () => {
 
 
 
-  const [projectNames, setProjectNames] = useState([]);
-  const [projectCounts, setProjectCounts] = useState([]);
+  const [projectNames, setProjectNames] = useState<string[]>([]);
+  const [projectCounts, setProjectCounts] = useState<number[]>([]);
 
   useEffect(() => {
     async function fetchFavoritesData() {
@@ -202,43 +210,17 @@ const page = () => {
   }, [selectedMonth, selectedYear]);
 
   const [loading, setLoading] = useState(true);  // เพิ่ม state สำหรับ loading
-  const [error, setError] = useState(null);
-  const [chartData, setChartData] = useState({});
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch('/api/getseller');
-  //       const salesData = await response.json(); // ต้อง parse JSON ก่อน
-
-  //       if (salesData && Array.isArray(salesData)) {
-  //         const categories = salesData.map((data) => data.category);
-  //         const prices = salesData.map((data) => data.price);
-
-  //         setChartData({
-  //           labels: categories,
-  //           datasets: [
-  //             {
-  //               label: 'Price',
-  //               data: prices,
-  //               backgroundColor: 'rgba(53, 83, 155, 0.5)',
-  //               borderColor: 'rgba(53, 83, 155, 1)',
-  //               borderWidth: 1,
-  //             },
-  //           ],
-  //         });
-  //       } else {
-  //         setError("Invalid data format or no data available");
-  //       }
-  //     } catch (error) {
-  //       setError('Error fetching data');
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
+  // const [error, setError] = useState(null);
+  const [chartData, setChartData] = useState<ChartData<'bar'>>({
+    labels: [],  // Initially an empty array
+    datasets: [{
+      label: 'Price',
+      data: [],
+      backgroundColor: 'rgba(53, 83, 155, 0.5)',
+      borderColor: 'rgba(53, 83, 155, 1)',
+      borderWidth: 1,
+    }],
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -292,8 +274,8 @@ const page = () => {
 
         // นับจำนวน role แต่ละประเภท
         const roles = ['student', 'other', 'developer'];
-        const normalCounts = roles.map(role => normalRoles.filter(r => r === role).length);
-        const studentCounts = roles.map(role => studentRoles.filter(r => r === role).length);
+        const normalCounts = roles.map(role => normalRoles.filter((r: string) => r === role).length);
+        const studentCounts = roles.map(role => studentRoles.filter((r: string) => r === role).length);
 
         // อัพเดท state ด้วยข้อมูลใหม่
         setRoleData({
@@ -336,6 +318,8 @@ const page = () => {
   ];
 
 
+  
+
   const currentYear = new Date().getFullYear();
   const years = ['All', ...Array.from({ length: 5 }, (_, i) => (currentYear - i).toString())];
 
@@ -357,27 +341,25 @@ const page = () => {
   }) : [];
 
   useEffect(() => {
-    if (filteredPurchaseHistory && filteredPurchaseHistory.length > 0) {
-      const categories = filteredPurchaseHistory.map((salesData) => salesData.category);
-      const prices = filteredPurchaseHistory.map((salesData) => salesData.price);
-
-      setChartData({
-        labels: categories,
-        datasets: [
-          {
-            label: 'Price',
-            data: prices,
-            backgroundColor: 'rgba(53, 83, 155, 0.5)',
-            borderColor: 'rgba(53, 83, 155, 1)',
-            borderWidth: 1,
-          },
-        ],
-      });
-    } else {
-      setChartData({
-        labels: [],
-        datasets: [],
-      });
+    if (!filteredPurchaseHistory) return;  // เพิ่มการ guard
+  
+    const categories = filteredPurchaseHistory.map((salesData) => salesData.category);
+    const prices = filteredPurchaseHistory.map((salesData) => salesData.price || 0);
+  
+    const newChartData = {
+      labels: categories,
+      datasets: [{
+        label: 'Price',
+        data: prices,
+        backgroundColor: 'rgba(53, 83, 155, 0.5)',
+        borderColor: 'rgba(53, 83, 155, 1)',
+        borderWidth: 1,
+      }]
+    };
+  
+    // เปรียบเทียบข้อมูลเก่าและใหม่ก่อน set state
+    if (JSON.stringify(chartData) !== JSON.stringify(newChartData)) {
+      setChartData(newChartData);
     }
   }, [filteredPurchaseHistory]);
 
@@ -407,23 +389,14 @@ const page = () => {
 
   const { data: session, status } = useSession();
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
-
   if (status === "loading") {
     return <p>Loading...</p>;
   }
 
-  if (!session) {
-    redirect("/auth/signin");
-    return null;
-  }
-
-
-
   return (
+    <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
+    <Header />
     <main>
-      <Header />
       <div className="flex flex-col items-center w-full" style={{ backgroundColor: "#FBFBFB" }}>
         <div className="w-full max-w-screen-lg p-4">
           <div className="flex flex-col">
@@ -585,6 +558,7 @@ const page = () => {
         </div>
       </div>
     </main>
+    </div>
   );
 }
 
