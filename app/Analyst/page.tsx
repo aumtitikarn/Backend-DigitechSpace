@@ -3,11 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import Header from "../component/Header";
 import Sidebar from "../component/Header"
 import Link from "next/link";
 import { Doughnut, Line, Pie, Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
+  ChartData,
   CategoryScale,
   LinearScale,
   BarElement,
@@ -19,6 +21,7 @@ import {
   Legend,
 } from 'chart.js';
 import axios from 'axios'; // เพิ่มการ import axios
+import { useRouter } from 'next/navigation';
 
 // Register the necessary components
 ChartJS.register(
@@ -64,7 +67,7 @@ type UserType = {
 
 type Sale = {
   createdAt: string;
-  net: number; 
+  net: number;
 };
 interface ChartDataType {
   labels: string[];
@@ -78,6 +81,9 @@ interface ChartDataType {
 }
 
 const page = () => {
+
+  const router = useRouter();
+
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedCategory1, setSelectedCategory1] = useState("");
 
@@ -85,6 +91,7 @@ const page = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
 
   const [purchaseHistory, setPurchaseHistory] = useState<Purchase[]>([]);
+  const [error, setError] = useState<null | string>(null);
 
   const [roleData, setRoleData] = useState<RoleDataType>({
     labels: [],
@@ -94,6 +101,7 @@ const page = () => {
   const [rawSalesData, setRawSalesData] = useState<Sale[]>([]);; // State สำหรับเก็บข้อมูลดิบที่ดึงมาจาก API
   const [totalSales, setTotalSales] = useState(0);
   const [totalCommission, setTotalCommission] = useState(0);
+
 
   useEffect(() => {
     async function fetchTotalSales() {
@@ -141,8 +149,8 @@ const page = () => {
 
 
 
-  const [projectNames, setProjectNames] = useState([]);
-  const [projectCounts, setProjectCounts] = useState([]);
+  const [projectNames, setProjectNames] = useState<string[]>([]);
+  const [projectCounts, setProjectCounts] = useState<number[]>([]);
 
   useEffect(() => {
     async function fetchFavoritesData() {
@@ -211,9 +219,9 @@ const page = () => {
   }, [selectedMonth, selectedYear]);
 
   const [loading, setLoading] = useState(true);  // เพิ่ม state สำหรับ loading
-  const [error, setError] = useState<string | null>(null);
-  const [chartData, setChartData] = useState<ChartDataType>({
-    labels: [],
+  // const [error, setError] = useState(null);
+  const [chartData, setChartData] = useState<ChartData<'bar'>>({
+    labels: [],  // Initially an empty array
     datasets: [{
       label: 'Price',
       data: [],
@@ -314,6 +322,8 @@ const page = () => {
         const roles = ['student', 'other', 'developer'];
         const normalCounts = roles.map(role => normalRoles.filter((r: string) => r === role).length);
         const studentCounts = roles.map(role => studentRoles.filter((r: string) => r === role).length);
+
+        // อัพเดท state ด้วยข้อมูลใหม่
   
         setRoleData({
           labels: roles,
@@ -354,6 +364,8 @@ const page = () => {
     { value: "12", label: "December" },
   ];
 
+
+  
 
   const currentYear = new Date().getFullYear();
   const years = ['All', ...Array.from({ length: 5 }, (_, i) => (currentYear - i).toString())];
@@ -424,23 +436,14 @@ const page = () => {
 
   const { data: session, status } = useSession();
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
-
   if (status === "loading") {
     return <p>Loading...</p>;
   }
 
-  if (!session) {
-    redirect("/auth/signin");
-    return null;
-  }
-
-
-
   return (
-    <div>
-      <Sidebar />
+    <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
+    <Header />
+    <main>
       <div className="flex flex-col items-center w-full" style={{ backgroundColor: "#FBFBFB" }}>
         <div className="w-full max-w-screen-lg p-4">
           <div className="flex flex-col">
@@ -601,6 +604,7 @@ const page = () => {
           </div>
         </div>
       </div>
+    </main>
     </div>
   );
 }
