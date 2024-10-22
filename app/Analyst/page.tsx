@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import Header from "../component/Header";
+import Sidebar from "../component/Header"
 import Link from "next/link";
 import { Doughnut, Line, Pie, Bar } from 'react-chartjs-2';
 import {
@@ -68,7 +69,16 @@ type Sale = {
   createdAt: string;
   net: number;
 };
-
+interface ChartDataType {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    backgroundColor: string;
+    borderColor: string;
+    borderWidth: number;
+  }[];
+}
 
 const page = () => {
 
@@ -78,7 +88,7 @@ const page = () => {
   const [selectedCategory1, setSelectedCategory1] = useState("");
 
   const [selectedMonth, setSelectedMonth] = useState("All"); 
-  const [selectedYear, setSelectedYear] = useState("All"); 
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
 
   const [purchaseHistory, setPurchaseHistory] = useState<Purchase[]>([]);
   const [error, setError] = useState<null | string>(null);
@@ -114,27 +124,26 @@ const page = () => {
   useEffect(() => {
     if (rawSalesData.length > 0) {
       const filteredData = rawSalesData.filter((sale) => {
+        if (!sale.createdAt) return false;  // เพิ่มการตรวจสอบ
+  
         const saleDate = new Date(sale.createdAt);
         const saleMonth = (saleDate.getMonth() + 1).toString().padStart(2, '0');
         const saleYear = saleDate.getFullYear().toString();
-
-        // ตรวจสอบค่าที่กรอง
-        console.log(`Sale Month: ${saleMonth}, Sale Year: ${saleYear}`);
-        console.log(`Selected Month: ${selectedMonth}, Selected Year: ${selectedYear}`);
-
+  
         const matchMonth = selectedMonth === 'All' || saleMonth === selectedMonth;
         const matchYear = selectedYear === 'All' || saleYear === selectedYear;
-
+  
         return matchMonth && matchYear;
       });
-
-      console.log("Filtered Data: ", filteredData);
-
-      const totalSalesFiltered = filteredData.reduce((acc, sale) => acc + sale.net, 0);
-      const totalCommissionFiltered = totalSalesFiltered * 0.2;
-
-      setTotalSales(totalSalesFiltered);
-      setTotalCommission(totalCommissionFiltered);
+  
+      // คำนวณเฉพาะเมื่อ filteredData มีค่า
+      if (filteredData.length > 0) {
+        const totalSalesFiltered = filteredData.reduce((acc, sale) => acc + (sale.net || 0), 0);
+        const totalCommissionFiltered = totalSalesFiltered * 0.2;
+  
+        setTotalSales(totalSalesFiltered);
+        setTotalCommission(totalCommissionFiltered);
+      }
     }
   }, [rawSalesData, selectedMonth, selectedYear]);
 
@@ -219,8 +228,43 @@ const page = () => {
       backgroundColor: 'rgba(53, 83, 155, 0.5)',
       borderColor: 'rgba(53, 83, 155, 1)',
       borderWidth: 1,
-    }],
+    }]
   });
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch('/api/getseller');
+  //       const salesData = await response.json(); // ต้อง parse JSON ก่อน
+
+  //       if (salesData && Array.isArray(salesData)) {
+  //         const categories = salesData.map((data) => data.category);
+  //         const prices = salesData.map((data) => data.price);
+
+  //         setChartData({
+  //           labels: categories,
+  //           datasets: [
+  //             {
+  //               label: 'Price',
+  //               data: prices,
+  //               backgroundColor: 'rgba(53, 83, 155, 0.5)',
+  //               borderColor: 'rgba(53, 83, 155, 1)',
+  //               borderWidth: 1,
+  //             },
+  //           ],
+  //         });
+  //       } else {
+  //         setError("Invalid data format or no data available");
+  //       }
+  //     } catch (error) {
+  //       setError('Error fetching data');
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -265,19 +309,22 @@ const page = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!selectedMonth || !selectedYear) return; // เพิ่มการตรวจสอบ
+  
       try {
-        // เรียก API เพื่อนำข้อมูล role
         const result = await axios.get(`/api/getanalyst?month=${selectedMonth}&year=${selectedYear}`);
-        console.log('API Result:', result.data);
-        const normalRoles = result.data.normalUsers.map((user: UserType) => user.roleai);
-        const studentRoles = result.data.studentUsers.map((user: UserType) => user.roleai);
-
-        // นับจำนวน role แต่ละประเภท
+        
+        if (!result.data) return;
+  
+        const normalRoles = result.data.normalUsers?.map((user: UserType) => user.roleai) || [];
+        const studentRoles = result.data.studentUsers?.map((user: UserType) => user.roleai) || [];
+  
         const roles = ['student', 'other', 'developer'];
         const normalCounts = roles.map(role => normalRoles.filter((r: string) => r === role).length);
         const studentCounts = roles.map(role => studentRoles.filter((r: string) => r === role).length);
 
         // อัพเดท state ด้วยข้อมูลใหม่
+  
         setRoleData({
           labels: roles,
           datasets: [
@@ -297,9 +344,9 @@ const page = () => {
         console.error("Error fetching role data:", error);
       }
     };
-
-    fetchData();  // เรียกฟังก์ชันเพื่อดึงข้อมูลเมื่อ component ถูก mount
-  }, [selectedMonth, selectedYear]);  // ใส่ dependency array ที่ว่างเพื่อให้ทำงานเพียงครั้งเดียว
+  
+    fetchData();
+  }, [selectedMonth, selectedYear]);// ใส่ dependency array ที่ว่างเพื่อให้ทำงานเพียงครั้งเดียว
 
   const months = [
     { value: 'All', label: "All" },
@@ -402,13 +449,13 @@ const page = () => {
           <div className="flex flex-col">
 
             <p
-              className="mt-3"
+              className="mt-10 text-black"
               style={{ fontSize: "24px", fontWeight: "bold" }}
             >
               สรุปผล
             </p>
 
-            <div className="flex flex-row w-full mt-10">
+            <div className="flex flex-row w-full mt-3">
               <p
                 style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
               >
@@ -473,7 +520,7 @@ const page = () => {
               <div className="flex flex-col justify-center w-96 h-28 m-5 bg-white rounded-md drop-shadow-md">
                 <div className="flex flex-row justify-center m-2">
                   <p className="font-semibold text-black">
-                    จำนวนผู้เข้าชม
+                    จำนวนสมาชิก
                   </p>
                 </div>
                 <div className="flex flex-row justify-center m-2">

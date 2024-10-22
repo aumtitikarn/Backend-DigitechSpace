@@ -53,6 +53,7 @@ const NavigationItem: React.FC<INavigationItemProps> = ({
     }
   };
 
+  
   const content = (
     <>
       <div className="flex items-center space-x-2">
@@ -115,9 +116,11 @@ const Sidebar: React.FC = () => {
     // Additional logic can be added here
   };
 
-  const handleLogout = async () => {
-    const data = await signOut({ redirect: false, callbackUrl: '/' });
-    router.push(data.url);
+  const handleSignOut = async () => {
+    await signOut({ 
+      redirect: true,
+      callbackUrl: '/'
+    });
   };
 
   return (
@@ -146,7 +149,7 @@ const Sidebar: React.FC = () => {
               </div>
               <div className="border-t border-gray-200 my-3"></div>
               <button
-                onClick={handleLogout}
+                onClick={handleSignOut}
                 className="block w-full text-left  text-sm text-gray-700 hover:bg-gray-100"
               >
                 <LogOut className="inline-block mr-2" size={16} />
