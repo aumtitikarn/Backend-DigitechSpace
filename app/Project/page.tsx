@@ -80,7 +80,8 @@ const Project: React.FC = () => {
       <Header />
       <main className="flex-grow">
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
-          <h2 className="text-xl font-bold mb-4 text-black">โครงงาน</h2>
+          <h2 className="text-xl font-bold text-black ">โครงงาน</h2>
+          <p className="text-black mb-4">โครงงานทั้งหมดที่ถูกเผยแพร่แล้วบนเว็บไซต์</p>
           <div className="overflow-x-auto">
             <div className="inline-block min-w-full align-middle">
               <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 rounded-lg shadow-sm">
