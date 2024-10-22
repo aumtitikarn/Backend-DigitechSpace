@@ -33,17 +33,33 @@ const UserStudent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const itemsPerPage = 10;
+
+
+   // Filter projects based on search term
+   const filteredProjects = projects.filter((project) => {
+    const searchValue = searchTerm.toLowerCase();
+    return (
+      project.username?.toLowerCase().includes(searchValue) ||
+      project.name?.toLowerCase().includes(searchValue) ||
+      project.email?.toLowerCase().includes(searchValue) ||
+      project.phonenumber?.toLowerCase().includes(searchValue)
+    );
+  });
+
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = projects.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(projects.length / itemsPerPage);
+  const currentItems = filteredProjects.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
   const [emailContent, setEmailContent] = useState("");
   const [isSending, setIsSending] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
   useEffect(() => {
     if (textareaRef.current) {
       adjustHeight();
@@ -176,15 +192,29 @@ const UserStudent: React.FC = () => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
       <Header />
       <main className="flex-grow">
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
-          <h2 className="text-xl font-bold mb-4 text-black">
+            <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-black">
             รายชื่อของนักศึกษา
-          </h2>
+            </h2>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="ค้นหาผู้ใช้..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="text-black w-64 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#5D76AD]"
+              />
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <div className="inline-block min-w-full align-middle ">
               <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 rounded-lg shadow-sm">

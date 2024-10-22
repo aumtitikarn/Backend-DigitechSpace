@@ -21,12 +21,23 @@ const usernormal: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const itemsPerPage = 10;
+
+  // Filter projects based on search term
+  const filteredProjects = projects.filter((project) => {
+    const searchValue = searchTerm.toLowerCase();
+    return (
+      project.name?.toLowerCase().includes(searchValue) ||
+      project.email?.toLowerCase().includes(searchValue) ||
+      project.numberphone?.toLowerCase().includes(searchValue)
+    );
+  });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = projects.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(projects.length / itemsPerPage);
+  const currentItems = filteredProjects.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
   const [emailContent, setEmailContent] = useState("");
   const [isSending, setIsSending] = useState(false);
 
@@ -38,9 +49,18 @@ const usernormal: React.FC = () => {
     }
   }, [emailContent]);
 
+  // Reset to first page when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEmailContent(e.target.value);
     adjustHeight();
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
   };
 
   const adjustHeight = () => {
@@ -103,6 +123,7 @@ const usernormal: React.FC = () => {
       setIsSending(false);
     }
   };
+
   const getPosts = async () => {
     setLoading(true);
     setError(null);
@@ -117,12 +138,11 @@ const usernormal: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log("Fetched Data:", data); // ตรวจสอบข้อมูลที่ได้มา
+      console.log("Fetched Data:", data);
 
-      // ตรวจสอบโครงสร้างข้อมูลและดึงเฉพาะ name และ email
       if (data && Array.isArray(data.adminusers)) {
         const formattedProjects = data.adminusers.map((user: any) => ({
-          id: user._id, // ใช้ _id เป็น id
+          id: user._id,
           name: user.name,
           email: user.email,
           numberphone: user.numberphone,
@@ -151,111 +171,121 @@ const usernormal: React.FC = () => {
     setCurrentPage(page);
   };
 
-
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
       <Header />
       <main className="flex-grow">
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
-          <h2 className="text-xl font-bold mb-4 text-black">
-            รายชื่อของแอดมิน
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-black">
+              รายชื่อของแอดมิน
+            </h2>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="ค้นหาแอดมิน..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="w-64 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#5D76AD] text-black"
+              />
+            </div>
+          </div>
           <div className="overflow-x-auto">
-            <div className="inline-block min-w-full align-middle ">
+            <div className="inline-block min-w-full align-middle">
               <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 rounded-lg shadow-sm">
                 <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-[#0B1E48]">
-                <tr>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
-                  >
-                    #
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
-                  >
-                    ชื่อ - นามสกุล
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
-                  >
-                    อีเมล
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
-                  >
-                    เบอร์โทร
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {currentItems.map((admin, index) => (
-                  <tr key={admin.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                      {index + 1 + indexOfFirstItem}.
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                      <Link
-                        href={{
-                          pathname: `/admin/detail`,
-                          query: {
-                            id: admin.id,
-                            name: admin.name,
-                            email: admin.email,
-                            numberphone: admin.numberphone,
-                            facebook: admin.facebook,
-                            line: admin.line,
-                            imageUrl: admin.imageUrl,
-                          },
-                        }}
+                  <thead className="bg-[#0B1E48]">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
                       >
-                        {admin.name || "-"}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                      <Link
-                        href={{
-                          pathname: `/admin/detail`,
-                          query: {
-                            id: admin.id,
-                            name: admin.name,
-                            email: admin.email,
-                            numberphone: admin.numberphone,
-                            facebook: admin.facebook,
-                            line: admin.line,
-                            imageUrl: admin.imageUrl,
-                          },
-                        }}
+                        #
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
                       >
-                        {admin.email || "-"}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                      <Link
-                        href={{
-                          pathname: `/admin/detail`,
-                          query: {
-                            id: admin.id,
-                            name: admin.name,
-                            email: admin.email,
-                            numberphone: admin.numberphone,
-                            facebook: admin.facebook,
-                            line: admin.line,
-                            imageUrl: admin.imageUrl,
-                          },
-                        }}
+                        ชื่อ - นามสกุล
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
                       >
-                        {admin.numberphone || "-"}
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              </table>
+                        อีเมล
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold"
+                      >
+                        เบอร์โทร
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {currentItems.map((admin, index) => (
+                      <tr key={admin.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                          {index + 1 + indexOfFirstItem}.
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                          <Link
+                            href={{
+                              pathname: `/admin/detail`,
+                              query: {
+                                id: admin.id,
+                                name: admin.name,
+                                email: admin.email,
+                                numberphone: admin.numberphone,
+                                facebook: admin.facebook,
+                                line: admin.line,
+                                imageUrl: admin.imageUrl,
+                              },
+                            }}
+                          >
+                            {admin.name || "-"}
+                          </Link>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                          <Link
+                            href={{
+                              pathname: `/admin/detail`,
+                              query: {
+                                id: admin.id,
+                                name: admin.name,
+                                email: admin.email,
+                                numberphone: admin.numberphone,
+                                facebook: admin.facebook,
+                                line: admin.line,
+                                imageUrl: admin.imageUrl,
+                              },
+                            }}
+                          >
+                            {admin.email || "-"}
+                          </Link>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                          <Link
+                            href={{
+                              pathname: `/admin/detail`,
+                              query: {
+                                id: admin.id,
+                                name: admin.name,
+                                email: admin.email,
+                                numberphone: admin.numberphone,
+                                facebook: admin.facebook,
+                                line: admin.line,
+                                imageUrl: admin.imageUrl,
+                              },
+                            }}
+                          >
+                            {admin.numberphone || "-"}
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

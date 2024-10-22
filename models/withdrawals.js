@@ -19,6 +19,10 @@ const WithdrawSchema = new mongoose.Schema({
     enum: ['pending', 'completed', 'failed'], // สถานะที่อนุญาต
     default: 'pending',
   },
+  date: {
+    type: String, // หรือ Date ขึ้นอยู่กับรูปแบบที่คุณต้องการ
+    required: true,
+  },
   receipt: {
     fullname: {
       type: String,

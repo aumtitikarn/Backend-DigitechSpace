@@ -24,12 +24,24 @@ const usernormal: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const itemsPerPage = 10;
+
+  // Filter projects based on search term
+  const filteredProjects = projects.filter((project) => {
+    const searchValue = searchTerm.toLowerCase();
+    return (
+      project.username?.toLowerCase().includes(searchValue) ||
+      project.name?.toLowerCase().includes(searchValue) ||
+      project.email?.toLowerCase().includes(searchValue) ||
+      project.phonenumber?.toLowerCase().includes(searchValue)
+    );
+  });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = projects.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(projects.length / itemsPerPage);
+  const currentItems = filteredProjects.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
   const [emailContent, setEmailContent] = useState("");
   const [isSending, setIsSending] = useState(false);
 
@@ -41,9 +53,18 @@ const usernormal: React.FC = () => {
     }
   }, [emailContent]);
 
+  // Reset to first page when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEmailContent(e.target.value);
     adjustHeight();
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
   };
 
   const adjustHeight = () => {
@@ -106,6 +127,7 @@ const usernormal: React.FC = () => {
       setIsSending(false);
     }
   };
+
   const getPosts = async () => {
     setLoading(true);
     setError(null);
@@ -153,57 +175,27 @@ const usernormal: React.FC = () => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-  const handleSubmit2 = async (
-    id: string | null,
-    email: string | null,
-    name: string | null
-  ) => {
-    // ตรวจสอบว่ามี ID, อีเมล และข้อความครบถ้วน
-    if (!id || !email) {
-      alert("Blog ID, email, or message is missing");
-      return;
-    }
-
-    // ยืนยันการติดต่อกับเจ้าของโปรเจค
-    const confirmed = confirm(
-      "Are you sure you want to contact the project owner?"
-    );
-    if (!confirmed) return;
-
-    try {
-      // เรียก API เพื่อส่งข้อมูล
-      const response = await fetch("/api/normoluser", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: name, // ใช้ชื่อจริงถ้ามี
-          email: email,
-        }),
-      });
-
-      // ตรวจสอบการตอบกลับจาก API
-      const data = await response.json();
-      if (response.ok) {
-        alert(data.message); // แสดงข้อความสำเร็จ
-      } else {
-        alert(data.error); // แสดงข้อผิดพลาด
-      }
-    } catch (error) {
-      console.error("Error contacting project owner:", error);
-      alert("An error occurred while contacting the project owner."); // แสดงข้อผิดพลาด
-    }
-  };
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
       <Header />
       <main className="flex-grow">
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
-          <h2 className="text-xl font-bold mb-4 text-black">
-            รายชื่อของผู้ใช้ธรรมดา
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-black">
+              รายชื่อของผู้ใช้ธรรมดา
+            </h2>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="ค้นหาผู้ใช้..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="text-black w-64 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#5D76AD]"
+              />
+            </div>
+          </div>
+          
           <div className="overflow-x-auto">
             <div className="inline-block min-w-full align-middle">
               <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 rounded-lg shadow-sm">
