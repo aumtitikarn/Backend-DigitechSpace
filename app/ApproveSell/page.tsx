@@ -112,7 +112,7 @@ const ApproveSell: React.FC = () => {
                           href={`/ApproveSell/Detail?_id=${project._id}&profileImage=${encodeURIComponent(project.profileImage)}&authorName=${encodeURIComponent(project.authorName)}`}
                           className="text-black"
                         >
-                          {project.projectname}
+                          {project.projectname || "-"}
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
@@ -120,7 +120,7 @@ const ApproveSell: React.FC = () => {
                           href={`/ApproveSell/Detail?_id=${project._id}&profileImage=${encodeURIComponent(project.profileImage)}&authorName=${encodeURIComponent(project.authorName)}`}
                           className="text-black"
                         >
-                        {project.authorName}
+                        {project.authorName || "-"}
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
@@ -128,7 +128,7 @@ const ApproveSell: React.FC = () => {
                           href={`/ApproveSell/Detail?_id=${project._id}&profileImage=${encodeURIComponent(project.profileImage)}&authorName=${encodeURIComponent(project.authorName)}`}
                           className="text-black"
                         >
-                        {project.price}
+                        {project.price || "-"}
                         </Link>
                       </td>
                     </tr>

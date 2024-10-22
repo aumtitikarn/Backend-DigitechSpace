@@ -124,14 +124,14 @@ const Reportproject: React.FC = () => {
                           }}
                           className="text-black"
                         >
-                          {val.name}
+                          {val.name || "-"}
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                        {val.report}
+                        {val.report || "-"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                        {val.username}
+                        {val.username || "-"}
                       </td>
                     </tr>
                   ))

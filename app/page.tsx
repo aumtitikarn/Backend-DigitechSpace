@@ -28,7 +28,7 @@ export default function SignIn() {
         return;
       }
   
-      router.replace("/normal");
+      router.replace("/Analyst");
     } catch (error) {
       console.log(error);
       setError("Something went wrong");

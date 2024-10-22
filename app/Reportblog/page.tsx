@@ -106,7 +106,7 @@ const Reportblog: React.FC = () => {
                           href={`/Reportblog/${val._id}`}
                           className="text-black"
                         >
-                          {val.blogname}
+                          {val.blogname || "-"}
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
@@ -114,7 +114,7 @@ const Reportblog: React.FC = () => {
                           href={`/Reportblog/${val._id}`}
                           className="text-black"
                         >
-                        {val.selectedReason}
+                        {val.selectedReason || "-"}
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
@@ -122,7 +122,7 @@ const Reportblog: React.FC = () => {
                           href={`/Reportblog/${val._id}`}
                           className="text-black"
                         >
-                        {val.author}
+                        {val.author || "-"}
                         </Link>
                       </td>
                     </tr>

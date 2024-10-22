@@ -115,7 +115,7 @@ const ReportService: React.FC = () => {
                           }}
                           className="text-black"
                         >
-                          {val.username}
+                          {val.username || "-"}
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
@@ -131,7 +131,7 @@ const ReportService: React.FC = () => {
                           }}
                           className="text-black"
                         >
-                          {val.report}
+                          {val.report || "-"}
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
@@ -147,7 +147,7 @@ const ReportService: React.FC = () => {
                           }}
                           className="text-black"
                         >
-                          {val.email}
+                          {val.email || "-"}
                         </Link>
                       </td>
                     </tr>

@@ -11,6 +11,9 @@ import Header from "../../component/Header";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { MdOutlineFileDownload } from "react-icons/md";
+import { Switch } from "@headlessui/react";
+import Swal from "sweetalert2";
+
 interface Project {
   _id: string;
   projectname: string;
@@ -35,6 +38,7 @@ const Detail: React.FC = () => {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rejectText, setRejectText] = useState<string>("");
+  const [enabled, setEnabled] = useState(true);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -58,6 +62,7 @@ const Detail: React.FC = () => {
 
         const data: Project = await response.json();
         setProject(data);
+        setEnabled(data.permission);
       } catch (error) {
         console.error("Error fetching project data:", error);
       }
@@ -87,6 +92,7 @@ const Detail: React.FC = () => {
 
     fetchAdditionalData();
   }, []);
+
   useEffect(() => {
     if (!id) return;
 
@@ -121,125 +127,61 @@ const Detail: React.FC = () => {
     redirect("/auth/signin");
     return null;
   }
+  const handleSwitchChange = async (checked: boolean) => {
+    if (!checked) {
+      const result = await Swal.fire({
+        title: "ยืนยันการซ่อนโครงงาน",
+        text: "ถ้าคุณกดซ่อน โครงงานนี้จะไปอยู่ที่หน้าอนุมัติการขาย คุณต้องการซ่อนโครงงานหรือไม่?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ใช่, ซ่อนโครงงาน",
+        cancelButtonText: "ยกเลิก",
+      });
 
-  const handleApprove = async () => {
+      if (result.isConfirmed) {
+        setEnabled(false);
+        await updateProjectPermission(false);
+      }
+    } else {
+      setEnabled(true);
+      await updateProjectPermission(true);
+    }
+  };
+  const updateProjectPermission = async (newPermission: boolean) => {
     if (!id) return;
 
     setIsLoading(true);
-    setStatusMessage(null);
-
-    try {
-      // อัปเดตสถานะของโปรเจกต์
-      const response = await fetch(`/api/project/id/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ permission: true, status: "approved" }),
-      });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          responseData.error || "Failed to update project permission"
-        );
-      }
-
-      // บันทึกข้อความแจ้งเตือน
-      const email = project?.email; // เปลี่ยนเป็นการดึง email จากผู้ส่งคำขอ หรือข้อมูลโปรเจกต์
-      const notificationMessage = `Project "${project?.projectname}" has been approved.`;
-
-      const notificationResponse = await fetch("/api/notification", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, notificationValue: notificationMessage }), // ส่ง email และ notificationValue
-      });
-
-      const notificationData = await notificationResponse.json();
-
-      if (!notificationResponse.ok) {
-        throw new Error(
-          notificationData.error || "Failed to save notification"
-        );
-      }
-
-      setStatusMessage("Project approved successfully and notification sent.");
-    } catch (error) {
-      console.error("Error approving project:", error);
-      setStatusMessage(`Approval failed.`); // แสดงข้อความผิดพลาดที่ชัดเจน
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleNotApprove = async () => {
-    if (!id || !rejectText) return;
-
-    setIsLoading(true);
-    setStatusMessage(null);
-
     try {
       const response = await fetch(`/api/project/id/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          status: "rejected",
-          rejecttext: rejectText,
-        }),
+        body: JSON.stringify({ permission: newPermission }),
       });
-
-      const responseData = await response.json();
 
       if (!response.ok) {
-        throw new Error(responseData.error || "Failed to update project");
-      }
-      // บันทึกข้อความแจ้งเตือน
-      const email = project?.email; // เปลี่ยนเป็นการดึง email จากผู้ส่งคำขอ หรือข้อมูลโปรเจกต์
-      const notificationMessage = `Your project was not approved because: ${rejectText}`; // เพิ่ม rejectText ในข้อความ
-
-      const notificationResponse = await fetch("/api/notification", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, notificationValue: notificationMessage }), // ส่ง email และ notificationValue
-      });
-
-      const notificationData = await notificationResponse.json();
-
-      if (!notificationResponse.ok) {
-        throw new Error(
-          notificationData.error || "Failed to save notification"
-        );
+        throw new Error("Failed to update project permission");
       }
 
+      const updatedProject = await response.json();
+      setProject(updatedProject);
       setStatusMessage(
-        "Project has been successfully rejected and notification has been sent."
+        `Project ${newPermission ? "shown" : "hidden"} successfully`
       );
-
-      // Redirect to the ApproveSell page
-      router.push("/ApproveSell");
+      if (!newPermission) {
+        // Redirect to ApproveSell page after hiding the project
+        router.push("/Project");
+      }
     } catch (error) {
-      console.error("Error updating project:", error);
-      setStatusMessage("Failed to reject project. Please try again.");
+      console.error("Error updating project permission:", error);
+      setStatusMessage("Failed to update project visibility");
     } finally {
       setIsLoading(false);
     }
   };
-  const parseJson = (str: string | null) => {
-    try {
-      return JSON.parse(str || "[]");
-    } catch {
-      console.error("Failed to parse JSON:", str);
-      return [];
-    }
-  };
-
   const imageUrl = project?.imageUrl || [];
 
   const handleDownload = async (fileName: string) => {
@@ -278,12 +220,12 @@ const Detail: React.FC = () => {
   };
 
   return (
-<main className="flex flex-col min-h-screen bg-[#FBFBFB]">
+    <main className="flex flex-col min-h-screen bg-[#FBFBFB]">
       <Header />
       <div className="lg:mx-64 lg:mt-20 lg:mb-20 mt-10 mb-10">
         <div className="flex flex-col min-h-screen">
           {/* Slider Section */}
-          <div className="flex flex-col items-center p-4">
+          <div className="flex flex-col items-center">
             <div className="relative w-full h-[500px] overflow-hidden rounded-lg">
               {imageUrl.length > 0 && (
                 <img
@@ -314,6 +256,29 @@ const Detail: React.FC = () => {
               <>
                 <div className="flex items-start justify-between">
                   <div>
+                    <Switch
+                      checked={enabled}
+                      onChange={handleSwitchChange}
+                      className={`${
+                        enabled ? "bg-blue-600" : "bg-gray-200"
+                      } relative inline-flex items-center h-8 rounded-full w-20 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 my-3`}
+                    >
+                      <span className="sr-only">Toggle visibility</span>
+                      <span
+                        className={`${
+                          enabled ? "translate-x-12" : "translate-x-1"
+                        } inline-block w-6 h-6 transform bg-white rounded-full transition-transform`}
+                      />
+                      <span
+                        className={`${
+                          enabled ? "left-2" : "right-2"
+                        } absolute text-xs font-medium ${
+                          enabled ? "text-white" : "text-gray-900"
+                        }`}
+                      >
+                        {enabled ? "แสดง" : "ซ่อน"}
+                      </span>
+                    </Switch>
                     <p className="text-xl font-bold text-[24px] text-black my-3">
                       {project.projectname}
                     </p>
@@ -374,26 +339,26 @@ const Detail: React.FC = () => {
                 </div>
 
                 {/* File Section */}
-                <div className="bg-white p-6 rounded-lg mt-10 shadow-custom">
-                  <h2 className="text-lg font-bold text-[#33529B]">
-                    File
-                  </h2>
-                  <div className="border-t border-gray-300 my-4"></div>
-                  <ul className="list-none mt-2">
-                    {project.filesUrl.map((fileName, index) => (
-                      <li className="flex items-center mb-2 " key={index}>
-                        <button
-                          onClick={() => handleDownload(fileName)}
-                          style={{ cursor: "pointer" }}
-                          className="flex items-center space-x-2 hover:text-blue-600 text-black"
-                        >
-                          <MdOutlineFileDownload className="w-5 h-5 text-gray-500" />
-                          <span >{fileName}</span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {project.filesUrl && project.filesUrl.length > 0 && (
+                  <div className="bg-white p-6 rounded-lg mt-10 shadow-custom">
+                    <h2 className="text-lg font-bold text-[#33529B]">File</h2>
+                    <div className="border-t border-gray-300 my-4"></div>
+                    <ul className="list-none mt-2">
+                      {project.filesUrl.map((fileName, index) => (
+                        <li className="flex items-center mb-2 " key={index}>
+                          <button
+                            onClick={() => handleDownload(fileName)}
+                            style={{ cursor: "pointer" }}
+                            className="flex items-center space-x-2 hover:text-blue-600 text-black"
+                          >
+                            <MdOutlineFileDownload className="w-5 h-5 text-gray-500" />
+                            <span>{fileName}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
                 {statusMessage && (
                   <p
@@ -406,43 +371,10 @@ const Detail: React.FC = () => {
                     {statusMessage}
                   </p>
                 )}
-
-                <h4 className="bg-white text-[#FF2020] p-4 mt-10 rounded-lg">
-                  *ใส่หมายเหตุ หากไม่อนุมัติ
-                </h4>
-                <textarea
-                  id="comment"
-                  rows={4}
-                  placeholder="Type your comment here..."
-                  className="w-full p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#33529B] focus:border-transparent"
-                  value={rejectText}
-                  onChange={(e) => setRejectText(e.target.value)}
-                ></textarea>
               </>
             ) : (
               <p>Loading project details...</p>
             )}
-          </div>
-
-          {/* Buttons Section */}
-          <div className="flex justify-center mt-5 space-x-2 md:space-x-20 lg:space-x-10">
-            <button
-              onClick={() => handleNotApprove()}
-              className={`bg-[#666666] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base ${
-                !rejectText ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              disabled={!rejectText}
-            >
-              ไม่อนุมัติ
-            </button>
-
-            <button
-              onClick={() => handleApprove()}
-              className="bg-[#33529B] text-white w-[180px] lg:w-[350px] md:w-[250px] py-3 rounded-lg text-sm lg:text-base"
-              disabled={isLoading}
-            >
-              {isLoading ? "Processing..." : "อนุมัติ"}
-            </button>
           </div>
         </div>
       </div>

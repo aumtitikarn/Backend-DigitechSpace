@@ -151,8 +151,6 @@ const usernormal: React.FC = () => {
     setCurrentPage(page);
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
@@ -215,7 +213,7 @@ const usernormal: React.FC = () => {
                           },
                         }}
                       >
-                        {admin.name}
+                        {admin.name || "-"}
                       </Link>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
@@ -233,7 +231,7 @@ const usernormal: React.FC = () => {
                           },
                         }}
                       >
-                        {admin.email}
+                        {admin.email || "-"}
                       </Link>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
@@ -251,7 +249,7 @@ const usernormal: React.FC = () => {
                           },
                         }}
                       >
-                        {admin.numberphone}
+                        {admin.numberphone || "-"}
                       </Link>
                     </td>
                   </tr>
@@ -261,7 +259,7 @@ const usernormal: React.FC = () => {
               </div>
             </div>
           </div>
-          <p className="text-sm mt-2">
+          <p className="text-sm mt-2 text-black">
             *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางคนนั้น
           </p>
           <Pagination

@@ -177,7 +177,7 @@ const Withdraw: React.FC = () => {
                             href={`/Withdraw/detail?id=${withdraw._id}`}
                             className="text-black"
                           >
-                            {withdraw.receipt.fullname}
+                            {withdraw.receipt.fullname || "-"}
                           </Link>
                         ) : (
                           withdraw.receipt.email
@@ -188,7 +188,7 @@ const Withdraw: React.FC = () => {
                             href={`/Withdraw/detail?id=${withdraw._id}`}
                             className="text-black"
                           >
-                        {withdraw.withdrawn}
+                        {withdraw.withdrawn || "-"}
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
@@ -196,7 +196,7 @@ const Withdraw: React.FC = () => {
                             href={`/Withdraw/detail?id=${withdraw._id}`}
                             className="text-black"
                           >
-                        {new Date(withdraw.date).toLocaleDateString()}
+                        {new Date(withdraw.date).toLocaleDateString() || "-"}
                         </Link>
                       </td>
                     </tr>

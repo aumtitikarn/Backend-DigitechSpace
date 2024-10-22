@@ -16,7 +16,8 @@ import {
   ChevronUp,
   LucideIcon,
   LogOut,
-  Siren
+  Siren,
+  FolderKanban
 } from 'lucide-react';
 import { MdAccountCircle } from "react-icons/md";
 import { signOut, useSession } from 'next-auth/react';
@@ -198,6 +199,13 @@ const Sidebar: React.FC = () => {
                 isActive={activeItem === 'approve-sales'}
               />
               <NavigationItem 
+                id="project"
+                icon={FolderKanban} 
+                label="โครงงาน" 
+                href="/Project"
+                isActive={activeItem === 'approve-sales'}
+              />
+              <NavigationItem 
                 id="user-reports"
                 icon={FileText} 
                 label="รายงานของผู้ใช้" 
@@ -227,7 +235,7 @@ const Sidebar: React.FC = () => {
               <NavigationItem 
                 id="policy"
                 icon={Siren} 
-                label="นโยบาย" 
+                label="นโยบายส่วนบุคคล" 
                 href="/policy"
                 isActive={activeItem === 'policy'}
               />

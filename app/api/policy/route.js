@@ -8,7 +8,7 @@ export async function POST(req) {
   try {
     await connectMongoDB();
 
-    const { policy, type } = await req.json();
+    const { policy, type, creator } = await req.json();
 
     if (!policy || !type) {
       return NextResponse.json({ error: 'Policy content and type are required' }, { status: 400 });
@@ -20,13 +20,15 @@ export async function POST(req) {
     if (existingPolicy) {
       // If policy exists, update it
       existingPolicy.policy = policy;
+      existingPolicy.creator = creator;
       existingPolicy.updatedAt = new Date();
       await existingPolicy.save();
 
       return NextResponse.json({ message: 'Policy updated successfully', id: existingPolicy._id }, { status: 200 });
     } else {
       // If policy doesn't exist, create a new one
-      const newPolicy = new Policy({ policy, type });
+      const newPolicy = new Policy({ policy, type, creator });
+
       await newPolicy.save();
 
       return NextResponse.json({ message: 'New policy created successfully', id: newPolicy._id }, { status: 201 });
