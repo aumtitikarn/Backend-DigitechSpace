@@ -13,7 +13,7 @@ export async function GET(req) {
 
     let filter = {};
 
-    if (selectedMonth && selectedYear) {
+    if (selectedMonth !== "All" && selectedYear !== "All") {
       const startDate = new Date(Date.UTC(selectedYear, selectedMonth - 1, 1));
       const endDate = new Date(Date.UTC(selectedYear, selectedMonth, 1));
       filter.lastSearched = { $gte: startDate, $lt: endDate };

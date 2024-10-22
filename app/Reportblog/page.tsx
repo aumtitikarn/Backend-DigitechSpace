@@ -89,7 +89,7 @@ const Reportblog: React.FC = () => {
               <thead className="bg-[#0B1E48]">
                 <tr>
                   <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">#</th>
-                  <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ชื่อโครงการ</th>
+                  <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ชื่อบล็อก</th>
                   <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">คำร้อง</th>
                   <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ผู้รายงาน</th>
                 </tr>
