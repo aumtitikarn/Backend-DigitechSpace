@@ -64,8 +64,18 @@ type UserType = {
 
 type Sale = {
   createdAt: string;
+  net: number; 
 };
-
+interface ChartDataType {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    backgroundColor: string;
+    borderColor: string;
+    borderWidth: number;
+  }[];
+}
 
 const page = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -202,8 +212,17 @@ const page = () => {
   }, [selectedMonth, selectedYear]);
 
   const [loading, setLoading] = useState(true);  // เพิ่ม state สำหรับ loading
-  const [error, setError] = useState(null);
-  const [chartData, setChartData] = useState({});
+  const [error, setError] = useState<string | null>(null);
+  const [chartData, setChartData] = useState<ChartDataType>({
+    labels: [],
+    datasets: [{
+      label: 'Price',
+      data: [],
+      backgroundColor: 'rgba(53, 83, 155, 0.5)',
+      borderColor: 'rgba(53, 83, 155, 1)',
+      borderWidth: 1,
+    }]
+  });
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -289,11 +308,10 @@ const page = () => {
         console.log('API Result:', result.data);
         const normalRoles = result.data.normalUsers.map((user: UserType) => user.roleai);
         const studentRoles = result.data.studentUsers.map((user: UserType) => user.roleai);
-
-        // นับจำนวน role แต่ละประเภท
+        
         const roles = ['student', 'other', 'developer'];
-        const normalCounts = roles.map(role => normalRoles.filter(r => r === role).length);
-        const studentCounts = roles.map(role => studentRoles.filter(r => r === role).length);
+        const normalCounts = roles.map(role => normalRoles.filter((r: string) => r === role).length);
+        const studentCounts = roles.map(role => studentRoles.filter((r: string) => r === role).length);
 
         // อัพเดท state ด้วยข้อมูลใหม่
         setRoleData({
