@@ -4,50 +4,74 @@ import { projects } from '../../../models/Getproject'
 
 export async function GET(req) {
   try {
-    // Connect to MongoDB
+    // เชื่อมต่อกับ MongoDB
     await connectMongoDB();
 
-    // Fetch orders with status "successful"
-    const orders = await Order.find({ status: 'successful' });
+    // ดึงข้อมูลออเดอร์ที่สถานะเป็น "successful"
+    const orders = await Order.find({ status: 'successful' }, 'product createdAt');
     console.log("Orders fetched: ", orders);
 
-    // Check if there are any orders to process
+    // ตรวจสอบว่ามีออเดอร์ให้ประมวลผลหรือไม่
     if (orders.length === 0) {
-      return new Response(JSON.stringify({ message: 'No successful orders found' }), {
+      return new Response(JSON.stringify({ message: 'ไม่พบออเดอร์ที่สำเร็จ' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    // Extract product IDs from the orders
-    const productIds = orders.map((order) => order.product);
+    // ดึง product IDs จากออเดอร์
+    const productIds = orders.map(order => order.product);
     console.log("Product IDs from orders: ", productIds);
 
-    // Fetch products that were sold based on the product IDs
-    const products = await projects.find({ _id: { $in: productIds } });
+    // ดึงข้อมูลผลิตภัณฑ์ที่ขายตาม product IDs
+    const products = await projects.find({ _id: { $in: productIds } }, 'price category _id');
     console.log("Fetched Products: ", products);
 
-    // Check if any products were found
+    // ตรวจสอบว่าพบผลิตภัณฑ์หรือไม่
     if (products.length === 0) {
-      return new Response(JSON.stringify({ message: 'No products found for the given product IDs' }), {
+      return new Response(JSON.stringify({ message: 'ไม่พบผลิตภัณฑ์ตาม product IDs ที่ให้มา' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    // Prepare sales data with price, category, and createdAt
-    const salesData = products.map((product) => {
-      // Find the corresponding order for this product
-      const correspondingOrder = orders.find(order => order.product.toString() === product._id.toString());
-      
-      return {
-        price: product.price,
-        category: product.category,
-        createdAt: correspondingOrder ? correspondingOrder.createdAt : null // Use the createdAt from the corresponding order
-      };
-    });
+    // สร้างแผนที่สำหรับข้อมูลผลิตภัณฑ์ โดยใช้ `_id` เป็นคีย์
+    const productMap = products.reduce((acc, product) => {
+      acc[product._id.toString()] = product;
+      return acc;
+    }, {});
 
-    // Return the sales data as JSON with a 200 status
+    // เก็บข้อมูลผลรวมราคาต่อ product (รวมจากออเดอร์)
+    const orderProductPrices = orders.reduce((acc, order) => {
+      const productId = order.product.toString();
+
+      // ถ้าพบ `_id` ของ product ในแผนที่
+      if (productMap[productId]) {
+        if (!acc[productId]) {
+          acc[productId] = {
+            price: productMap[productId].price,
+            category: productMap[productId].category,
+            totalPrice: productMap[productId].price, // บวกราคาเริ่มต้น
+            count: 1, // นับจำนวนครั้งที่ใช้ product นี้
+            createdAt: order.createdAt,
+          };
+        } else {
+          acc[productId].totalPrice += productMap[productId].price; // บวกราคาเพิ่ม
+          acc[productId].count += 1; // นับจำนวนครั้งที่ใช้
+        }
+      }
+      return acc;
+    }, {});
+
+    // เตรียมข้อมูลยอดขายจากการบวกราคา
+    const salesData = Object.entries(orderProductPrices).map(([productId, productData]) => ({
+      price: productData.totalPrice, // รวมราคาทั้งหมดที่ใช้ผลิตภัณฑ์นี้ใน order
+      category: productData.category,
+      count: productData.count, // จำนวนครั้งที่ใช้ผลิตภัณฑ์นี้ใน order
+      createdAt: productData.createdAt
+    }));
+
+    // คืนข้อมูลยอดขายในรูปแบบ JSON ด้วยสถานะ 200
     return new Response(JSON.stringify(salesData), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -55,10 +79,11 @@ export async function GET(req) {
   } catch (error) {
     console.error("Error during fetching:", error);
 
-    // Return a 500 error if something goes wrong
-    return new Response(JSON.stringify({ message: 'Server Error' }), {
+    // คืนสถานะข้อผิดพลาด 500 หากมีบางอย่างผิดพลาด
+    return new Response(JSON.stringify({ message: 'เกิดข้อผิดพลาดในเซิร์ฟเวอร์' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
   }
 }
+
