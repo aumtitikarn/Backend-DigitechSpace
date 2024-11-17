@@ -1,58 +1,84 @@
 import { NextResponse } from 'next/server';
-import { connectMongoDB } from '../../../../../lib/mongodb';
+import { connectMongoDB } from '../../../../lib/mongodb';
 import NormalUser from "../../../../models/NormalUser";
 import StudentUser from "../../../../models/StudentUser";
 import { getServerSession } from 'next-auth/next';
-import { authOption } from '../../auth/[...nextauth]/route';
+import { authOptions } from '../../auth/auth.config'; // ปรับ path ให้ถูกต้องตามโครงสร้างโปรเจค
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(req) {
   try {
-    // Connect to the database
-    await connectMongoDB();
-
-        // ดึงข้อมูล roleai จาก normalUsers และ studentUsers
-        const normalUsers = await NormalUser.find({}, 'roleai');
-        const studentUsers = await StudentUser.find({}, 'roleai');
-
-        const normalUserCount = await NormalUser.countDocuments({});
-        const studentUserCount = await StudentUser.countDocuments({});
-
-        // รวมจำนวนผู้ใช้ทั้งหมด
-        const totalUserCount = normalUserCount + studentUserCount;
-
-    // รวมจำนวนผู้ใช้ทั้งหมด
-
+    // ตรวจสอบ session ก่อน
+    const session = await getServerSession(authOptions);
+    
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get order details for each project
-    const purchaseHistory = await Promise.all(
-        totalUserCount.map(async (totalUserCounts) => {
-        // const order = await Order.findOne({ product: project._id, check: true });
-        const normalUserCount = await NormalUser.countDocuments({});
-        const studentUserCount = await StudentUser.countDocuments({});
+    // Connect to the database
+    await connectMongoDB();
 
-        const totalUserCount = normalUserCount + studentUserCount;
+    // ดึงข้อมูลจาก database
+    const [normalUsers, studentUsers, normalUserCount, studentUserCount] = await Promise.all([
+      NormalUser.find({}, 'roleai createdAt').lean(),
+      StudentUser.find({}, 'roleai createdAt').lean(),
+      NormalUser.countDocuments({}),
+      StudentUser.countDocuments({})
+    ]);
 
-        if (!totalUserCount) {
-          
-          return null;
+    // รวมจำนวนผู้ใช้ทั้งหมด
+    const totalUserCount = normalUserCount + studentUserCount;
+
+    // สร้าง array ของข้อมูลผู้ใช้ทั้งหมด
+    const allUsers = [
+      ...normalUsers.map(user => ({
+        date: user.createdAt,
+        roleai: user.roleai,
+        type: 'normal'
+      })),
+      ...studentUsers.map(user => ({
+        date: user.createdAt,
+        roleai: user.roleai,
+        type: 'student'
+      }))
+    ];
+
+    // เรียงข้อมูลตามวันที่
+    allUsers.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // สร้าง response object
+    const response = {
+      totalUsers: totalUserCount,
+      normalUserCount,
+      studentUserCount,
+      userHistory: allUsers,
+      summary: {
+        normal: {
+          student: normalUsers.filter(u => u.roleai === 'student').length,
+          developer: normalUsers.filter(u => u.roleai === 'developer').length,
+          other: normalUsers.filter(u => u.roleai === 'other').length
+        },
+        student: {
+          student: studentUsers.filter(u => u.roleai === 'student').length,
+          developer: studentUsers.filter(u => u.roleai === 'developer').length,
+          other: studentUsers.filter(u => u.roleai === 'other').length
         }
+      }
+    };
 
-        return {
-          date: totalUserCount.createdAt,
-          roleai: totalUserCount.roleai,
-        };
-      })
-    );
+    return NextResponse.json(response, {
+      status: 200,
+      headers: {
+        'Cache-Control': 'no-store'
+      }
+    });
 
-    // Filter out any null entries (projects without matching orders)
-    const validPurchaseHistory = purchaseHistory.filter(entry => entry !== null);
-
-    return NextResponse.json(validPurchaseHistory);
   } catch (error) {
     console.error('Error in getHistory:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal Server Error', details: error.message },
+      { status: 500 }
+    );
   }
 }

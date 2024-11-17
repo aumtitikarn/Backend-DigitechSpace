@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect,Suspense } from 'react';
 import { useSearchParams } from "next/navigation"; // Ensure you import this if you want to use it
 import Header from "../../component/Header";
 import Link from "next/link";
@@ -8,56 +8,48 @@ import { MdAccountCircle } from "react-icons/md";
 import Image from "next/image";
 import Swal from 'sweetalert2';
 
-const Detail: React.FC = () => {
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center min-h-screen">
+    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+);
+
+// Move utility functions outside of component
+const getProxyUrl = (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`;
+
+const isValidHttpUrl = (string: string) => {
+  let url;
+  try {
+    url = new URL(string);
+  } catch (_) {
+    return false;
+  }
+  return url.protocol === "http:" || url.protocol === "https:";
+};
+
+const getImageSource = (imageUrl: string | null) => {
+  if (imageUrl && imageUrl.length > 0) {
+    if (isValidHttpUrl(imageUrl)) {
+      return getProxyUrl(imageUrl);
+    } else {
+      return `/api/imagesprofile/${imageUrl}`;
+    }
+  }
+  return null;
+};
+
+const DetailContent = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const username = searchParams.get("username");
   const name = searchParams.get("name");
   const phonenumber = searchParams.get("phonenumber");
   const email = searchParams.get("email");
-
-
-  // เพิ่ม state สำหรับข้อความ
-  const [message, setMessage] = useState<string>("");
-
-  const handleSubmit2 = async () => {
-    if (!id || !email || !message) { // Ensure message is included
-      alert("Blog ID, email, or message is missing");
-      return;
-    }
-
-    const confirmed = confirm("Are you sure you want to contact the project owner?");
-    if (!confirmed) return;
-
-    try {
-      const response = await fetch(`/api/normoluser/${id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          name: name,  // You can replace this with the actual name if available
-          email: email, 
-          message: message // Use the message from state
-        }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        alert(data.message);
-      } else {
-        alert(data.error);
-      }
-    } catch (error) {
-      console.error("Error contacting project owner:", error);
-      alert("An error occurred while contacting the project owner.");
-    }
-};
-
   const facebook = searchParams.get("facebook");
   const line = searchParams.get("line");
   const imageUrl = searchParams.get("imageUrl");
 
+  const [message, setMessage] = useState<string>("");
   const [emailContent, setEmailContent] = useState('');
   const [isSending, setIsSending] = useState(false);
 
@@ -133,31 +125,8 @@ const Detail: React.FC = () => {
     }
   };
 
-  const getImageSource = () => {
-    const useProxy = (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`;
-  
-    const isValidHttpUrl = (string: string) => {
-      let url;
-      try {
-        url = new URL(string);
-      } catch (_) {
-        return false;
-      }
-      return url.protocol === "http:" || url.protocol === "https:";
-    };
-
-    if (imageUrl && imageUrl.length > 0) {
-      if (isValidHttpUrl(imageUrl)) {
-        return useProxy(imageUrl);
-      } else {
-        return `/api/imagesprofile/${imageUrl}`;
-      }
-    }
-    
-    return null;
-  };
-
-  const imageSource = getImageSource();
+  // Get image source using the utility function
+  const imageSource = getImageSource(imageUrl);
 
 
   return (
@@ -259,6 +228,15 @@ const Detail: React.FC = () => {
         </div>
       </main>
     </div>
+  );
+};
+
+// Main Detail Component with Suspense
+const Detail: React.FC = () => {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <DetailContent />
+    </Suspense>
   );
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { redirect, useSearchParams } from "next/navigation";
 import { GoCheck } from "react-icons/go";
@@ -11,6 +11,7 @@ import Header from "../../component/Header";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { MdOutlineFileDownload } from "react-icons/md";
+
 interface Project {
   _id: string;
   projectname: string;
@@ -28,14 +29,22 @@ interface Project {
   imageUrl: string[];
 }
 
-const Detail: React.FC = () => {
+// Loading Component
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center min-h-screen">
+    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+);
+
+// Main Content Component
+const DetailContent = () => {
+  const searchParams = useSearchParams();
   const [project, setProject] = useState<Project | null>(null);
   const { data: session, status } = useSession();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rejectText, setRejectText] = useState<string>("");
-  const searchParams = useSearchParams();
   const router = useRouter();
 
   const id = searchParams.get("_id");
@@ -286,12 +295,15 @@ const Detail: React.FC = () => {
           <div className="flex flex-col items-center p-4">
             <div className="relative w-full h-[500px] overflow-hidden rounded-lg">
               {imageUrl.length > 0 && (
-                <img
-                  src={`/api/project/images/${imageUrl[currentIndex]}`}
-                  className="w-full h-full object-cover"
-                  onError={(e) => console.error("Image failed to load:", e)}
-                  alt="Project"
-                />
+               <Image
+               src={`/api/project/images/${imageUrl[currentIndex]}`}
+               alt="Project"
+               fill
+               className="object-cover"
+               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
+               onError={(e) => console.error("Image failed to load:", e)}
+               priority
+             />
               )}
               <button
                 onClick={handlePrevClick}
@@ -414,7 +426,7 @@ const Detail: React.FC = () => {
                   id="comment"
                   rows={4}
                   placeholder="Type your comment here..."
-                  className="w-full p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#33529B] focus:border-transparent"
+                  className="text-black w-full p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#33529B] focus:border-transparent"
                   value={rejectText}
                   onChange={(e) => setRejectText(e.target.value)}
                 ></textarea>
@@ -447,6 +459,15 @@ const Detail: React.FC = () => {
         </div>
       </div>
     </main>
+  );
+};
+
+// Main Detail Component with Suspense
+const Detail: React.FC = () => {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <DetailContent />
+    </Suspense>
   );
 };
 

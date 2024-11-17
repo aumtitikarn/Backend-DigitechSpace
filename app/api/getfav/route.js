@@ -1,79 +1,138 @@
 import { connectMongoDB } from "../../../lib/mongodb";
-import { favorites } from '../../../models/Getfav'; 
+import { favorites } from '../../../models/Getfav';
 import { projects } from '../../../models/Getproject';
+import { NextResponse } from 'next/server';
 
-export async function GET(req) {
+// กำหนดให้เป็น dynamic route
+export const dynamic = 'force-dynamic';
+
+export async function GET(request) {
   try {
-    // เชื่อมต่อกับ MongoDB
     await connectMongoDB();
 
-    // รับค่า selectedMonth และ selectedYear จาก query string
-    const url = new URL(req.url);
-    const selectedMonth = url.searchParams.get('month');
-    const selectedYear = url.searchParams.get('year');
+    // ใช้ searchParams จาก request
+    const { searchParams } = new URL(request.url);
+    const selectedMonth = searchParams.get('month');
+    const selectedYear = searchParams.get('year');
 
-    // สร้าง filter สำหรับการกรองตาม addedAt
-    let filter = {};
-
-    // กรองข้อมูลตามเดือนและปี ถ้าเลือกเดือนและปีที่เฉพาะเจาะจง
-    if (selectedMonth !== 'All' && selectedYear !== 'All') {
-      const startDate = new Date(Date.UTC(selectedYear, selectedMonth - 1, 1)); // วันที่เริ่มต้น
-      const endDate = new Date(Date.UTC(selectedYear, selectedMonth, 1)); // วันที่สิ้นสุด
-      filter.addedAt = { $gte: startDate, $lt: endDate };
-    }
-
-    // ดึงข้อมูลจาก favorites ตาม filter
-    const favoriteData = await favorites.find(filter);
-
-    // ตรวจสอบว่ามีข้อมูล favorite หรือไม่
-    if (!favoriteData.length) {
-      return new Response(JSON.stringify({
+    // ตรวจสอบความถูกต้องของ input
+    if (!selectedMonth || !selectedYear) {
+      return NextResponse.json({
         projectNames: [],
         projectCounts: [],
-      }), { status: 200 });
+        error: "Missing month or year parameter"
+      }, { status: 400 });
     }
 
-    // รวม projectId ทั้งหมดจาก favorites
+    // สร้าง date filter
+    let dateFilter = {};
+    if (selectedMonth !== 'All' && selectedYear !== 'All') {
+      const startDate = new Date(Date.UTC(
+        parseInt(selectedYear),
+        parseInt(selectedMonth) - 1,
+        1
+      ));
+      const endDate = new Date(Date.UTC(
+        parseInt(selectedYear),
+        parseInt(selectedMonth),
+        1
+      ));
+      dateFilter = {
+        addedAt: {
+          $gte: startDate,
+          $lt: endDate
+        }
+      };
+    }
+
+    // ดึงข้อมูล favorites
+    const favoriteData = await favorites.find(dateFilter).lean();
+
+    if (!favoriteData.length) {
+      return NextResponse.json({
+        projectNames: [],
+        projectCounts: [],
+        metadata: { month: selectedMonth, year: selectedYear }
+      }, {
+        status: 200,
+        headers: { 'Cache-Control': 'no-store' }
+      });
+    }
+
+    // รวบรวม projectIds
     const allProjectIds = favoriteData.flatMap(favorite => favorite.projectId);
 
-    // ค้นหาโปรเจคที่ตรงกับ projectId เหล่านี้
-    const matchedProjects = await projects.find({ _id: { $in: allProjectIds } });
+    // ดึงข้อมูล projects
+    const matchedProjects = await projects.find({
+      _id: { $in: allProjectIds }
+    }).lean();
 
-    // ตรวจสอบว่ามีข้อมูลโปรเจคหรือไม่
     if (!matchedProjects.length) {
-      return new Response(JSON.stringify({
+      return NextResponse.json({
         projectNames: [],
         projectCounts: [],
-      }), { status: 200 });
+        metadata: { month: selectedMonth, year: selectedYear }
+      }, {
+        status: 200,
+        headers: { 'Cache-Control': 'no-store' }
+      });
     }
 
-    // ดึงชื่อโปรเจค
-    const projectNames = matchedProjects.map(project => project.projectname);
-
-    // นับจำนวนโปรเจคที่ตรงกัน
-    const projectCountsMap = projectNames.reduce((countMap, projectName) => {
-      countMap[projectName] = (countMap[projectName] || 0) + 1;
-      return countMap;
+    // สร้าง project statistics
+    const projectStats = matchedProjects.reduce((stats, project) => {
+      const name = project.projectname;
+      stats[name] = (stats[name] || 0) + 1;
+      return stats;
     }, {});
 
-    // สร้าง array สำหรับ projectNames และ projectCounts
-    const projectNamesArray = Object.keys(projectCountsMap);
-    const projectCountsArray = Object.values(projectCountsMap);
+    // แปลงเป็น arrays
+    const projectNames = Object.keys(projectStats);
+    const projectCounts = Object.values(projectStats);
 
-    // ตรวจสอบข้อมูลที่ถูกดึงมา
-    console.log('Favorite Data:', favoriteData);
-    console.log('All Project IDs:', allProjectIds);
-    console.log('Matched Projects:', matchedProjects);
-    console.log('Project Names Array:', projectNamesArray);
-    console.log('Project Counts Array:', projectCountsArray);
+    // ส่งผลลัพธ์
+    return NextResponse.json({
+      projectNames,
+      projectCounts,
+      metadata: {
+        month: selectedMonth,
+        year: selectedYear,
+        totalFavorites: favoriteData.length,
+        uniqueProjects: projectNames.length
+      }
+    }, {
+      status: 200,
+      headers: {
+        'Cache-Control': 'no-store'
+      }
+    });
 
-    // ส่งข้อมูลกลับเป็น JSON
-    return new Response(JSON.stringify({
-      projectNames: projectNamesArray,
-      projectCounts: projectCountsArray,
-    }), { status: 200 });
   } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ message: 'Internal Server Error' }), { status: 500 });
+    console.error('Error in getFavorites:', error);
+    return NextResponse.json({
+      error: 'Internal Server Error',
+      details: error.message
+    }, {
+      status: 500,
+      headers: {
+        'Cache-Control': 'no-store'
+      }
+    });
   }
 }
+
+// Utility functions (อาจแยกไปไฟล์ต่างหาก)
+const isValidDate = (month, year) => {
+  if (month === "All" || year === "All") return true;
+  
+  const monthNum = parseInt(month);
+  const yearNum = parseInt(year);
+  
+  return (
+    !isNaN(monthNum) &&
+    !isNaN(yearNum) &&
+    monthNum >= 1 &&
+    monthNum <= 12 &&
+    yearNum >= 2000 &&
+    yearNum <= new Date().getFullYear()
+  );
+};

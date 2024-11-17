@@ -1,11 +1,23 @@
 "use client";
 
-import Header from "../../component/Header";
-import React from 'react';
+import React, { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useState } from "react";
+import Header from "../../component/Header";
 
-const Detail: React.FC = () => {
+interface BlogPost {
+  _id: string;
+}
+interface BlogPostArray extends Array<BlogPost> {}
+
+// Loading Component
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center min-h-screen">
+    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+);
+
+// Main Content Component
+const DetailContent = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const blogname = searchParams.get("blogname");
@@ -14,9 +26,9 @@ const Detail: React.FC = () => {
   const selectedReason = searchParams.get("selectedReason");
   const createdAt = searchParams.get("createdAt");
 
-  const [userEmail, setUserEmail] = useState('');
-
-  const [blogemail, setBlogemail] = useState("");
+  const [userEmail, setUserEmail] = useState<string>('');
+  const [blogemail, setBlogemail] = useState<string>('');
+  const [postBlog, setPostBlogs] = useState<BlogPostArray>([]);
 
   const formatDate = (timestamp: string | null) => {
     if (!timestamp) return '';
@@ -46,12 +58,11 @@ const Detail: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id }), // Send the id of the report to be deleted
+        body: JSON.stringify({ id }),
       });
 
       if (response.ok) {
         alert("Report deleted successfully");
-        // Add any additional logic, like updating the UI or redirecting
       } else {
         const data = await response.json();
         alert(`Failed to delete report: ${data.msg}`);
@@ -61,7 +72,6 @@ const Detail: React.FC = () => {
       alert("An error occurred while deleting the report.");
     }
   };
-
 
   const handleSubmit2 = async (id: string | null) => {
     if (!id) {
@@ -73,7 +83,6 @@ const Detail: React.FC = () => {
     if (!confirmed) return;
 
     try {
-      // Fetch the blog post details from MongoDB using the blog ID
       const response = await fetch(`/api/getreportblog/${id}`, {
         method: 'GET',
         headers: {
@@ -83,18 +92,10 @@ const Detail: React.FC = () => {
 
       if (response.ok) {
         const blogData = await response.json();
-        console.log(blogData)
-
         setBlogemail(blogData.blogEmail);
-
-        console.log("getsetemail :", blogemail);
         const { blogEmail } = blogData;
-        console.log("getemail2 :", blogEmail)
-
-        // Dynamically create the mailto link
         const mailtoLink = `mailto:${blogEmail}?subject=Notification form DigitechSpace&body=`;
         window.location.href = mailtoLink;
-
       } else {
         alert("Failed to fetch blog details.");
       }
@@ -104,14 +105,7 @@ const Detail: React.FC = () => {
     }
   };
 
-  const handleSubmit3 = () => {
-    alert("ลบโครงงาน/บล็อก");
-    // Add your specific logic here
-  };
-
-  const [postBlog,setPostBlogs] = useState("");
-
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string): Promise<void> => {
     const confirmed = confirm("Are you sure?");
 
     if (confirmed) {
@@ -121,7 +115,9 @@ const Detail: React.FC = () => {
         });
 
         if (res.ok) {
-          setPostBlogs(prevPostBlogs => prevPostBlogs.filter(blog => blog._id !== id));
+          setPostBlogs((prevPostBlogs) => 
+            prevPostBlogs.filter((blog) => blog._id !== id)
+          );
           alert("ลบโครงงานและบล็อกเรียบร้อยแล้ว");
         } else {
           const data = await res.json();
@@ -139,9 +135,7 @@ const Detail: React.FC = () => {
       <Header />
       <main className="flex-grow">
         <div className="lg:mx-60 mt-10 mb-5 mx-20">
-          {/* Container for content and buttons */}
           <div className="w-full mt-2 lg:w-2/3 mx-auto">
-            {/* Content */}
             <h2 className="text-xl font-bold mb-10">รายงานบล็อก {blogname || ""}</h2>
             <h3 className="text-lg text-gray-700 mb-4">โดย คุณ {username || ""}</h3>
             <h4 className="text-xl font-bold mb-4">คำร้อง</h4>
@@ -152,26 +146,22 @@ const Detail: React.FC = () => {
             <p className="text-lg text-gray-700 mb-4">{formatDate(createdAt)}</p>
           </div>
 
-          {/* Buttons */}
           <div className="mt-6 flex flex-col gap-4 lg:w-2/3 mx-auto">
             <button
               onClick={() => handleSubmit1(id)}
-              className="w-full p-2 text-white rounded"
-              style={{ backgroundColor: "#33539B" }}
+              className="w-full p-2 text-white rounded bg-[#33539B] hover:bg-[#264176] transition-colors"
             >
               ลบคำร้อง
             </button>
             <button
               onClick={() => handleSubmit2(id)}
-              className="w-full p-2 text-white rounded"
-              style={{ backgroundColor: "#1976D2" }}
+              className="w-full p-2 text-white rounded bg-[#1976D2] hover:bg-[#1565C0] transition-colors"
             >
               ติดต่อเจ้าของโครงงาน/บล็อก
             </button>
             <button
-              onClick={() => handleDelete(postBlog._id)} // ส่ง _id ของ postblogs
-              className="w-full p-2 text-white rounded"
-              style={{ backgroundColor: "#9B3933" }}
+              onClick={() => id && handleDelete(id)}
+              className="w-full p-2 text-white rounded bg-[#9B3933] hover:bg-[#7A2C27] transition-colors"
             >
               ลบโครงงาน/บล็อก
             </button>
@@ -179,6 +169,15 @@ const Detail: React.FC = () => {
         </div>
       </main>
     </div>
+  );
+};
+
+// Main Detail Component with Suspense
+const Detail: React.FC = () => {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <DetailContent />
+    </Suspense>
   );
 };
 

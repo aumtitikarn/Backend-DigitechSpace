@@ -1,14 +1,42 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from "next/navigation"; // Ensure you import this if you want to use it
 import Header from "../../component/Header";
 import Link from "next/link";
 import { MdAccountCircle } from "react-icons/md";
 import Image from "next/image";
 import Swal from 'sweetalert2';
+// Loading Component
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center min-h-screen">
+    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+);
+const getProxyUrl = (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`;
 
-const Detail: React.FC = () => {
+const isValidHttpUrl = (string: string) => {
+  let url;
+  try {
+    url = new URL(string);
+  } catch (_) {
+    return false;
+  }
+  return url.protocol === "http:" || url.protocol === "https:";
+};
+
+const getImageSource = (imageUrl: string | null) => {
+  if (imageUrl && imageUrl.length > 0) {
+    if (isValidHttpUrl(imageUrl)) {
+      return getProxyUrl(imageUrl);
+    } else {
+      return `/api/imagesprofile/${imageUrl}`;
+    }
+  }
+  return null;
+};
+
+const DetailContent = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const name = searchParams.get("name");
@@ -21,8 +49,6 @@ const Detail: React.FC = () => {
   const [isSending, setIsSending] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
- 
-
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -93,31 +119,9 @@ const Detail: React.FC = () => {
       setIsSending(false);
     }
   };
-  const getImageSource = () => {
-    const useProxy = (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`;
-  
-    const isValidHttpUrl = (string: string) => {
-      let url;
-      try {
-        url = new URL(string);
-      } catch (_) {
-        return false;
-      }
-      return url.protocol === "http:" || url.protocol === "https:";
-    };
 
-    if (imageUrl && imageUrl.length > 0) {
-      if (isValidHttpUrl(imageUrl)) {
-        return useProxy(imageUrl);
-      } else {
-        return `/api/imagesprofile/${imageUrl}`;
-      }
-    }
-    
-    return null;
-  };
-
-  const imageSource = getImageSource();
+  // Get the image source using the utility function
+  const imageSource = getImageSource(imageUrl);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
@@ -207,4 +211,13 @@ const Detail: React.FC = () => {
   );
 };
 
+const Detail: React.FC = () => {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <DetailContent />
+    </Suspense>
+  );
+};
+
 export default Detail;
+

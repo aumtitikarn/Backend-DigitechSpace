@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import Header from "../component/Header";
@@ -80,7 +80,7 @@ interface ChartDataType {
   }[];
 }
 
-const page = () => {
+const Page = () => {
 
   const router = useRouter();
 
@@ -370,25 +370,24 @@ const page = () => {
   const currentYear = new Date().getFullYear();
   const years = ['All', ...Array.from({ length: 5 }, (_, i) => (currentYear - i).toString())];
 
-  const filteredPurchaseHistory = Array.isArray(purchaseHistory) ? purchaseHistory.filter((purchase) => {
-    const purchaseDate = new Date(purchase.createdAt);
-    const purchaseMonth = (purchaseDate.getMonth() + 1).toString().padStart(2, '0');
-    const purchaseYear = purchaseDate.getFullYear().toString();
+  const filteredPurchaseHistory = useMemo(() => {
+    if (!Array.isArray(purchaseHistory)) return [];
+    
+    return purchaseHistory.filter((purchase) => {
+      const purchaseDate = new Date(purchase.createdAt);
+      const purchaseMonth = (purchaseDate.getMonth() + 1).toString().padStart(2, '0');
+      const purchaseYear = purchaseDate.getFullYear().toString();
 
-    // console.log('Valid Date:', purchaseDate);
-    // console.log('Purchase Month:', purchaseMonth);
-    // console.log('Purchase Year:', purchaseYear);
+      const matchMonth = selectedMonth === 'All' || purchaseMonth === selectedMonth;
+      const matchYear = selectedYear === 'All' || purchaseYear === selectedYear;
 
-    // console.log('Checking purchase:', purchaseDate, 'Month:', purchaseMonth, 'Year:', purchaseYear);
+      return matchMonth && matchYear;
+    });
+  }, [purchaseHistory, selectedMonth, selectedYear]);
 
-    const matchMonth = selectedMonth === 'All' || purchaseMonth === selectedMonth;
-    const matchYear = selectedYear === 'All' || purchaseYear === selectedYear;
-
-    return matchMonth && matchYear;
-  }) : [];
-
+  // Update chart data when filtered history changes
   useEffect(() => {
-    if (!filteredPurchaseHistory) return;  // เพิ่มการ guard
+    if (!filteredPurchaseHistory) return;
   
     const categories = filteredPurchaseHistory.map((salesData) => salesData.category);
     const prices = filteredPurchaseHistory.map((salesData) => salesData.price || 0);
@@ -404,11 +403,11 @@ const page = () => {
       }]
     };
   
-    // เปรียบเทียบข้อมูลเก่าและใหม่ก่อน set state
+    // Only update if the data has actually changed
     if (JSON.stringify(chartData) !== JSON.stringify(newChartData)) {
       setChartData(newChartData);
     }
-  }, [filteredPurchaseHistory]);
+  }, [filteredPurchaseHistory, chartData]);
 
   useEffect(() => {
     // console.log('Selected month:', selectedMonth);
@@ -609,4 +608,4 @@ const page = () => {
   );
 }
 
-export default page;
+export default Page;

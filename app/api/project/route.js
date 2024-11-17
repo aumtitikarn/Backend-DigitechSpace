@@ -15,7 +15,7 @@ const isValidHttpUrl = (string) => {
 };
 
 // ฟังก์ชันสร้าง Proxy URL สำหรับลิงก์ภายนอก
-const useProxy = (url) => `/api/proxy?url=${encodeURIComponent(url)}`;
+const getProxyUrl = (url) => `/api/proxy?url=${encodeURIComponent(url)}`;
 
 // POST - Create a new project
 export async function POST(req) {
@@ -66,7 +66,7 @@ export async function GET(req) {
           if (author.imageUrl) {
             // ตรวจสอบว่า URL ของรูปโปรไฟล์เป็นลิงก์ภายนอกหรือไม่
             profileImage = isValidHttpUrl(author.imageUrl)
-              ? useProxy(author.imageUrl)
+              ? getProxyUrl(author.imageUrl)
               : `/api/project/images/${author.imageUrl}`;
           }
         }

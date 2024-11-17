@@ -1,4 +1,5 @@
 import React, { useState, ReactNode } from 'react';
+import Image from "next/image";
 import Link from 'next/link';
 import { 
   X, 
@@ -125,15 +126,20 @@ const Sidebar: React.FC = () => {
 
   return (
     <div className="bg-[#0B1E48] text-white">
-      <header className="flex items-center justify-between p-4">
-        <Menu className="text-3xl cursor-pointer" onClick={toggleMenu} aria-label="Toggle menu" />
-        <img
-          src="https://m1r.ai/W8p5i.png"
-          alt="Digitech Space logo"
-          width={90}
-          height={90}
-        />
-      <div className="relative">
+      <header className="flex items-center justify-between">
+        <Menu className="text-3xl cursor-pointer ml-[30px]" onClick={toggleMenu} aria-label="Toggle menu" />
+        <div className="relative w-[90px] h-[90px]">
+          <Image
+            src="https://m1r.ai/W8p5i.png"
+            alt="Digitech Space logo"
+            fill
+            sizes="90px"
+            className="object-contain"
+            priority // Add priority since this is above the fold
+            unoptimized 
+          />
+        </div>
+      <div className="relative mr-[30px]">
           <button
             onClick={toggleProfileDropdown}
             className="focus:outline-none"
@@ -169,12 +175,17 @@ const Sidebar: React.FC = () => {
       >
         <div className="p-6">
           <div className="flex items-center justify-between mb-8">
-            <img
-              src="https://m1r.ai/W8p5i.png"
-              alt="Digitech Space logo"
-              width={100}
-              height={100}
-            />
+          <div className="relative w-[100px] h-[100px]">
+          <Image
+            src="https://m1r.ai/W8p5i.png"
+            alt="Digitech Space logo"
+            fill
+            sizes="100px"
+            className="object-contain"
+            priority // Add priority since this is above the fold
+            unoptimized 
+          />
+          </div>
             <X className="text-3xl cursor-pointer" onClick={toggleMenu} aria-label="Close menu" />
           </div>
 

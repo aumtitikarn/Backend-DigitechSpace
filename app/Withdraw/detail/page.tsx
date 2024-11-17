@@ -1,14 +1,18 @@
 "use client";
 
 import Header from "../../component/Header";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Swal from 'sweetalert2';
-
-const Detail: React.FC = () => {
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center min-h-screen">
+    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+);
+const DetailContent = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-
+  
   const [withdrawalDetails, setWithdrawalDetails] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -21,6 +25,7 @@ const Detail: React.FC = () => {
     lastname: string;
     username: string;
   } | null>(null);
+
 
   useEffect(() => {
     const fetchWithdrawalDetails = async () => {
@@ -368,6 +373,14 @@ const Detail: React.FC = () => {
           </div>
       </main>
     </div>
+  );
+};
+
+const Detail: React.FC = () => {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <DetailContent />
+    </Suspense>
   );
 };
 

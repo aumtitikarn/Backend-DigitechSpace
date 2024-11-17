@@ -16,7 +16,7 @@ interface Project {
   imageUrl: string;
 }
 
-const usernormal: React.FC = () => {
+const Usernormal: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -324,4 +324,4 @@ const usernormal: React.FC = () => {
   );
 };
 
-export default usernormal;
+export default Usernormal;

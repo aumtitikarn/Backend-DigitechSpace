@@ -3,43 +3,67 @@ import NormalUser from "../../../models/NormalUser";
 import StudentUser from "../../../models/StudentUser";
 import { NextResponse } from "next/server";
 
-// เชื่อมต่อ MongoDB และดึงข้อมูล roleai
-export async function GET(req) {
+export async function GET(request) {
     try {
-        await connectMongoDB();  // เชื่อมต่อ MongoDB
+        await connectMongoDB();
 
-        const url = new URL(req.url);
-        const selectedMonth = url.searchParams.get('month'); // รับค่าจาก query params
-        const selectedYear = url.searchParams.get('year'); // รับค่าจาก query params
+        // Use searchParams from the Request object
+        const { searchParams } = new URL(request.url);
+        const selectedMonth = searchParams.get('month');
+        const selectedYear = searchParams.get('year');
 
-        // กำหนด filter สำหรับ NormalUser และ StudentUser
-        let normalUserFilter = {};
-        let studentUserFilter = {};
+        // Define filter conditions
+        let dateFilter = {};
 
-        // ตรวจสอบค่าที่เลือก
         if (selectedMonth !== "All" && selectedYear !== "All") {
             const startDate = new Date(`${selectedYear}-${selectedMonth}-01`);
             const endDate = new Date(startDate);
-            endDate.setMonth(endDate.getMonth() + 1); // ไปจนถึงสิ้นเดือน
+            endDate.setMonth(endDate.getMonth() + 1);
             
-            normalUserFilter = { createdAt: { $gte: startDate, $lt: endDate } };
-            studentUserFilter = { createdAt: { $gte: startDate, $lt: endDate } };
+            dateFilter = {
+                createdAt: {
+                    $gte: startDate,
+                    $lt: endDate
+                }
+            };
         }
 
-        // ดึงข้อมูล roleai จาก normalUsers และ studentUsers ตาม filter ที่กำหนด
-        const normalUsers = await NormalUser.find(normalUserFilter, 'roleai');
-        const studentUsers = await StudentUser.find(studentUserFilter, 'roleai');
+        // Execute queries with the filter
+        const [normalUsers, studentUsers, normalUserCount, studentUserCount] = await Promise.all([
+            NormalUser.find(dateFilter, 'roleai').lean(),
+            StudentUser.find(dateFilter, 'roleai').lean(),
+            NormalUser.countDocuments(dateFilter),
+            StudentUser.countDocuments(dateFilter)
+        ]);
 
-        const normalUserCount = await NormalUser.countDocuments(normalUserFilter);
-        const studentUserCount = await StudentUser.countDocuments(studentUserFilter);
-
-        // รวมจำนวนผู้ใช้ทั้งหมด
         const totalUserCount = normalUserCount + studentUserCount;
 
-        // ส่งข้อมูล roleai กลับไปยัง frontend
-        return NextResponse.json({ normalUsers, studentUsers, totalUserCount }, { status: 200 });
+        // Return the response
+        return NextResponse.json({
+            normalUsers,
+            studentUsers,
+            totalUserCount,
+            metadata: {
+                month: selectedMonth,
+                year: selectedYear,
+                normalCount: normalUserCount,
+                studentCount: studentUserCount
+            }
+        }, { 
+            status: 200,
+            headers: {
+                'Cache-Control': 'no-store'
+            }
+        });
+
     } catch (error) {
         console.error("Error fetching role data:", error);
-        return NextResponse.json({ error: "Failed to fetch role data" }, { status: 500 });
+        return NextResponse.json(
+            { error: "Failed to fetch role data", details: error.message },
+            { status: 500 }
+        );
     }
 }
+
+// Add configuration to mark this as dynamic
+export const dynamic = 'force-dynamic';

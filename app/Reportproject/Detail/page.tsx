@@ -1,11 +1,16 @@
 "use client";
 
 import Header from "../../component/Header";
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Suspense} from 'react';
 import { useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
-
-const Detail: React.FC = () => {
+// Loading Component
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center min-h-screen">
+    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+);
+const DetailContent = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const name = searchParams.get("name");
@@ -300,4 +305,13 @@ const Detail: React.FC = () => {
   );
 };
 
+const Detail: React.FC = () => {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <DetailContent />
+    </Suspense>
+  );
+};
+
 export default Detail;
+

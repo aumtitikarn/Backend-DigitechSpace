@@ -1,12 +1,16 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from "next/navigation";
 import Header from "../../component/Header";
 import { MdAccountCircle } from "react-icons/md";
 import Swal from 'sweetalert2';
 import Image from "next/image";
-
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center min-h-screen">
+    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+);
 interface UserDetails {
   username?: string | null;
   housenum?: string | null;
@@ -25,9 +29,33 @@ interface UserDetails {
   facebook: string | null;
   line: string | null;
   imageUrl?: string | null;
+  
 }
+const getProxyUrl = (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`;
 
-const Detail: React.FC = () => {
+const isValidHttpUrl = (string: string) => {
+  let url;
+  try {
+    url = new URL(string);
+  } catch (_) {
+    return false;
+  }
+  return url.protocol === "http:" || url.protocol === "https:";
+};
+
+// Updated type definition to handle undefined
+const getImageSource = (imageUrl: string | null | undefined): string | null => {
+  if (imageUrl && imageUrl.length > 0) {
+    if (isValidHttpUrl(imageUrl)) {
+      return getProxyUrl(imageUrl);
+    } else {
+      return `/api/imagesprofile/${imageUrl}`;
+    }
+  }
+  return null;
+};
+
+const DetailContent = () => {
   const searchParams = useSearchParams();
   const userDetails: UserDetails = {
     username: searchParams.get("username"),
@@ -47,6 +75,7 @@ const Detail: React.FC = () => {
     facebook: searchParams.get("facebook"),
     line: searchParams.get("line"),
     imageUrl: searchParams.get("imageUrl"),
+    
   };
   const [emailContent, setEmailContent] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -125,32 +154,7 @@ const Detail: React.FC = () => {
     }
   };
 
-  const getImageSource = () => {
-    const useProxy = (url: string) => `/api/proxy?url=${encodeURIComponent(url)}`;
-  
-    const isValidHttpUrl = (string: string) => {
-      let url;
-      try {
-        url = new URL(string);
-      } catch (_) {
-        return false;
-      }
-      return url.protocol === "http:" || url.protocol === "https:";
-    };
-
-    if (userDetails.imageUrl && userDetails.imageUrl.length > 0) {
-      if (isValidHttpUrl(userDetails.imageUrl)) {
-        return useProxy(userDetails.imageUrl);
-      } else {
-        return `/api/imagesprofile/${userDetails.imageUrl}`;
-      }
-    }
-    
-    return null;
-  };
-
-  const imageSource = getImageSource();
-
+  const imageSource = getImageSource(userDetails.imageUrl);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden text-black">
@@ -367,6 +371,15 @@ const Detail: React.FC = () => {
         </div>
       </main>
     </div>
+  );
+};
+
+// Main Detail Component with Suspense
+const Detail: React.FC = () => {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <DetailContent />
+    </Suspense>
   );
 };
 
