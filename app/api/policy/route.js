@@ -3,7 +3,7 @@
 import { connectMongoDB } from "../../../lib/mongodb";
 import { NextResponse } from 'next/server';
 import Policy from "../../../models/policy";
-
+export const dynamic = 'force-dynamic';
 export async function POST(req) {
   try {
     await connectMongoDB();
