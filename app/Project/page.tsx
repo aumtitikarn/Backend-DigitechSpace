@@ -113,6 +113,7 @@ const Project: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
+      <Header />
       <main className="flex-grow">
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
