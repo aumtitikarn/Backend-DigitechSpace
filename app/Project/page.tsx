@@ -32,6 +32,7 @@ const Project: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedRathing, setSelectedRathing] = useState<number | null>(null);
+  const [selectedPrice, setSelectedPrice] = useState<number | null>(null);
   const itemsPerPage = 10;
 
   const categories = Array.from(
@@ -42,6 +43,10 @@ const Project: React.FC = () => {
     new Set(projects.map((project) => project.rathing))
   ).sort((a, b) => a - b);
 
+  const priceOptions = Array.from(
+    new Set(projects.map((project) => project.price))
+  ).sort((a, b) => a - b);
+
   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCategory(event.target.value || null);
   };
@@ -49,6 +54,11 @@ const Project: React.FC = () => {
   const handleRathingChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
     setSelectedRathing(value ? parseFloat(value) : null);
+  };
+
+  const handlePriceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedPrice(value ? parseFloat(value) : null);
   };
 
   const filteredProjects = projects.filter((project) => {
@@ -64,7 +74,9 @@ const Project: React.FC = () => {
     const matchesRathing =
       selectedRathing === null || project.rathing === selectedRathing;
 
-    return matchesSearch && matchesCategory && matchesRathing;
+    const matchesPrice = selectedPrice === null || project.price === selectedPrice;
+
+    return matchesSearch && matchesCategory && matchesRathing && matchesPrice;
   });
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -101,7 +113,7 @@ const Project: React.FC = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory, selectedRathing]);
+  }, [searchTerm, selectedCategory, selectedRathing, selectedPrice]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -132,7 +144,7 @@ const Project: React.FC = () => {
               <select
                 value={selectedCategory || ""}
                 onChange={handleCategoryChange}
-                className="w-full sm:w-64 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#5D76AD] text-black"
+                className="w-full sm:w-54 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#5D76AD] text-black"
               >
                 <option value="">ทุกหมวดหมู่</option>
                 {categories.map((category) => (
@@ -153,6 +165,18 @@ const Project: React.FC = () => {
                   </option>
                 ))}
               </select>
+              <select
+                value={selectedPrice || ""}
+                onChange={handlePriceChange}
+                className="w-32 sm:w-32 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#5D76AD] text-black"
+              >
+                <option value="">ทุกช่วงราคา</option>
+                {priceOptions.map((price) => (
+                  <option key={price} value={price}>
+                    {price} บาท
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -163,7 +187,6 @@ const Project: React.FC = () => {
                     <tr>
                       <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">#</th>
                       <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ชื่อโครงงาน</th>
-                      {/* <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">คะแนน</th> */}
                       <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ราคา</th>
                       <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ผู้สร้าง</th>
                       <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">อีเมล</th>
@@ -180,9 +203,6 @@ const Project: React.FC = () => {
                             {project.projectname || "-"}
                           </Link>
                         </td>
-                        {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                          {project.rathing || "-"} ดาว
-                        </td> */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
                           {project.price || "-"}
                         </td>
@@ -211,4 +231,3 @@ const Project: React.FC = () => {
 };
 
 export default Project;
-
