@@ -30,16 +30,41 @@ const Project: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedRathing, setSelectedRathing] = useState<number | null>(null);
   const itemsPerPage = 10;
 
-  // Filter projects based on search term
+  const categories = Array.from(
+    new Set(projects.map((project) => project.category))
+  );
+
+  const rathingOptions = Array.from(
+    new Set(projects.map((project) => project.rathing))
+  ).sort((a, b) => a - b);
+
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(event.target.value || null);
+  };
+
+  const handleRathingChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedRathing(value ? parseFloat(value) : null);
+  };
+
   const filteredProjects = projects.filter((project) => {
     const searchValue = searchTerm.toLowerCase();
-    return (
+    const matchesSearch =
       project.projectname?.toLowerCase().includes(searchValue) ||
       project.authorName?.toLowerCase().includes(searchValue) ||
-      project.email?.toLowerCase().includes(searchValue)
-    );
+      project.email?.toLowerCase().includes(searchValue);
+
+    const matchesCategory =
+      !selectedCategory || project.category === selectedCategory;
+
+    const matchesRathing =
+      selectedRathing === null || project.rathing === selectedRathing;
+
+    return matchesSearch && matchesCategory && matchesRathing;
   });
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -62,14 +87,7 @@ const Project: React.FC = () => {
         }
 
         const data = await response.json();
-        console.log("Fetched Data:", data);
-
-        if (Array.isArray(data)) {
-          setProjects(data);
-        } else {
-          console.error('Data format is incorrect:', data);
-          setError('Data format is incorrect');
-        }
+        setProjects(data);
       } catch (error) {
         console.error("Error loading projects:", error);
         setError("Error loading projects");
@@ -81,10 +99,9 @@ const Project: React.FC = () => {
     getProjects();
   }, []);
 
-  // Reset to first page when search term changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, selectedCategory, selectedRathing]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -96,7 +113,6 @@ const Project: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
-      <Header />
       <main className="flex-grow">
         <div className="lg:mx-64 lg:mt-10 lg:mb-10 mt-10 mb-10 mx-5">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
@@ -104,7 +120,7 @@ const Project: React.FC = () => {
               <h2 className="text-xl font-bold text-black">โครงงาน</h2>
               <p className="text-black">โครงงานทั้งหมดที่ถูกเผยแพร่แล้วบนเว็บไซต์</p>
             </div>
-            <div className="relative w-full sm:w-auto">
+            <div className="relative w-full sm:w-auto flex gap-4">
               <input
                 type="text"
                 placeholder="ค้นหาโครงงาน, ผู้ขาย หรืออีเมล..."
@@ -112,6 +128,30 @@ const Project: React.FC = () => {
                 onChange={handleSearch}
                 className="w-full sm:w-64 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#5D76AD] text-black"
               />
+              <select
+                value={selectedCategory || ""}
+                onChange={handleCategoryChange}
+                className="w-full sm:w-64 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#5D76AD] text-black"
+              >
+                <option value="">ทุกหมวดหมู่</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={selectedRathing || ""}
+                onChange={handleRathingChange}
+                className="w-32 sm:w-32 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#5D76AD] text-black"
+              >
+                <option value="">ทุกคะแนน</option>
+                {rathingOptions.map((rathing) => (
+                  <option key={rathing} value={rathing}>
+                    {rathing} ดาว
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -120,11 +160,12 @@ const Project: React.FC = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-[#0B1E48]">
                     <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">#</th>
-                      <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ชื่อโครงงาน</th>
-                      <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ราคา</th>
-                      <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ผู้สร้าง</th>
-                      <th scope="col" className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">อีเมล</th>
+                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">#</th>
+                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ชื่อโครงงาน</th>
+                      {/* <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">คะแนน</th> */}
+                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ราคา</th>
+                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ผู้สร้าง</th>
+                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">อีเมล</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -134,36 +175,21 @@ const Project: React.FC = () => {
                           {index + 1 + indexOfFirstItem}.
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                          <Link href={{
-                            pathname: `/Project/detail`,
-                            query: { ...project }
-                          }}>
+                          <Link href={`/Project/detail?project=${project._id}`}>
                             {project.projectname || "-"}
                           </Link>
                         </td>
+                        {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                          {project.rathing || "-"} ดาว
+                        </td> */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                          <Link href={{
-                            pathname: `/Project/detail`,
-                            query: { ...project }
-                          }}>
-                            {project.price || "-"}
-                          </Link>
+                          {project.price || "-"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                          <Link href={{
-                            pathname: `/Project/detail`,
-                            query: { ...project }
-                          }}>
-                            {project.authorName || "-"}
-                          </Link>
+                          {project.authorName || "-"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                          <Link href={{
-                            pathname: `/Project/detail`,
-                            query: { ...project }
-                          }}>
-                            {project.email || "-"}
-                          </Link>
+                          {project.email || "-"}
                         </td>
                       </tr>
                     ))}
@@ -172,9 +198,6 @@ const Project: React.FC = () => {
               </div>
             </div>
           </div>
-          <p className="text-sm mt-2 text-black">
-            *หากอยากดูข้อมูลเพิ่มเติมให้คลิกที่ตารางคนนั้น
-          </p>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -187,3 +210,4 @@ const Project: React.FC = () => {
 };
 
 export default Project;
+
