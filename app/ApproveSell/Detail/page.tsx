@@ -11,6 +11,7 @@ import Header from "../../component/Header";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { MdOutlineFileDownload } from "react-icons/md";
+import Swal from 'sweetalert2';
 
 interface Project {
   _id: string;
@@ -175,13 +176,26 @@ const DetailContent = () => {
         );
       }
 
-      setStatusMessage("Project approved successfully and notification sent.");
-    } catch (error) {
-      console.error("Error approving project:", error);
-      setStatusMessage(`Approval failed.`); // แสดงข้อความผิดพลาดที่ชัดเจน
-    } finally {
-      setIsLoading(false);
-    }
+      // แสดงข้อความแจ้งเตือนสำเร็จ
+    Swal.fire(
+      'อนุมัติสำเร็จ!',
+      `โครงงานอนุมัติเรียบร้อยแล้ว`,
+      'success'
+    ).then(() => {
+      router.push("/ApproveSell"); // เปลี่ยนหน้าเมื่อผู้ใช้กดตกลง
+    });
+
+  } catch (error) {
+    console.error("Error approving project:", error);
+    // แสดงข้อความแจ้งเตือนเมื่อเกิดข้อผิดพลาด
+    Swal.fire({
+      icon: 'error',
+      title: 'เกิดข้อผิดพลาด',
+      text: 'ไม่สามารถอนุมัติโครงงานได้',
+    });
+  } finally {
+    setIsLoading(false);
+  }
   };
 
   const handleNotApprove = async () => {
