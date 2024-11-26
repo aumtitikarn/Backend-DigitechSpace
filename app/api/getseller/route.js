@@ -1,6 +1,6 @@
 import { connectMongoDB } from "../../../lib/mongodb";
 import { Order } from '../../../models/Getseller';
-import { projects } from '../../../models/Getproject'
+import { projects } from '../../../models/Getproject';
 
 export async function GET(req) {
   try {
@@ -63,16 +63,33 @@ export async function GET(req) {
       return acc;
     }, {});
 
-    // เตรียมข้อมูลยอดขายจากการบวกราคา
-    const salesData = Object.entries(orderProductPrices).map(([productId, productData]) => ({
-      price: productData.totalPrice, // รวมราคาทั้งหมดที่ใช้ผลิตภัณฑ์นี้ใน order
-      category: productData.category,
-      count: productData.count, // จำนวนครั้งที่ใช้ผลิตภัณฑ์นี้ใน order
-      createdAt: productData.createdAt
-    }));
+    // เตรียมข้อมูลยอดขายจากการบวกราคาและจัดกลุ่มตาม category
+    const salesData = Object.values(orderProductPrices).reduce((acc, productData) => {
+      const { category, totalPrice, count, createdAt } = productData;
+
+      // ค้นหา category ใน acc ถ้าไม่พบให้สร้างใหม่
+      if (!acc[category]) {
+        acc[category] = {
+          price: totalPrice, // รวมราคาที่เริ่มต้น
+          category: category,
+          count: count, // เริ่มต้นด้วยจำนวนที่ใช้ผลิตภัณฑ์นี้
+          createdAt: createdAt, // เก็บ createdAt ใดๆ
+        };
+      } else {
+        acc[category].price += totalPrice; // บวกราคาเพิ่มใน category เดียวกัน
+        acc[category].count += count; // บวกจำนวน count
+      }
+
+      return acc;
+    }, {});
+
+    // แปลงผลลัพธ์จาก object เป็น array
+    const groupedSalesData = Object.values(salesData);
+
+    console.log(groupedSalesData);
 
     // คืนข้อมูลยอดขายในรูปแบบ JSON ด้วยสถานะ 200
-    return new Response(JSON.stringify(salesData), {
+    return new Response(JSON.stringify(groupedSalesData), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -86,4 +103,3 @@ export async function GET(req) {
     });
   }
 }
-
