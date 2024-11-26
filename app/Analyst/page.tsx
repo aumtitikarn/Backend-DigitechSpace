@@ -7,6 +7,8 @@ import Header from "../component/Header";
 import Sidebar from "../component/Header"
 import Link from "next/link";
 import { Doughnut, Line, Pie, Bar } from 'react-chartjs-2';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { Chart } from 'chart.js';
 import {
   Chart as ChartJS,
   ChartData,
@@ -81,13 +83,14 @@ interface ChartDataType {
 }
 
 const Page = () => {
+  Chart.register(ChartDataLabels);
 
   const router = useRouter();
 
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedCategory1, setSelectedCategory1] = useState("");
 
-  const [selectedMonth, setSelectedMonth] = useState("All"); 
+  const [selectedMonth, setSelectedMonth] = useState("All");
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
 
   const [purchaseHistory, setPurchaseHistory] = useState<Purchase[]>([]);
@@ -148,22 +151,22 @@ const Page = () => {
   //   if (rawSalesData.length > 0) {
   //     const filteredData = rawSalesData.filter((sale) => {
   //       if (!sale.createdAt) return false;  // เพิ่มการตรวจสอบ
-  
+
   //       const saleDate = new Date(sale.createdAt);
   //       const saleMonth = (saleDate.getMonth() + 1).toString().padStart(2, '0');
   //       const saleYear = saleDate.getFullYear().toString();
-  
+
   //       const matchMonth = selectedMonth === 'All' || saleMonth === selectedMonth;
   //       const matchYear = selectedYear === 'All' || saleYear === selectedYear;
-  
+
   //       return matchMonth && matchYear;
   //     });
-  
+
   //     // คำนวณเฉพาะเมื่อ filteredData มีค่า
   //     if (filteredData.length > 0) {
   //       const totalSalesFiltered = filteredData.reduce((acc, sale) => acc + (sale.net || 0), 0);
   //       const totalCommissionFiltered = totalSalesFiltered * 0.2;
-  
+
   //       setTotalSales(totalSalesFiltered);
   //       setTotalCommission(totalCommissionFiltered);
   //     }
@@ -198,18 +201,50 @@ const Page = () => {
     fetchFavoritesData();
   }, [selectedMonth, selectedYear]);
 
+  const generateColors = (count: number): string[] => {
+    const colors = [
+      'rgb(24, 64, 152, 0.5)',
+      'rgb(19, 48, 112, 0.5)'
+    ];
+    return Array.from({ length: count }, (_, i) => colors[i % colors.length]);
+  };
+
+  const generateColors2 = (count: number): string[] => {
+    const colors = [
+      'rgb(24, 64, 152, 0.5)',
+      'rgb(19, 48, 112, 0.5)',
+      'rgb(24, 64, 152, 0.5)',
+      'rgb(19, 48, 112, 0.5)',
+    ];
+    return Array.from({ length: count }, (_, i) => colors[i % colors.length]);
+  };
+
+
   const datafav = {
-    labels: projectNames,  // ใช้ projectNames เป็น labels
+    labels: projectNames,
     datasets: [
       {
-        label: 'จำนวนโปรเจค',  // ชื่อชุดข้อมูล
-        data: projectCounts,  // ใช้ projectCounts เป็นข้อมูล (ตรวจสอบว่าเป็น array ของตัวเลข)
-        backgroundColor: 'rgba(53, 83, 155, 0.5)',
-        borderColor: 'rgba(53, 83, 155, 1)',
+        label: 'โปรเจกต์',
+        data: projectCounts,
+        backgroundColor: generateColors(projectCounts.length),
+        borderColor: generateColors(projectCounts.length).map(color => color.replace('0.5', '1')), // เปลี่ยนความโปร่งใส
         borderWidth: 1,
       },
     ],
   };
+
+  // const datafav = {
+  //   labels: projectNames,  // ใช้ projectNames เป็น labels
+  //   datasets: [
+  //     {
+  //       label: 'โปรเจกต์',  // ชื่อชุดข้อมูล
+  //       data: projectCounts,  // ใช้ projectCounts เป็นข้อมูล (ตรวจสอบว่าเป็น array ของตัวเลข)
+  //       backgroundColor: 'rgba(53, 83, 155, 0.5)',
+  //       borderColor: 'rgba(53, 83, 155, 1)',
+  //       borderWidth: 1,
+  //     },
+  //   ],
+  // };
 
   const [terms, setTerms] = useState<Term[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
@@ -220,24 +255,24 @@ const Page = () => {
         const response = await fetch(`/api/getsearch?month=${selectedMonth}&year=${selectedYear}`, {
           method: 'GET',
         });
-  
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-  
+
         const data: { terms: Term[]; count: number } = await response.json();
-  
+
         // console.log("ข้อมูลตาราง", data);
-  
+
         // Set the terms and the total count
         setTerms(data.terms); // จะได้แค่ 10 รายการ
         setTotalCount(data.count); // Set total count from the API
-  
+
       } catch (error) {
         console.error("Error fetching search terms:", error);
       }
     }
-  
+
     fetchTerms();
   }, [selectedMonth, selectedYear]);
 
@@ -248,8 +283,14 @@ const Page = () => {
     datasets: [{
       label: 'Price',
       data: [],
-      backgroundColor: 'rgba(53, 83, 155, 0.5)',
-      borderColor: 'rgba(53, 83, 155, 1)',
+      backgroundColor:['rgb(24, 64, 152, 0.5)',
+      'rgb(19, 48, 112, 0.5)',
+      'rgb(24, 64, 152, 0.5)',
+      'rgb(19, 48, 112, 0.5)',],
+      borderColor:['rgb(24, 64, 152, 0.5)',
+        'rgb(19, 48, 112, 0.5)',
+        'rgb(24, 64, 152, 0.5)',
+        'rgb(19, 48, 112, 0.5)',],
       borderWidth: 1,
     }]
   });
@@ -296,6 +337,7 @@ const Page = () => {
         const salesData = await response.json();
 
         if (salesData && Array.isArray(salesData)) {
+          // console.log("กราฟ", salesData)
           setPurchaseHistory(salesData); // อัปเดต purchaseHistory ถ้า salesData เป็น array
         } else {
           setError("Invalid data format or no data available");
@@ -333,33 +375,33 @@ const Page = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (!selectedMonth || !selectedYear) return; // เพิ่มการตรวจสอบ
-  
+
       try {
         const result = await axios.get(`/api/getanalyst?month=${selectedMonth}&year=${selectedYear}`);
-        
+
         if (!result.data) return;
-  
+
         const normalRoles = result.data.normalUsers?.map((user: UserType) => user.roleai) || [];
         const studentRoles = result.data.studentUsers?.map((user: UserType) => user.roleai) || [];
-  
-        const roles = ['student', 'other', 'developer'];
+
+        const roles = ['student', 'developer', 'professor', 'designer', 'executive', 'researcher','teacher', 'other'];
         const normalCounts = roles.map(role => normalRoles.filter((r: string) => r === role).length);
         const studentCounts = roles.map(role => studentRoles.filter((r: string) => r === role).length);
 
         // อัพเดท state ด้วยข้อมูลใหม่
-  
+
         setRoleData({
           labels: roles,
           datasets: [
             {
               label: 'Normal User',
               data: normalCounts,
-              backgroundColor: '#33539B',
+              backgroundColor: '#133070',
             },
             {
               label: 'Student User',
               data: studentCounts,
-              backgroundColor: '#33539B',
+              backgroundColor: '#0B1E48',
             },
           ],
         });
@@ -367,7 +409,7 @@ const Page = () => {
         console.error("Error fetching role data:", error);
       }
     };
-  
+
     fetchData();
   }, [selectedMonth, selectedYear]);// ใส่ dependency array ที่ว่างเพื่อให้ทำงานเพียงครั้งเดียว
 
@@ -388,14 +430,14 @@ const Page = () => {
   ];
 
 
-  
+
 
   const currentYear = new Date().getFullYear();
   const years = ['All', ...Array.from({ length: 5 }, (_, i) => (currentYear - i).toString())];
 
   const filteredPurchaseHistory = useMemo(() => {
     if (!Array.isArray(purchaseHistory)) return [];
-    
+
     return purchaseHistory.filter((purchase) => {
       const purchaseDate = new Date(purchase.createdAt);
       const purchaseMonth = (purchaseDate.getMonth() + 1).toString().padStart(2, '0');
@@ -409,23 +451,47 @@ const Page = () => {
   }, [purchaseHistory, selectedMonth, selectedYear]);
 
   // Update chart data when filtered history changes
+  const chartOptions = {
+    scales: {
+      x: { // สำหรับ Chart.js เวอร์ชันใหม่กว่า (3.x หรือ 4.x)
+        ticks: {
+          display: false // ซ่อนตัวเลขด้านล่าง (แกน x)
+        },
+        grid: {
+          display: true // แสดงเส้นกริด (สามารถปรับเป็น false ได้หากต้องการลบ)
+        }
+      },
+      y: {
+        ticks: {
+          beginAtZero: true // เริ่มแกน y จาก 0
+        }
+      }
+    }
+  };
+
   useEffect(() => {
     if (!filteredPurchaseHistory) return;
-  
+
     const categories = filteredPurchaseHistory.map((salesData) => salesData.category);
     const prices = filteredPurchaseHistory.map((salesData) => salesData.price || 0);
-  
+
     const newChartData = {
       labels: categories,
       datasets: [{
         label: 'Price',
         data: prices,
-        backgroundColor: 'rgba(53, 83, 155, 0.5)',
-        borderColor: 'rgba(53, 83, 155, 1)',
+        backgroundColor:['rgb(24, 64, 152, 0.5)',
+          'rgb(19, 48, 112, 0.5)',
+          'rgb(24, 64, 152, 0.5)',
+          'rgb(19, 48, 112, 0.5)',],
+          borderColor:['rgb(24, 64, 152, 0.5)',
+            'rgb(19, 48, 112, 0.5)',
+            'rgb(24, 64, 152, 0.5)',
+            'rgb(19, 48, 112, 0.5)',],
         borderWidth: 1,
       }]
     };
-  
+
     // Only update if the data has actually changed
     if (JSON.stringify(chartData) !== JSON.stringify(newChartData)) {
       setChartData(newChartData);
@@ -464,169 +530,311 @@ const Page = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBFBFB] overflow-hidden">
-    <Header />
-    <main>
-      <div className="flex flex-col items-center w-full" style={{ backgroundColor: "#FBFBFB" }}>
-        <div className="w-full max-w-screen-lg p-4">
-          <div className="flex flex-col">
+      <Header />
+      <main>
+        <div className="flex flex-col items-center w-full" style={{ backgroundColor: "#FBFBFB" }}>
+          <div className="w-full max-w-screen-lg p-4">
+            <div className="flex flex-col">
 
-            <p
-              className="mt-10 text-black"
-              style={{ fontSize: "24px", fontWeight: "bold" }}
-            >
-              สรุปผล
-            </p>
-
-            <div className="flex flex-row w-full mt-3">
               <p
-                style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
+                className="mt-10 text-black"
+                style={{ fontSize: "24px", fontWeight: "bold" }}
               >
-                ประจำเดือน
-              </p>
-              {/* Category Dropdown */}
-
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
-              >
-                <option value="" disabled>เลือกเดือน</option>
-                {months.map((month) => (
-                  <option key={month.value} value={month.value}>
-                    {month.label}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
-              >
-                <option value="" disabled>เลือกปี</option>
-                {years.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-row w-full mt-5">
-              <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
-                <div className="flex flex-row justify-center m-2">
-                  <p className="font-semibold text-black">
-                    ยอดขายทั้งหมด
-                  </p>
-                </div>
-                <div className="flex flex-row justify-center m-2">
-                  <p className="font-semibold text-black">
-                    {totalSales !== undefined ? totalSales.toLocaleString() : 'กำลังโหลด...'} ฿
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
-                <div className="flex flex-row justify-center m-2">
-                  <p className="font-semibold text-black">
-                    กำไรของเว็บไซต์
-                  </p>
-                </div>
-                <div className="flex flex-row justify-center m-2">
-                  <p className="font-semibold text-black">
-                    {totalCommission !== undefined ? totalCommission.toLocaleString() : 'กำลังโหลด...'} ฿
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col justify-center w-96 h-28 m-5 bg-white rounded-md drop-shadow-md">
-                <div className="flex flex-row justify-center m-2">
-                  <p className="font-semibold text-black">
-                    จำนวนสมาชิก
-                  </p>
-                </div>
-                <div className="flex flex-row justify-center m-2">
-                  <p className="font-semibold text-black">
-                    {totalUserCount !== undefined ? totalUserCount.toLocaleString() : 'Loading...'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col w-full mt-5">
-              <p
-                style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
-              >
-                จำนวนที่ขายได้แต่ละหมวดหมู่
+                สรุปผล
               </p>
 
-              <Bar data={chartData} width={200} height={100} options={{ indexAxis: 'y' }} />
+              <div className="flex flex-row w-full mt-3">
+                <p
+                  style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
+                >
+                  ประจำเดือน
+                </p>
+                {/* Category Dropdown */}
 
-            </div>
-
-            <div className="flex flex-col w-full mt-5">
-              <p
-                style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
-              >
-                อันดับการค้นหา
-              </p>
-
-              <table className="border-2 mt-10 mb-10" style={{ width: "992px" }}>
-                <thead>
-                  <tr style={{ backgroundColor: "#33539B", color: "#ffff" }}>
-                    <th className="w-1/12 text-center h-12">อันดับ</th>
-                    <th className="w-3/12 h-12 text-start">คำค้นหา</th>
-                    <th className="w-1/12 h-12 text-start">จำนวน</th>
-                  </tr>
-                </thead>
-                <tbody className="text-black">
-                  {terms.map((term, index) => (
-                    <tr key={term._id}>
-                      <td className="text-center h-14">{index + 1}</td>
-                      <td className="h-14">{term.term}</td>
-                      <td className="h-14">{term.count}</td>
-                    </tr>
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
+                >
+                  <option value="" disabled>เลือกเดือน</option>
+                  {months.map((month) => (
+                    <option key={month.value} value={month.value}>
+                      {month.label}
+                    </option>
                   ))}
-                </tbody>
-              </table>
+                </select>
+
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  className="w-auto p-2 mb-4 ml-5 border border-gray-300 rounded text-black"
+                >
+                  <option value="" disabled>เลือกปี</option>
+                  {years.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-row w-full mt-5">
+                <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
+                  <div className="flex flex-row justify-center m-2">
+                    <p className="font-semibold text-black">
+                      ยอดขายทั้งหมด
+                    </p>
+                  </div>
+                  <div className="flex flex-row justify-center m-2">
+                    <p className="font-semibold text-black">
+                      {totalSales !== undefined ? totalSales.toLocaleString() : 'กำลังโหลด...'} ฿
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
+                  <div className="flex flex-row justify-center m-2">
+                    <p className="font-semibold text-black">
+                      กำไรของเว็บไซต์
+                    </p>
+                  </div>
+                  <div className="flex flex-row justify-center m-2">
+                    <p className="font-semibold text-black">
+                      {totalCommission !== undefined ? totalCommission.toLocaleString() : 'กำลังโหลด...'} ฿
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col justify-center w-96 h-28 m-5 bg-white rounded-md drop-shadow-md">
+                  <div className="flex flex-row justify-center m-2">
+                    <p className="font-semibold text-black">
+                      จำนวนสมาชิก
+                    </p>
+                  </div>
+                  <div className="flex flex-row justify-center m-2">
+                    <p className="font-semibold text-black">
+                      {totalUserCount !== undefined ? totalUserCount.toLocaleString() : 'Loading...'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col w-full mt-5">
+                <p
+                  style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
+                >
+                  จำนวนที่ขายได้แต่ละหมวดหมู่
+                </p>
+
+                <Bar data={chartData} width={200} height={100}
+                  options={{ indexAxis: 'y',
+                    scales: {
+                      x: { 
+                        ticks: {
+                          display: false, 
+                        },
+                        grid: {
+                          display: false, 
+                        },
+                      },
+                      y: { 
+                        beginAtZero: true, 
+                        ticks: {
+                          font: {
+                            size: 15, 
+                          },
+                          autoSkip: true, 
+                        },
+                      },
+                    },    
+                    layout: {
+                      padding: {
+                        top: 10,  
+                        right: 30,  
+                        bottom: 10, 
+                        left: 10,   
+                      },
+                    },
+                    plugins: {
+                      legend: {
+                        display: true,
+                        position: 'top',
+                      },
+                      datalabels: {
+                        display: true,
+                        align: 'end',
+                        anchor: 'end',
+                        color: '#000',
+                        font: {
+                          size: 15,
+                        },
+                        // กำหนดประเภท 'value' เป็น 'number'
+                        formatter: (value) => {
+                          if (value === undefined || value === null) {
+                            return null;
+                          }
+                          return value === 0 ? null : value.toLocaleString();
+                        },
+                      },
+                    },
+                   }}  
+                />
+
+              </div>
+
+              <div className="flex flex-col w-full mt-5">
+                <p
+                  style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
+                >
+                  อันดับการค้นหา
+                </p>
+
+                <table className="border-2 mt-10 mb-10" style={{ width: "992px" }}>
+                  <thead>
+                    <tr style={{ backgroundColor: "#33539B", color: "#ffff" }}>
+                      <th className="w-1/12 text-center h-12">อันดับ</th>
+                      <th className="w-3/12 h-12 text-start">คำค้นหา</th>
+                      <th className="w-1/12 h-12 text-start">จำนวน</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-black">
+                    {terms.map((term, index) => (
+                      <tr key={term._id}>
+                        <td className="text-center h-14">{index + 1}</td>
+                        <td className="h-14">{term.term}</td>
+                        <td className="h-14">{term.count}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="flex flex-col w-full mt-5">
+                <p
+                  style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
+                >
+                  บทบาทของผู้ใช้
+                </p>
+                <Bar
+                  data={roleData}  
+                  width={200}
+                  height={100}
+                  options={{
+                    scales: {
+                      y: { // แกน x
+                        ticks: {
+                          display: false, 
+                        },
+                        grid: {
+                          display: false, 
+                        },
+                      },
+                      x: { // แกน y
+                        beginAtZero: true, 
+                        ticks: {
+                          autoSkip: true, 
+                          font: {
+                            size: 15, 
+                          },
+                        },
+                      },
+                    },    
+                    plugins: {
+                      legend: {
+                        display: true,
+                        position: 'top',
+                      },
+                      datalabels: {
+                        display: true,
+                        align: 'end',
+                        anchor: 'end',
+                        color: '#000',
+                        font: {
+                          size: 15,
+                        },
+                        // กำหนดประเภท 'value' เป็น 'number'
+                        formatter: (value) => {
+                          if (value === undefined || value === null) {
+                            return null; 
+                          }
+                          return value === 0 ? null : value.toLocaleString();
+                        },
+                      },
+                    },
+                  }}
+                />
+              </div>
+
+              <div className="flex flex-col w-full mt-5 ">
+                <p
+                  style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
+                >
+                  ความชอบของผู้ใช้
+                </p>
+
+                <Bar
+                  data={datafav}
+                  width={200}
+                  height={100}
+                  options={{ indexAxis: 'y',
+                    scales: {
+                      x: {
+                        ticks: {
+                          display: false, 
+                        },
+                        grid: {
+                          display: false, 
+                        },
+                      },
+                      y: { 
+                        beginAtZero: true, 
+                        ticks: {
+                          font: {
+                            size: 15,
+                          },
+                          autoSkip: true,
+                        },
+                      },
+                    },    
+                    layout: {
+                      padding: {
+                        top: 10,    
+                        right: 30,  
+                        bottom: 10, 
+                        left: 10,   
+                      },
+                    },
+                    plugins: {
+                      legend: {
+                        display: true,
+                        position: 'top',
+                      },
+                      datalabels: {
+                        display: true,
+                        align: 'end',
+                        anchor: 'end',
+                        color: '#000',
+                        font: {
+                          size: 15,
+                        },
+                        // กำหนดประเภท 'value' เป็น 'number'
+                        formatter: (value) => {
+                          if (value === undefined || value === null) {
+                            return null; // or handle as needed
+                          }
+                          return value === 0 ? null : value.toLocaleString();
+                        },
+                      },
+                    },
+                   }}  
+                />
+
+              </div>
+
             </div>
-
-            <div className="flex flex-col w-full mt-5">
-              <p
-                style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
-              >
-                บทบาทของผู้ใช้
-              </p>
-              <Bar
-                data={roleData}  // ใช้ข้อมูลจาก state roleData
-                width={200}
-                height={100}
-                options={{
-                  maintainAspectRatio: true,
-                }}
-              />
-            </div>
-
-            <div className="flex flex-col w-full mt-5 ">
-              <p
-                style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
-              >
-                ความชอบของผู้ใช้
-              </p>
-
-              <Bar
-                data={datafav}
-                width={200}
-                height={100}
-                options={{ indexAxis: 'y' }}  // Set indexAxis to 'y' for horizontal bars
-              />
-
-            </div>
-
           </div>
         </div>
-      </div>
-    </main>
+      </main>
     </div>
   );
 }
