@@ -63,10 +63,11 @@ export async function POST(req) {
           <div class="logo">
             <img src="https://m1r.ai/7ttM.png" alt="Digitech Space Logo" width="150">
           </div>
-          <h2>Warning you have been reported</h2>
-          <p>Dear ${author},</p>
-          <p>We have received a request from another user that your project is not suitable for our site.</p>
-          <p>We will remove your project content soon.</p>
+         <h2>Warning: Your project has been reported</h2>
+<p>Dear ${author},</p>
+<p>Your project titled "${name}" has been reported due to the following reason: ${report}. ${more}</p>
+<p>We will remove your project content soon. If you believe this is a mistake or have any concerns, please contact us at digitechspace65@gmail.com.</p>
+<p>Thank you for your understanding.</p>
         </div>
       </body>
       </html>
@@ -75,7 +76,7 @@ export async function POST(req) {
       const info = await transporter.sendMail({
           from: '"Digitech Space" <digitechspace65@gmail.com>',
           to: email,
-          subject: "Contact from Project Viewer",
+          subject: "Warnings from Digitech Space",
           html: htmlContent,
       });
 

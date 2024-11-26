@@ -6,9 +6,25 @@ export async function GET(req) {
   console.log("MongoDB connected successfully.");
 
   try {
-    // Fetch all orders
-    const transactions = await orders.find({}).lean();
-    console.log("Fetched transactions:", transactions); // Log transactions
+    const { searchParams } = new URL(req.url);
+    const selectedMonth = searchParams.get('month');
+    const selectedYear = searchParams.get('year');
+
+    let filter = {};
+
+    // เพิ่มการกรองวันที่ตามเดือนและปีที่เลือก
+    if (selectedMonth !== "All" && selectedYear !== "All") {
+      const startDate = new Date(Date.UTC(parseInt(selectedYear), parseInt(selectedMonth) - 1, 1));
+      const endDate = new Date(Date.UTC(parseInt(selectedYear), parseInt(selectedMonth), 1));
+      filter.createdAt = {
+        $gte: startDate,
+        $lt: endDate,
+      };
+    }
+
+    // Fetch orders ตาม filter
+    const transactions = await orders.find(filter).lean();
+    console.log("Fetched transactions:", transactions);
 
     if (transactions.length === 0) {
       console.log("No transactions found.");
@@ -27,7 +43,6 @@ export async function GET(req) {
       return acc + commission;
     }, 0);
 
-    // ส่ง transactions กลับไปด้วย โดยมี createdAt เพื่อใช้หาเดือนและปี
     return new Response(JSON.stringify({ totalSales, totalCommission, transactions }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },

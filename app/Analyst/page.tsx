@@ -102,50 +102,73 @@ const Page = () => {
   const [totalSales, setTotalSales] = useState(0);
   const [totalCommission, setTotalCommission] = useState(0);
 
-
   useEffect(() => {
     async function fetchTotalSales() {
+      if (!selectedMonth || !selectedYear) return;
+
       try {
-        const response = await fetch('/api/getmoney', {
+        const response = await fetch(`/api/getmoney?month=${selectedMonth}&year=${selectedYear}`, {
           method: 'GET',
         });
         const data = await response.json();
 
-        console.log("Sales data from API: ", data.transactions);  // ตรวจสอบข้อมูล
-        setRawSalesData(data.transactions || []);
+        // ตรวจสอบข้อมูลที่ fetch มา
+        // console.log("Fetched data:", data);
+
+        setTotalSales(data.totalSales || '0');  // ต้องเป็น array ของ string
+        setTotalCommission(data.totalCommission || '0');  // ต้องเป็น array ของตัวเลข
       } catch (error) {
-        console.error("Error fetching total sales and commission:", error);
+        console.error("Error fetching favorites data:", error);
       }
     }
 
     fetchTotalSales();
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
-  useEffect(() => {
-    if (rawSalesData.length > 0) {
-      const filteredData = rawSalesData.filter((sale) => {
-        if (!sale.createdAt) return false;  // เพิ่มการตรวจสอบ
+
+  // useEffect(() => {
+  //   async function fetchTotalSales() {
+  //     try {
+  //       const response = await fetch('/api/getmoney', {
+  //         method: 'GET',
+  //       });
+  //       const data = await response.json();
+
+  //       console.log("Sales data from API: ", data.transactions);  // ตรวจสอบข้อมูล
+  //       setRawSalesData(data.transactions || []);
+  //     } catch (error) {
+  //       console.error("Error fetching total sales and commission:", error);
+  //     }
+  //   }
+
+  //   fetchTotalSales();
+  // }, []);
+
+  // useEffect(() => {
+  //   if (rawSalesData.length > 0) {
+  //     const filteredData = rawSalesData.filter((sale) => {
+  //       if (!sale.createdAt) return false;  // เพิ่มการตรวจสอบ
   
-        const saleDate = new Date(sale.createdAt);
-        const saleMonth = (saleDate.getMonth() + 1).toString().padStart(2, '0');
-        const saleYear = saleDate.getFullYear().toString();
+  //       const saleDate = new Date(sale.createdAt);
+  //       const saleMonth = (saleDate.getMonth() + 1).toString().padStart(2, '0');
+  //       const saleYear = saleDate.getFullYear().toString();
   
-        const matchMonth = selectedMonth === 'All' || saleMonth === selectedMonth;
-        const matchYear = selectedYear === 'All' || saleYear === selectedYear;
+  //       const matchMonth = selectedMonth === 'All' || saleMonth === selectedMonth;
+  //       const matchYear = selectedYear === 'All' || saleYear === selectedYear;
   
-        return matchMonth && matchYear;
-      });
+  //       return matchMonth && matchYear;
+  //     });
   
-      // คำนวณเฉพาะเมื่อ filteredData มีค่า
-      if (filteredData.length > 0) {
-        const totalSalesFiltered = filteredData.reduce((acc, sale) => acc + (sale.net || 0), 0);
-        const totalCommissionFiltered = totalSalesFiltered * 0.2;
+  //     // คำนวณเฉพาะเมื่อ filteredData มีค่า
+  //     if (filteredData.length > 0) {
+  //       const totalSalesFiltered = filteredData.reduce((acc, sale) => acc + (sale.net || 0), 0);
+  //       const totalCommissionFiltered = totalSalesFiltered * 0.2;
   
-        setTotalSales(totalSalesFiltered);
-        setTotalCommission(totalCommissionFiltered);
-      }
-    }
-  }, [rawSalesData, selectedMonth, selectedYear]);
+  //       setTotalSales(totalSalesFiltered);
+  //       setTotalCommission(totalCommissionFiltered);
+  //     }
+  //   }
+  // }, [rawSalesData, selectedMonth, selectedYear]);
 
 
 
@@ -163,7 +186,7 @@ const Page = () => {
         const data = await response.json();
 
         // ตรวจสอบข้อมูลที่ fetch มา
-        console.log("Fetched data:", data);
+        // console.log("Fetched data:", data);
 
         setProjectNames(data.projectNames || []);  // ต้องเป็น array ของ string
         setProjectCounts(data.projectCounts || []);  // ต้องเป็น array ของตัวเลข
@@ -204,7 +227,7 @@ const Page = () => {
   
         const data: { terms: Term[]; count: number } = await response.json();
   
-        console.log("ข้อมูลตาราง", data);
+        // console.log("ข้อมูลตาราง", data);
   
         // Set the terms and the total count
         setTerms(data.terms); // จะได้แค่ 10 รายการ
@@ -295,7 +318,7 @@ const Page = () => {
       try {
         const response = await fetch(`/api/getanalyst?month=${selectedMonth}&year=${selectedYear}`);
         const data = await response.json();
-        console.log(data); // ตรวจสอบข้อมูลที่ได้รับ
+        // console.log(data); // ตรวจสอบข้อมูลที่ได้รับ
         setTotalUserCount(data.totalUserCount); // กำหนดค่าให้กับ state
       } catch (error) {
         console.error("Error fetching user count:", error);
