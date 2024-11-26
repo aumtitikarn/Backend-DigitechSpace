@@ -203,16 +203,22 @@ const Page = () => {
 
   const generateColors = (count: number): string[] => {
     const colors = [
-      // 'rgba(255, 99, 132, 0.5)',
-      // 'rgba(54, 162, 235, 0.5)',
-      // 'rgba(75, 192, 192, 0.5)',
-      // 'rgba(153, 102, 255, 0.5)',
-      // 'rgba(255, 159, 64, 0.5)',
       'rgb(24, 64, 152, 0.5)',
       'rgb(19, 48, 112, 0.5)'
     ];
     return Array.from({ length: count }, (_, i) => colors[i % colors.length]);
   };
+
+  const generateColors2 = (count: number): string[] => {
+    const colors = [
+      'rgb(24, 64, 152, 0.5)',
+      'rgb(19, 48, 112, 0.5)',
+      'rgb(24, 64, 152, 0.5)',
+      'rgb(19, 48, 112, 0.5)',
+    ];
+    return Array.from({ length: count }, (_, i) => colors[i % colors.length]);
+  };
+
 
   const datafav = {
     labels: projectNames,
@@ -277,8 +283,14 @@ const Page = () => {
     datasets: [{
       label: 'Price',
       data: [],
-      backgroundColor: 'rgba(53, 83, 155, 0.5)',
-      borderColor: 'rgba(53, 83, 155, 1)',
+      backgroundColor:['rgb(24, 64, 152, 0.5)',
+      'rgb(19, 48, 112, 0.5)',
+      'rgb(24, 64, 152, 0.5)',
+      'rgb(19, 48, 112, 0.5)',],
+      borderColor:['rgb(24, 64, 152, 0.5)',
+        'rgb(19, 48, 112, 0.5)',
+        'rgb(24, 64, 152, 0.5)',
+        'rgb(19, 48, 112, 0.5)',],
       borderWidth: 1,
     }]
   });
@@ -457,26 +469,6 @@ const Page = () => {
     }
   };
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top',
-      },
-      datalabels: {
-        display: true,
-        align: 'end',
-        anchor: 'end',
-        color: '#000',
-        font: {
-          size: 12,
-        },
-        formatter: (value: number) => value.toLocaleString(), // แปลงค่าให้มีรูปแบบตัวเลข
-      },
-    },
-  };
-
   useEffect(() => {
     if (!filteredPurchaseHistory) return;
 
@@ -488,8 +480,14 @@ const Page = () => {
       datasets: [{
         label: 'Price',
         data: prices,
-        backgroundColor: generateColors(projectCounts.length),
-        borderColor: generateColors(projectCounts.length).map(color => color.replace('0.5', '1')), // เปลี่ยนความโปร่งใส
+        backgroundColor:['rgb(24, 64, 152, 0.5)',
+          'rgb(19, 48, 112, 0.5)',
+          'rgb(24, 64, 152, 0.5)',
+          'rgb(19, 48, 112, 0.5)',],
+          borderColor:['rgb(24, 64, 152, 0.5)',
+            'rgb(19, 48, 112, 0.5)',
+            'rgb(24, 64, 152, 0.5)',
+            'rgb(19, 48, 112, 0.5)',],
         borderWidth: 1,
       }]
     };
@@ -629,9 +627,34 @@ const Page = () => {
                 </p>
 
                 <Bar data={chartData} width={200} height={100}
-                  options={{
-                    indexAxis: 'y', // กราฟแท่งแนวนอน
-                    responsive: true,
+                  options={{ indexAxis: 'y',
+                    scales: {
+                      x: { 
+                        ticks: {
+                          display: false, 
+                        },
+                        grid: {
+                          display: false, 
+                        },
+                      },
+                      y: { 
+                        beginAtZero: true, 
+                        ticks: {
+                          font: {
+                            size: 15, 
+                          },
+                          autoSkip: true, 
+                        },
+                      },
+                    },    
+                    layout: {
+                      padding: {
+                        top: 10,  
+                        right: 30,  
+                        bottom: 10, 
+                        left: 10,   
+                      },
+                    },
                     plugins: {
                       legend: {
                         display: true,
@@ -641,33 +664,20 @@ const Page = () => {
                         display: true,
                         align: 'end',
                         anchor: 'end',
+                        color: '#000',
                         font: {
                           size: 15,
                         },
                         // กำหนดประเภท 'value' เป็น 'number'
-                        formatter: (value: number) => value.toLocaleString(), // แปลงค่าให้มีรูปแบบตัวเลข
-                      },
-                    },
-                    scales: {
-                      x: { // แกน x
-                        ticks: {
-                          display: false, // ซ่อนตัวเลขด้านล่าง
-                        },
-                        grid: {
-                          display: false, // แสดงเส้นกริด (ตั้ง false หากต้องการลบ)
-                        },
-                      },
-                      y: { // แกน y
-                        beginAtZero: true, // ให้แกน y เริ่มต้นที่ 0 (วางไว้ในระดับนี้)
-                        ticks: {
-                          autoSkip: true, // เพิ่มเติมการจัดการ ticks (ถ้าต้องการ)
-                          font: {
-                            size: 15, // Increase this value to make the Y-axis labels larger
-                          },
+                        formatter: (value) => {
+                          if (value === undefined || value === null) {
+                            return null;
+                          }
+                          return value === 0 ? null : value.toLocaleString();
                         },
                       },
                     },
-                  }}
+                   }}  
                 />
 
               </div>
@@ -706,25 +716,25 @@ const Page = () => {
                   บทบาทของผู้ใช้
                 </p>
                 <Bar
-                  data={roleData}  // ใช้ข้อมูลจาก state roleData
+                  data={roleData}  
                   width={200}
                   height={100}
                   options={{
                     scales: {
                       y: { // แกน x
                         ticks: {
-                          display: false, // ซ่อนตัวเลขด้านล่าง
+                          display: false, 
                         },
                         grid: {
-                          display: false, // แสดงเส้นกริด (ตั้ง false หากต้องการลบ)
+                          display: false, 
                         },
                       },
                       x: { // แกน y
-                        beginAtZero: true, // ให้แกน y เริ่มต้นที่ 0 (วางไว้ในระดับนี้)
+                        beginAtZero: true, 
                         ticks: {
-                          autoSkip: true, // เพิ่มเติมการจัดการ ticks (ถ้าต้องการ)
+                          autoSkip: true, 
                           font: {
-                            size: 15, // Increase this value to make the Y-axis labels larger
+                            size: 15, 
                           },
                         },
                       },
@@ -744,7 +754,9 @@ const Page = () => {
                         },
                         // กำหนดประเภท 'value' เป็น 'number'
                         formatter: (value) => {
-                          // Return null for values equal to 0 to hide the label
+                          if (value === undefined || value === null) {
+                            return null; 
+                          }
                           return value === 0 ? null : value.toLocaleString();
                         },
                       },
@@ -766,30 +778,30 @@ const Page = () => {
                   height={100}
                   options={{ indexAxis: 'y',
                     scales: {
-                      x: { // แกน x
+                      x: {
                         ticks: {
-                          display: false, // ซ่อนตัวเลขด้านล่าง
+                          display: false, 
                         },
                         grid: {
-                          display: false, // แสดงเส้นกริด (ตั้ง false หากต้องการลบ)
+                          display: false, 
                         },
                       },
-                      y: { // แกน y
-                        beginAtZero: true, // ให้แกน y เริ่มต้นที่ 0 (วางไว้ในระดับนี้)
+                      y: { 
+                        beginAtZero: true, 
                         ticks: {
                           font: {
-                            size: 15, // Increase this value to make the Y-axis labels larger
+                            size: 15,
                           },
-                          autoSkip: true, // เพิ่มเติมการจัดการ ticks (ถ้าต้องการ)
+                          autoSkip: true,
                         },
                       },
                     },    
                     layout: {
                       padding: {
-                        top: 10,    // Top margin
-                        right: 30,  // Right margin
-                        bottom: 10, // Bottom margin
-                        left: 10,   // Left margin
+                        top: 10,    
+                        right: 30,  
+                        bottom: 10, 
+                        left: 10,   
                       },
                     },
                     plugins: {
@@ -806,10 +818,15 @@ const Page = () => {
                           size: 15,
                         },
                         // กำหนดประเภท 'value' เป็น 'number'
-                        formatter: (value: number) => value.toLocaleString(), // แปลงค่าให้มีรูปแบบตัวเลข
+                        formatter: (value) => {
+                          if (value === undefined || value === null) {
+                            return null; // or handle as needed
+                          }
+                          return value === 0 ? null : value.toLocaleString();
+                        },
                       },
                     },
-                   }}  // Set indexAxis to 'y' for horizontal bars
+                   }}  
                 />
 
               </div>
