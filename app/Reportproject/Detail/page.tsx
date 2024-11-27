@@ -3,6 +3,7 @@
 import Header from "../../component/Header";
 import React, { useState, useRef, useEffect, Suspense} from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import Swal from 'sweetalert2';
 // Loading Component
 const LoadingSpinner = () => (
@@ -21,6 +22,7 @@ const DetailContent = () => {
   const email = searchParams.get("email");
   const author = searchParams.get("author");
   const projectId = searchParams.get("projectId");
+  const router = useRouter();
 
   // Function to format date
   const formatDate = (timestamp: string | null) => {
@@ -58,7 +60,7 @@ const DetailContent = () => {
   
     if (result.isConfirmed) {
       try {
-        const response = await fetch('/api/getreportproject/delete', {
+        const response = await fetch(`/api/getreportproject`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -71,8 +73,9 @@ const DetailContent = () => {
             'ลบแล้ว!',
             'รายงานถูกลบเรียบร้อยแล้ว',
             'success'
-          );
-          // Add any additional logic, like updating the UI or redirecting
+          ).then(() => {
+            router.push("/Reportproject"); // เปลี่ยนหน้าเมื่อผู้ใช้กดตกลง
+          });
         } else {
           const data = await response.json();
           Swal.fire({
@@ -138,7 +141,9 @@ const DetailContent = () => {
             'ส่งแล้ว!',
             'ส่งอีเมลถึงเจ้าของโครงงานเรียบร้อยแล้ว!',
             'success'
-          );
+          ).then(() => {
+            router.push("/Reportproject"); // เปลี่ยนหน้าเมื่อผู้ใช้กดตกลง
+          });
         } else {
           const data = await response.json();
           Swal.fire({
@@ -169,7 +174,7 @@ const DetailContent = () => {
     }
 
     const result = await Swal.fire({
-      title: "คุณต้องการลบบล็อกนี้ใช่หรือไม่?",
+      title: "คุณต้องการลบโครงงานนี้ใช่หรือไม่?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -180,7 +185,7 @@ const DetailContent = () => {
 
     if (result.isConfirmed) {
       try {
-        const response = await fetch(`/api/getreportproject`, {
+        const response = await fetch('/api/getreportproject/delete', {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -193,8 +198,9 @@ const DetailContent = () => {
             'ลบแล้ว!',
             'โครงงานถูกลบเรียบร้อยแล้ว',
             'success'
-          );
-          window.location.reload();
+          ).then(() => {
+            router.push("/Reportproject"); // เปลี่ยนหน้าเมื่อผู้ใช้กดตกลง
+          });
         } else {
           const data = await response.json();
           Swal.fire({
