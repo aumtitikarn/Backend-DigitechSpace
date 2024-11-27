@@ -7,6 +7,7 @@ import Studentusers from "../../../../models/studentusers";
 import { NextResponse } from "next/server";
 import mongoose from 'mongoose';
 import nodemailer from "nodemailer";
+import { ObjectId } from 'mongodb';
 
 export async function POST(req, { params }) {
   try {
@@ -189,6 +190,50 @@ export async function DELETE(req, { params }) {
   try {
     const { id } = params; // ใช้ id ของ postblogs เพื่อค้นหา blogid
     await connectMongoDB();
+
+    console.log("id :",id)
+
+    const blogdata = await blog.findById({ _id: id });
+
+    console.log("blogdata :",blogdata.blogid)
+
+    const idblog = (blogdata.blogid);
+
+    console.log("idblog :",idblog)
+
+    const { client, imgbucket, filebucket } = await connectMongoDB();
+
+    if (!id) {
+      return NextResponse.json({ msg: "Missing blogid" }, { status: 400 });
+    }
+
+    const objectId = new ObjectId(idblog);
+
+    console.log("objectId :",objectId)
+
+    const blogpost = await Post.findOne({ _id: objectId });
+
+    console.log("blogpost :",blogpost)
+
+    if (!blogpost) {
+      return NextResponse.json({ message: "blog not found" }, { status: 404 });
+    }
+
+    // Deleting images from images bucket
+    if (blogpost.imageUrl && blogpost.imageUrl.length > 0) {
+      for (const imageName of blogpost.imageUrl) {
+        const image = await imgbucket.find({ filename: imageName }).toArray();
+        if (image.length > 0) {
+          const imageId = image[0]._id;
+          await imgbucket.delete(imageId);
+          await client.collection("images.chunks").deleteMany({ files_id: imageId });
+        }
+      }
+    }
+
+    if (!id) {
+      return NextResponse.json({ msg: "ID is required" }, { status: 400 });
+    }
 
     // ค้นหา blogid จากคอลเลกชัน postblogs
     const blogData = await blog.findById(id);
