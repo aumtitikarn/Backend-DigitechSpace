@@ -79,15 +79,22 @@ export async function GET(request) {
     }
 
     // สร้าง project statistics
-    const projectStats = matchedProjects.reduce((stats, project) => {
-      const name = project.projectname;
-      stats[name] = (stats[name] || 0) + 1;
+    const projectStats = allProjectIds.reduce((stats, projectId) => {
+      stats[projectId] = (stats[projectId] || 0) + 1; // นับจำนวน projectId
       return stats;
     }, {});
 
-    // แปลงเป็น arrays
-    const projectNames = Object.keys(projectStats);
-    const projectCounts = Object.values(projectStats);
+    // แปลง projectStats เพื่อดึงชื่อ project
+    const projectNames = [];
+    const projectCounts = [];
+
+    for (const [id, count] of Object.entries(projectStats)) {
+      const matchedProject = matchedProjects.find(project => project._id.toString() === id);
+      if (matchedProject) {
+        projectNames.push(matchedProject.projectname); // เพิ่มชื่อ project
+        projectCounts.push(count); // เพิ่มจำนวน
+      }
+    }
 
     // ส่งผลลัพธ์
     return NextResponse.json({
