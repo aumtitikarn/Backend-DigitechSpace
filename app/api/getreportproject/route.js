@@ -1,10 +1,8 @@
 import { connectMongoDB } from "../../../lib/mongodb";
 import Reportprojet from "../../../models/reportprojet";
-import Project from "../../../models/projects";
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
-import Order from "../../../models/orders"; 
-import Favorites from "../../../models/favorites";
+
 
 // Function to handle POST request
 export async function POST(req) {
@@ -100,55 +98,27 @@ export async function GET() {
         return NextResponse.json({ error: "Failed to fetch projects" }, { status: 500 });
     }
 }
-
-// Function to handle DELETE request
 export async function DELETE(req) {
   try {
-    // Connect to the MongoDB database
     await connectMongoDB();
+    const { id } = await req.json(); // Assume the id of the report is sent in the request body
 
-    // Extract the projectId from the request body
-    const { projectId } = await req.json();
-
-    // Validate if the projectId exists
-    if (!projectId) {
-      return NextResponse.json({ msg: "Missing projectId" }, { status: 400 });
+    if (!id) {
+      return NextResponse.json({ msg: "ID is required" }, { status: 400 });
     }
 
-    console.log("Deleting project and associated data with projectId:", projectId);
+    const deletedReport = await Reportprojet.findByIdAndDelete(id);
 
-    // 1. Delete related reports in Reportprojet
-    const deletedReportprojet = await Reportprojet.deleteMany({ projectId });
-    console.log("Deleted reports:", deletedReportprojet.deletedCount);
-
-    // 2. Update matching orders in Orders collection to set status to 'delete'
-    const updatedOrders = await Order.updateMany(
-      { product: projectId }, // ค้นหาคำสั่งที่ตรงกับ projectId
-      { status: 'delete' } // เปลี่ยนสถานะเป็น 'delete'
-    );
-    console.log("Updated orders to 'delete':", updatedOrders.modifiedCount);
-
-    // 3. Remove projectId from Favorites collection using $pull
-    const deletedFavorites = await Favorites.updateMany(
-      {},
-      { $pull: { projectId: projectId } }
-    );
-    console.log("Updated favorites:", deletedFavorites.modifiedCount);
-
-    // 4. Delete project from projects collection
-    const deletedProject = await Project.findOneAndDelete({ _id: projectId });
-
-    // Check if the project was found and deleted
-    if (!deletedProject) {
-      console.error("Project not found in projects for _id:", projectId);
-      return NextResponse.json({ msg: "Project not found in projects" }, { status: 404 });
+    if (!deletedReport) {
+      return NextResponse.json({ msg: "Report not found" }, { status: 404 });
     }
 
-    console.log("Project and associated data deleted successfully");
-    return NextResponse.json({ message: "Project and associated data deleted successfully" }, { status: 200 });
-
+    return NextResponse.json({ message: "Report deleted successfully" }, { status: 200 });
   } catch (error) {
     console.error("Error in DELETE handler:", error);
-    return NextResponse.json({ msg: "Error deleting project and associated data", error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { msg: "Error deleting report" },
+      { status: 500 }
+    );
   }
 }
