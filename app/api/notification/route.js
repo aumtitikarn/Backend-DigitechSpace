@@ -17,6 +17,7 @@ export const POST = async (req) => {
         const notificationData = {
             message: notificationValue, // เก็บข้อความแจ้งเตือน
             timestamp: new Date(), // เก็บเวลาที่บันทึก
+            read: false
         };
 
         console.log("Notification data to be added:", JSON.stringify(notificationData, null, 2));
@@ -28,6 +29,7 @@ export const POST = async (req) => {
                 notification.notifications = {
                     message: [],
                     times: [],
+                    read: [],
                 };
             }
             // ตรวจสอบว่า message และ times ถูกกำหนดให้เป็นอาเรย์
@@ -37,10 +39,14 @@ export const POST = async (req) => {
             if (!Array.isArray(notification.notifications.times)) {
                 notification.notifications.times = [];
             }
+            if (!Array.isArray(notification.notifications.read)) {
+                notification.notifications.read = [];
+            }
 
             // เพิ่มข้อความและเวลาเข้าไปในอาเรย์
             notification.notifications.message.push(notificationData.message);
             notification.notifications.times.push(notificationData.timestamp);
+            notification.notifications.read.push(notificationData.read);
         } else {
             // ถ้าไม่มี ให้สร้างใหม่
             notification = new Notification({
@@ -48,6 +54,7 @@ export const POST = async (req) => {
                 notifications: {
                     message: [notificationData.message],
                     times: [notificationData.timestamp],
+                    read: [notificationData.read],
                 },
             });
         }

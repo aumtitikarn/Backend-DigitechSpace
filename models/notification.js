@@ -19,7 +19,7 @@ const notificationSchema = new mongoose.Schema({
       },
       read: {
         type: [Boolean], // เพิ่มฟิลด์เก็บสถานะการอ่าน
-        default: [false], // ค่าเริ่มต้นเป็น array ว่าง
+        default: [], // ค่าเริ่มต้นเป็น array ว่าง
       }
   },
 }, {
