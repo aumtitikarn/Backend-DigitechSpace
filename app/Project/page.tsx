@@ -199,18 +199,36 @@ const Project: React.FC = () => {
                           {index + 1 + indexOfFirstItem}.
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                          <Link href={`/Project/detail?project=${project._id}`}>
+                        <Link href={{
+                            pathname: `/Project/detail`,
+                            query: { ...project }
+                          }}>
                             {project.projectname || "-"}
                           </Link>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                        <Link href={{
+                            pathname: `/Project/detail`,
+                            query: { ...project }
+                          }}>
                           {project.price || "-"}
+                          </Link>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                        <Link href={{
+                            pathname: `/Project/detail`,
+                            query: { ...project }
+                          }}>
                           {project.authorName || "-"}
+                          </Link>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                        <Link href={{
+                            pathname: `/Project/detail`,
+                            query: { ...project }
+                          }}>
                           {project.email || "-"}
+                          </Link>
                         </td>
                       </tr>
                     ))}
