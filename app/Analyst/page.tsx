@@ -283,11 +283,11 @@ const Page = () => {
     datasets: [{
       label: 'Price',
       data: [],
-      backgroundColor:['rgb(24, 64, 152, 0.5)',
-      'rgb(19, 48, 112, 0.5)',
-      'rgb(24, 64, 152, 0.5)',
-      'rgb(19, 48, 112, 0.5)',],
-      borderColor:['rgb(24, 64, 152, 0.5)',
+      backgroundColor: ['rgb(24, 64, 152, 0.5)',
+        'rgb(19, 48, 112, 0.5)',
+        'rgb(24, 64, 152, 0.5)',
+        'rgb(19, 48, 112, 0.5)',],
+      borderColor: ['rgb(24, 64, 152, 0.5)',
         'rgb(19, 48, 112, 0.5)',
         'rgb(24, 64, 152, 0.5)',
         'rgb(19, 48, 112, 0.5)',],
@@ -384,7 +384,7 @@ const Page = () => {
         const normalRoles = result.data.normalUsers?.map((user: UserType) => user.roleai) || [];
         const studentRoles = result.data.studentUsers?.map((user: UserType) => user.roleai) || [];
 
-        const roles = ['student', 'developer', 'professor', 'designer', 'executive', 'researcher','teacher', 'other'];
+        const roles = ['student', 'developer', 'professor', 'designer', 'executive', 'researcher', 'teacher', 'other'];
         const normalCounts = roles.map(role => normalRoles.filter((r: string) => r === role).length);
         const studentCounts = roles.map(role => studentRoles.filter((r: string) => r === role).length);
 
@@ -430,7 +430,7 @@ const Page = () => {
   ];
 
 
-
+  console.log()
 
   const currentYear = new Date().getFullYear();
   const years = ['All', ...Array.from({ length: 5 }, (_, i) => (currentYear - i).toString())];
@@ -480,14 +480,14 @@ const Page = () => {
       datasets: [{
         label: 'Price',
         data: prices,
-        backgroundColor:['rgb(24, 64, 152, 0.5)',
+        backgroundColor: ['rgb(24, 64, 152, 0.5)',
           'rgb(19, 48, 112, 0.5)',
           'rgb(24, 64, 152, 0.5)',
           'rgb(19, 48, 112, 0.5)',],
-          borderColor:['rgb(24, 64, 152, 0.5)',
-            'rgb(19, 48, 112, 0.5)',
-            'rgb(24, 64, 152, 0.5)',
-            'rgb(19, 48, 112, 0.5)',],
+        borderColor: ['rgb(24, 64, 152, 0.5)',
+          'rgb(19, 48, 112, 0.5)',
+          'rgb(24, 64, 152, 0.5)',
+          'rgb(19, 48, 112, 0.5)',],
         borderWidth: 1,
       }]
     };
@@ -497,6 +497,7 @@ const Page = () => {
       setChartData(newChartData);
     }
   }, [filteredPurchaseHistory, chartData]);
+
 
   useEffect(() => {
     // console.log('Selected month:', selectedMonth);
@@ -579,108 +580,148 @@ const Page = () => {
               </div>
 
               <div className="flex flex-row w-full mt-5">
-                <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
-                  <div className="flex flex-row justify-center m-2">
-                    <p className="font-semibold text-black">
-                      ยอดขายทั้งหมด
-                    </p>
-                  </div>
-                  <div className="flex flex-row justify-center m-2">
-                    <p className="font-semibold text-black">
-                      {totalSales !== undefined ? totalSales.toLocaleString() : 'กำลังโหลด...'} ฿
-                    </p>
-                  </div>
-                </div>
 
-                <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
-                  <div className="flex flex-row justify-center m-2">
-                    <p className="font-semibold text-black">
-                      กำไรของเว็บไซต์
-                    </p>
-                  </div>
-                  <div className="flex flex-row justify-center m-2">
-                    <p className="font-semibold text-black">
-                      {totalCommission !== undefined ? totalCommission.toLocaleString() : 'กำลังโหลด...'} ฿
-                    </p>
-                  </div>
-                </div>
+                <>
+                  {chartData.datasets?.length > 0 &&
+                    chartData.datasets[0]?.data?.some((value) => {
+                      if (Array.isArray(value)) {
+                        return value.some((v) => v > 0); // ตรวจสอบในกรณีที่ value เป็น array
+                      }
+                      return (value ?? 0) > 0; // ตรวจสอบในกรณีที่ value เป็นตัวเลขเดี่ยว
+                    }) ? (
+                    <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
+                      <div className="flex flex-row justify-center m-2">
+                        <p className="font-semibold text-black">ยอดขายทั้งหมด</p>
+                      </div>
+                      <div className="flex flex-row justify-center m-2">
+                        <p className="font-semibold text-black">
+                          {totalSales !== undefined ? totalSales.toLocaleString() : 'กำลังโหลด...'} ฿
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
+                      <div className="flex flex-row justify-center m-2">
+                        <p className="font-semibold text-black">ยอดขายทั้งหมด</p>
+                      </div>
+                      <div className="flex flex-row justify-center m-2">
+                        <p className="font-semibold text-black">
+                          0 ฿
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
-                <div className="flex flex-col justify-center w-96 h-28 m-5 bg-white rounded-md drop-shadow-md">
-                  <div className="flex flex-row justify-center m-2">
-                    <p className="font-semibold text-black">
-                      จำนวนสมาชิก
-                    </p>
+                  {chartData.datasets?.length > 0 &&
+                    chartData.datasets[0]?.data?.some((value) => {
+                      if (Array.isArray(value)) {
+                        return value.some((v) => v > 0); // ตรวจสอบในกรณีที่ value เป็น array
+                      }
+                      return (value ?? 0) > 0; // ตรวจสอบในกรณีที่ value เป็นตัวเลขเดี่ยว
+                    }) ? (
+                    <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
+                      <div className="flex flex-row justify-center m-2">
+                        <p className="font-semibold text-black">กำไรของเว็บไซต์</p>
+                      </div>
+                      <div className="flex flex-row justify-center m-2">
+                        <p className="font-semibold text-black">
+                          {totalCommission !== undefined ? totalCommission.toLocaleString() : 'กำลังโหลด...'} ฿
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col justify-center w-96 h-28 m-5 rounded-md bg-white drop-shadow-md">
+                      <div className="flex flex-row justify-center m-2">
+                        <p className="font-semibold text-black">กำไรของเว็บไซต์</p>
+                      </div>
+                      <div className="flex flex-row justify-center m-2">
+                        <p className="font-semibold text-black">
+                          0 ฿
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex flex-col justify-center w-96 h-28 m-5 bg-white rounded-md drop-shadow-md">
+                    <div className="flex flex-row justify-center m-2">
+                      <p className="font-semibold text-black">จำนวนสมาชิก</p>
+                    </div>
+                    <div className="flex flex-row justify-center m-2">
+                      <p className="font-semibold text-black">
+                        {totalUserCount !== undefined ? totalUserCount.toLocaleString() : 'Loading...'}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex flex-row justify-center m-2">
-                    <p className="font-semibold text-black">
-                      {totalUserCount !== undefined ? totalUserCount.toLocaleString() : 'Loading...'}
-                    </p>
-                  </div>
-                </div>
+                </>
+
               </div>
 
               <div className="flex flex-col w-full mt-5">
-                <p
-                  style={{ fontSize: "24px", fontWeight: "bold", color: "#33539B" }}
-                >
+                <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#33539B' }}>
                   จำนวนที่ขายได้แต่ละหมวดหมู่
                 </p>
 
-                <Bar data={chartData} width={200} height={100}
-                  options={{ indexAxis: 'y',
-                    scales: {
-                      x: { 
-                        ticks: {
-                          display: false, 
-                        },
-                        grid: {
-                          display: false, 
-                        },
-                      },
-                      y: { 
-                        beginAtZero: true, 
-                        ticks: {
-                          font: {
-                            size: 15, 
+                {chartData.datasets?.length > 0 ? (
+                  <Bar
+                    data={chartData}
+                    width={200}
+                    height={100}
+                    options={{
+                      indexAxis: 'y',
+                      scales: {
+                        x: {
+                          ticks: {
+                            display: false,
                           },
-                          autoSkip: true, 
+                          grid: {
+                            display: false,
+                          },
+                        },
+                        y: {
+                          beginAtZero: true,
+                          ticks: {
+                            font: {
+                              size: 15,
+                            },
+                            autoSkip: true,
+                          },
                         },
                       },
-                    },    
-                    layout: {
-                      padding: {
-                        top: 10,  
-                        right: 30,  
-                        bottom: 10, 
-                        left: 10,   
-                      },
-                    },
-                    plugins: {
-                      legend: {
-                        display: true,
-                        position: 'top',
-                      },
-                      datalabels: {
-                        display: true,
-                        align: 'end',
-                        anchor: 'end',
-                        color: '#000',
-                        font: {
-                          size: 15,
-                        },
-                        // กำหนดประเภท 'value' เป็น 'number'
-                        formatter: (value) => {
-                          if (value === undefined || value === null) {
-                            return null;
-                          }
-                          return value === 0 ? null : value.toLocaleString();
+                      layout: {
+                        padding: {
+                          top: 10,
+                          right: 30,
+                          bottom: 10,
+                          left: 10,
                         },
                       },
-                    },
-                   }}  
-                />
-
+                      plugins: {
+                        legend: {
+                          display: true,
+                          position: 'top',
+                        },
+                        datalabels: {
+                          display: true,
+                          align: 'end',
+                          anchor: 'end',
+                          color: '#000',
+                          font: {
+                            size: 15,
+                          },
+                          formatter: (value) => {
+                            if (value === undefined || value === null) {
+                              return null;
+                            }
+                            return value === 0 ? null : value.toLocaleString();
+                          },
+                        },
+                      },
+                    }}
+                  />
+                ) : (
+                  <p className="text-center text-gray-500">กราฟไม่มีข้อมูล</p>
+                )}
               </div>
+
 
               <div className="flex flex-col w-full mt-5">
                 <p
@@ -716,29 +757,29 @@ const Page = () => {
                   บทบาทของผู้ใช้
                 </p>
                 <Bar
-                  data={roleData}  
+                  data={roleData}
                   width={200}
                   height={100}
                   options={{
                     scales: {
                       y: { // แกน x
                         ticks: {
-                          display: false, 
+                          display: false,
                         },
                         grid: {
-                          display: false, 
+                          display: false,
                         },
                       },
                       x: { // แกน y
-                        beginAtZero: true, 
+                        beginAtZero: true,
                         ticks: {
-                          autoSkip: true, 
+                          autoSkip: true,
                           font: {
-                            size: 15, 
+                            size: 15,
                           },
                         },
                       },
-                    },    
+                    },
                     plugins: {
                       legend: {
                         display: true,
@@ -755,7 +796,7 @@ const Page = () => {
                         // กำหนดประเภท 'value' เป็น 'number'
                         formatter: (value) => {
                           if (value === undefined || value === null) {
-                            return null; 
+                            return null;
                           }
                           return value === 0 ? null : value.toLocaleString();
                         },
@@ -776,18 +817,19 @@ const Page = () => {
                   data={datafav}
                   width={200}
                   height={100}
-                  options={{ indexAxis: 'y',
+                  options={{
+                    indexAxis: 'y',
                     scales: {
                       x: {
                         ticks: {
-                          display: false, 
+                          display: false,
                         },
                         grid: {
-                          display: false, 
+                          display: false,
                         },
                       },
-                      y: { 
-                        beginAtZero: true, 
+                      y: {
+                        beginAtZero: true,
                         ticks: {
                           font: {
                             size: 15,
@@ -795,13 +837,13 @@ const Page = () => {
                           autoSkip: true,
                         },
                       },
-                    },    
+                    },
                     layout: {
                       padding: {
-                        top: 10,    
-                        right: 30,  
-                        bottom: 10, 
-                        left: 10,   
+                        top: 10,
+                        right: 30,
+                        bottom: 10,
+                        left: 10,
                       },
                     },
                     plugins: {
@@ -826,7 +868,7 @@ const Page = () => {
                         },
                       },
                     },
-                   }}  
+                  }}
                 />
 
               </div>
