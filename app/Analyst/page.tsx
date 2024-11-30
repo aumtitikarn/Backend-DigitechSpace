@@ -401,7 +401,7 @@ const Page = () => {
             {
               label: 'Student User',
               data: studentCounts,
-              backgroundColor: '#0B1E48',
+              backgroundColor: '#ff9f00',
             },
           ],
         });
