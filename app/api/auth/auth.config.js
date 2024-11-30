@@ -4,6 +4,11 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { connectMongoDB } from "../../../lib/mongodb";
 import AdminUser from "../../../models/AdminUser";
 import bcrypt from "bcryptjs";
+export const dynamic = 'force-dynamic'; 
+if (process.env.NODE_ENV === 'development') {
+  console.log('Auth configuration loaded');
+  console.log('Base URL:', process.env.NEXTAUTH_URL);
+}
 
 export const authOptions = {
   providers: [

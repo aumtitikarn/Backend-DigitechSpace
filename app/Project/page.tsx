@@ -47,7 +47,9 @@ const Project: React.FC = () => {
     new Set(projects.map((project) => project.price))
   ).sort((a, b) => a - b);
 
-  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCategoryChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setSelectedCategory(event.target.value || null);
   };
 
@@ -74,14 +76,18 @@ const Project: React.FC = () => {
     const matchesRathing =
       selectedRathing === null || project.rathing === selectedRathing;
 
-    const matchesPrice = selectedPrice === null || project.price === selectedPrice;
+    const matchesPrice =
+      selectedPrice === null || project.price === selectedPrice;
 
     return matchesSearch && matchesCategory && matchesRathing && matchesPrice;
   });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredProjects.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredProjects.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
   const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
 
   useEffect(() => {
@@ -131,7 +137,9 @@ const Project: React.FC = () => {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
             <div>
               <h2 className="text-xl font-bold text-black">โครงงาน</h2>
-              <p className="text-black">โครงงานทั้งหมดที่ถูกเผยแพร่แล้วบนเว็บไซต์</p>
+              <p className="text-black">
+                โครงงานทั้งหมดที่ถูกเผยแพร่แล้วบนเว็บไซต์
+              </p>
             </div>
             <div className="relative w-full sm:w-auto flex gap-4">
               <input
@@ -185,11 +193,21 @@ const Project: React.FC = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-[#0B1E48]">
                     <tr>
-                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">#</th>
-                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ชื่อโครงงาน</th>
-                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ราคา</th>
-                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">ผู้สร้าง</th>
-                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">อีเมล</th>
+                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">
+                        #
+                      </th>
+                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">
+                        ชื่อโครงงาน
+                      </th>
+                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">
+                        ราคา
+                      </th>
+                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">
+                        ผู้สร้าง
+                      </th>
+                      <th className="px-6 py-3 text-left text-[16px] text-white uppercase tracking-wider font-semibold">
+                        อีเมล
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -199,35 +217,59 @@ const Project: React.FC = () => {
                           {index + 1 + indexOfFirstItem}.
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                        <Link href={{
-                            pathname: `/Project/detail`,
-                            query: { ...project }
-                          }}>
+                          <Link
+                            href={`/Project/detail?_id=${
+                              project._id
+                            }&profileImage=${encodeURIComponent(
+                              project.profileImage
+                            )}&authorName=${encodeURIComponent(
+                              project.authorName
+                            )}`}
+                            className="text-black"
+                          >
                             {project.projectname || "-"}
                           </Link>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                        <Link href={{
-                            pathname: `/Project/detail`,
-                            query: { ...project }
-                          }}>
-                          {project.price || "-"}
+                          <Link
+                            href={`/Project/detail?_id=${
+                              project._id
+                            }&profileImage=${encodeURIComponent(
+                              project.profileImage
+                            )}&authorName=${encodeURIComponent(
+                              project.authorName
+                            )}`}
+                            className="text-black"
+                          >
+                            {project.price || "-"}
                           </Link>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                        <Link href={{
-                            pathname: `/Project/detail`,
-                            query: { ...project }
-                          }}>
-                          {project.authorName || "-"}
+                          <Link
+                            href={`/Project/detail?_id=${
+                              project._id
+                            }&profileImage=${encodeURIComponent(
+                              project.profileImage
+                            )}&authorName=${encodeURIComponent(
+                              project.authorName
+                            )}`}
+                            className="text-black"
+                          >
+                            {project.authorName || "-"}
                           </Link>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                        <Link href={{
-                            pathname: `/Project/detail`,
-                            query: { ...project }
-                          }}>
-                          {project.email || "-"}
+                          <Link
+                            href={`/Project/detail?_id=${
+                              project._id
+                            }&profileImage=${encodeURIComponent(
+                              project.profileImage
+                            )}&authorName=${encodeURIComponent(
+                              project.authorName
+                            )}`}
+                            className="text-black"
+                          >
+                            {project.email || "-"}
                           </Link>
                         </td>
                       </tr>
