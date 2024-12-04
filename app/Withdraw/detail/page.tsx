@@ -3,6 +3,7 @@
 import Header from "../../component/Header";
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Swal from 'sweetalert2';
 const LoadingSpinner = () => (
   <div className="flex justify-center items-center min-h-screen">
@@ -12,6 +13,7 @@ const LoadingSpinner = () => (
 const DetailContent = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  const router = useRouter();
   
   const [withdrawalDetails, setWithdrawalDetails] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -134,8 +136,8 @@ const DetailContent = () => {
         await Swal.fire({
           icon: 'success',
           title: 'สำเร็จ',
-          text: 'ทำเครื่องหมายโครงการว่าเสร็จสมบูรณ์เรียบร้อยแล้ว',
         });
+        router.push("/Withdraw");
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการทำเครื่องหมายโครงการว่าเสร็จสมบูรณ์:", error);
         await Swal.fire({

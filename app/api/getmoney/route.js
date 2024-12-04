@@ -1,5 +1,6 @@
 import { connectMongoDB } from "../../../lib/mongodb";
 import orders from '../../../models/Getmoney';
+import { projects } from '../../../models/Getproject';
 
 export async function GET(req) {
   await connectMongoDB();
@@ -25,6 +26,12 @@ export async function GET(req) {
     // Fetch orders ตาม filter
     const transactions = await orders.find(filter).lean();
     console.log("Fetched transactions:", transactions);
+
+    const productIds = transactions.map(transactions => transactions.product);
+    console.log("productsellID", productIds);
+
+    const productsell = await projects.find({ _id: { $in: productIds } }, 'price category _id');
+    console.log("productsell",productsell)
 
     if (transactions.length === 0) {
       console.log("No transactions found.");
@@ -55,3 +62,5 @@ export async function GET(req) {
     });
   }
 }
+
+// transactions

@@ -159,10 +159,48 @@ const Reportproject: React.FC = () => {
                               </Link>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                              {val.report || "-"}
+                            <Link
+                                href={{
+                                  pathname: `/Reportproject/Detail`,
+                                  query: {
+                                    id: val._id,
+                                    name: val.name,
+                                    username: val.username,
+                                    report: val.report,
+                                    more: val.more,
+                                    email: val.email,
+                                    author: val.author,
+                                    projectId: val.projectId,
+                                    createdAt: formatDate(val.createdAt),
+                                  },
+                                }}
+                                className="text-black"
+                              >
+                                {val.report || "-"}
+                              </Link>
+                              
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                              {val.username || "-"}
+                            <Link
+                                href={{
+                                  pathname: `/Reportproject/Detail`,
+                                  query: {
+                                    id: val._id,
+                                    name: val.name,
+                                    username: val.username,
+                                    report: val.report,
+                                    more: val.more,
+                                    email: val.email,
+                                    author: val.author,
+                                    projectId: val.projectId,
+                                    createdAt: formatDate(val.createdAt),
+                                  },
+                                }}
+                                className="text-black"
+                              >
+                                {val.username || "-"}
+                              </Link>
+                      
                             </td>
                           </tr>
                         ))

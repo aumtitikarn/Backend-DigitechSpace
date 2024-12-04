@@ -66,12 +66,13 @@ const Detail: React.FC = () => {
           body: JSON.stringify({ id }),
         });
   
-        if (response.ok&&res.ok) {
+        if (response.ok && res.ok) {
           Swal.fire('Deleted!', 'Report deleted successfully', 'success');
           router.push("/ReportService");
         } else {
           const data = await response.json();
-          Swal.fire('Error', `Failed to delete report: ${data.msg}`, 'error');
+          const errorMessage = data.msg || 'Unknown error occurred';
+          Swal.fire('Error', `Failed to delete report: ${errorMessage}`, 'error');
         }
       } catch (error) {
         console.error("Error deleting report:", error);

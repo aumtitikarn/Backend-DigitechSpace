@@ -19,6 +19,7 @@ const Detail: React.FC = () => {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
+  // const { id } = params;
 
   const [postBlogs, setPostBlogs] = useState<BlogPost[]>([]);
 
@@ -124,6 +125,7 @@ const Detail: React.FC = () => {
       try {
         const res = await fetch(`/api/getreportblog/${id}`, {
           method: "DELETE",
+          body: JSON.stringify({ id }),
         });
         const response = await fetch("/api/getreportblog/delet", {
           method: "DELETE",
