@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import Order from "../../../../models/orders";
 import Favorites from "../../../../models/favorites";
 import Project from "../../../../models/projects";
-import { ObjectId } from "mongodb"; // Ensure ObjectId is imported for MongoDB usage
+import { ObjectId } from "mongodb"; // ใช้ ObjectId จาก mongodb
 
 export async function DELETE(req) {
   try {
@@ -16,7 +16,7 @@ export async function DELETE(req) {
       return NextResponse.json({ msg: "Missing projectId" }, { status: 400 });
     }
 
-    const objectId = new ObjectId(projectId);
+    const objectId = new ObjectId(projectId); // สร้าง ObjectId จาก projectId
 
     const project = await Project.findOne({ _id: objectId });
     if (!project) {
@@ -61,7 +61,7 @@ export async function DELETE(req) {
     // Removing project from favorites
     const deletedFavorites = await Favorites.updateMany(
       {},
-      { $pull: { projectId: projectId } }
+      { $pull: { projectId: objectId } } // ใช้ objectId ที่สร้างแล้ว
     );
     console.log("Updated favorites:", deletedFavorites.modifiedCount);
 
